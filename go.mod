@@ -13,7 +13,7 @@ require (
 	github.com/unidoc/garabic v0.0.0-20220702200334-8c7cb25baa11
 	github.com/unidoc/pkcs7 v0.3.0
 	github.com/unidoc/timestamp v0.0.0-20200412005513-91597fd3793a
-	github.com/unidoc/typesetting v0.1.0
+	github.com/unidoc/typesetting v0.1.1
 	github.com/unidoc/unichart v0.5.2
 	github.com/unidoc/unitype v0.5.1
 	golang.org/x/crypto v0.48.0
