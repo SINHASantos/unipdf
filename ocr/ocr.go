@@ -9,35 +9,104 @@
 // Use of this source code is governed by the UniDoc End User License Agreement
 // terms that can be accessed at https://unidoc.io/eula/
 
-package ocr ;import (_d "bytes";_feg "context";_ce "fmt";_dd "github.com/unidoc/unipdf/v4/model";_b "io";_f "mime/multipart";_c "net/http";_cd "os";_fe "path/filepath";_dc "time";);
+package ocr ;import (_a "bytes";_db "context";_ea "fmt";_g "github.com/unidoc/unipdf/v4/model";_eb "io";_b "mime/multipart";_fe "net/http";_ae "os";_d "path/filepath";_f "time";);
 
-// WithService returns a new client with the given service.
-func (_aed *Client )WithService (service OCRService )*Client {return &Client {_ddc :service }};
+// ExtractTextFromImage extracts text from a UniPDF image
+func (_de *Client )ExtractTextFromImage (ctx _db .Context ,image *_g .Image )([]byte ,error ){if image ==nil {return nil ,_ea .Errorf ("\u0069\u006d\u0061\u0067e \u0063\u0061\u006e\u006e\u006f\u0074\u0020\u0062\u0065\u0020\u006e\u0069\u006c");};if len (image .Data )==0{return nil ,_ea .Errorf ("\u0069\u006d\u0061\u0067e \u0064\u0061\u0074\u0061\u0020\u0069\u0073\u0020\u0065\u006d\u0070\u0074\u0079");
+};_eae :=_a .NewReader (image .Data );_dc :="\u0069m\u0061\u0067\u0065\u002e\u006a\u0070g";return _de ._ead .ExtractText (ctx ,_eae ,_dc );};
 
 // ExtractText extracts text from an image reader
-func (_ab *Client )ExtractText (ctx _feg .Context ,reader _b .Reader ,filename string )([]byte ,error ){if reader ==nil {return nil ,_ce .Errorf ("r\u0065a\u0064\u0065\u0072\u0020\u0063\u0061\u006e\u006eo\u0074\u0020\u0062\u0065 n\u0069\u006c");};return _ab ._ddc .ExtractText (ctx ,reader ,filename );
+func (_ff *Client )ExtractText (ctx _db .Context ,reader _eb .Reader ,filename string )([]byte ,error ){if reader ==nil {return nil ,_ea .Errorf ("r\u0065a\u0064\u0065\u0072\u0020\u0063\u0061\u006e\u006eo\u0074\u0020\u0062\u0065 n\u0069\u006c");};return _ff ._ead .ExtractText (ctx ,reader ,filename );
 };
+
+// CallEndpoint executes an HTTP request to the configured URL.
+// This provides a general method for users to execute HTTP requests using
+// the service's configured options (URL, method, headers, timeout, etc.).
+//
+// The URL, method, and headers are taken from the OCROptions used to create this service.
+// To call different endpoints, create separate service instances with different URLs.
+//
+// Parameters:
+//   - body: Request body (can be nil for GET requests or when no body is needed)
+func (_daf *HTTPOCRService )CallEndpoint (ctx _db .Context ,body _eb .Reader )([]byte ,error ){if _daf ._cb .Url ==""{return nil ,_ea .Errorf ("\u006e\u006f\u0020U\u0052\u004c\u0020\u0063o\u006e\u0066\u0069\u0067\u0075\u0072\u0065d\u0020\u0069\u006e\u0020\u004f\u0043\u0052\u004f\u0070\u0074\u0069\u006f\u006e\u0073");
+};_agaf :=_daf ._cb .Method ;if _agaf ==""{_agaf ="\u0047\u0045\u0054";};_dd ,_cfd :=_fe .NewRequestWithContext (ctx ,_agaf ,_daf ._cb .Url ,body );if _cfd !=nil {return nil ,_ea .Errorf ("\u0066\u0061\u0069\u006ce\u0064\u0020\u0074\u006f\u0020\u0063\u0072\u0065\u0061\u0074e\u0020r\u0065\u0071\u0075\u0065\u0073\u0074\u003a \u0025\u0077",_cfd );
+};for _bbe ,_fgb :=range _daf ._cb .Headers {_dd .Header .Set (_bbe ,_fgb );};if _daf ._cb .RequestModifier !=nil {if _cad :=_daf ._cb .RequestModifier (_dd );_cad !=nil {return nil ,_ea .Errorf ("r\u0065\u0071\u0075\u0065\u0073\u0074 \u006d\u006f\u0064\u0069\u0066\u0069\u0065\u0072\u0020f\u0061\u0069\u006ce\u0064:\u0020\u0025\u0077",_cad );
+};};return _daf .executeRequestWithRetry (ctx ,_dd );};
 
 // NewHTTPOCRService creates a new HTTP-based OCR service.
 func NewHTTPOCRService (options OCROptions )*HTTPOCRService {if options .Method ==""{options .Method ="\u0050\u004f\u0053\u0054";};if options .FileFieldName ==""{options .FileFieldName ="\u0066\u0069\u006c\u0065";};if options .TimeoutSeconds ==0{options .TimeoutSeconds =30;
-};if options .Headers ==nil {options .Headers =make (map[string ]string );};if options .FormFields ==nil {options .FormFields =make (map[string ]string );};return &HTTPOCRService {_bc :options };};
+};if options .Headers ==nil {options .Headers =make (map[string ]string );};if options .FormFields ==nil {options .FormFields =make (map[string ]string );};return &HTTPOCRService {_cb :options };};
 
-// BatchProcessFiles processes multiple image files concurrently from a list of file paths.
-func (_cee *Client )BatchProcessFiles (ctx _feg .Context ,filePaths []string )([][]byte ,[]error ){if len (filePaths )==0{return nil ,nil ;};_cc :=make ([][]byte ,len (filePaths ));_ffa :=make ([]error ,len (filePaths ));_bb :=make (chan struct{},10);type result struct{_agf int ;
-_bd []byte ;_aae error ;};_be :=make (chan result ,len (filePaths ));for _dbe ,_bff :=range filePaths {go func (_ge int ,_agd string ){_bb <-struct{}{};defer func (){<-_bb }();_da ,_ee :=_cee .ExtractTextFromFile (ctx ,_agd );_be <-result {_agf :_ge ,_bd :_da ,_aae :_ee };
-}(_dbe ,_bff );};for _dff :=0;_dff < len (filePaths );_dff ++{_abd :=<-_be ;_cc [_abd ._agf ]=_abd ._bd ;_ffa [_abd ._agf ]=_abd ._aae ;};return _cc ,_ffa ;};
+// ExtractText extracts text from an image reader.
+// The filename parameter is used to set the filename in the multipart form data.
+// If filename is empty, a default name based on content type will be used.
+//
+// Parameters:
+//   - reader: Image data reader (e.g., file, buffer)
+//   - filename: Optional filename for the uploaded file (used in multipart form)
+func (_dg *HTTPOCRService )ExtractText (ctx _db .Context ,reader _eb .Reader ,filename string )([]byte ,error ){if _dg ._cb .Url ==""{return nil ,_ea .Errorf ("n\u006f\u0020\u004f\u0043\u0052\u0020s\u0065\u0072\u0076\u0069\u0063\u0065\u0020\u0055\u0052L\u0020\u0070\u0072o\u0076i\u0064\u0065\u0064");
+};if reader ==nil {return nil ,_ea .Errorf ("r\u0065a\u0064\u0065\u0072\u0020\u0063\u0061\u006e\u006eo\u0074\u0020\u0062\u0065 n\u0069\u006c");};var _cca _a .Buffer ;_ffc :=_b .NewWriter (&_cca );if filename ==""{_aga :=make ([]byte ,512);_aa ,_fd :=reader .Read (_aga );
+if _fd !=nil &&_fd !=_eb .EOF {return nil ,_ea .Errorf ("\u0066\u0061\u0069\u006c\u0065\u0064\u0020\u0074\u006f\u0020r\u0065\u0061\u0064\u0020\u0066\u0072\u006fm\u0020\u0072\u0065\u0061\u0064\u0065\u0072\u003a\u0020\u0025\u0077",_fd );};_cd :=_fe .DetectContentType (_aga [:_aa ]);
+switch _cd {case "\u0069\u006d\u0061\u0067\u0065\u002f\u006a\u0070\u0065\u0067":filename ="\u0069m\u0061\u0067\u0065\u002e\u006a\u0070g";case "\u0069m\u0061\u0067\u0065\u002f\u0070\u006eg":filename ="\u0069m\u0061\u0067\u0065\u002e\u0070\u006eg";case "\u0069m\u0061\u0067\u0065\u002f\u0067\u0069f":filename ="\u0069m\u0061\u0067\u0065\u002e\u0067\u0069f";
+default:filename ="\u0069m\u0061\u0067\u0065\u002e\u006a\u0070g";};reader =_eb .MultiReader (_a .NewReader (_aga [:_aa ]),reader );};_aaa ,_fcd :=_ffc .CreateFormFile (_dg ._cb .FileFieldName ,filename );if _fcd !=nil {return nil ,_ea .Errorf ("\u0066\u0061\u0069\u006c\u0065\u0064\u0020\u0074\u006f\u0020c\u0072\u0065\u0061\u0074\u0065\u0020\u0066o\u0072\u006d\u0020\u0066\u0069\u006c\u0065\u003a\u0020\u0025\u0077",_fcd );
+};_ ,_fcd =_eb .Copy (_aaa ,reader );if _fcd !=nil {return nil ,_ea .Errorf ("\u0066\u0061\u0069le\u0064\u0020\u0074\u006f\u0020\u0063\u006f\u0070\u0079\u0020\u0064\u0061\u0074\u0061\u003a\u0020\u0025\u0077",_fcd );};for _bfg ,_dfd :=range _dg ._cb .FormFields {_fcd =_ffc .WriteField (_bfg ,_dfd );
+if _fcd !=nil {return nil ,_ea .Errorf ("\u0066\u0061\u0069l\u0065\u0064\u0020\u0074o\u0020\u0061\u0064\u0064\u0020\u0066\u006fr\u006d\u0020\u0066\u0069\u0065\u006c\u0064\u0020\u0025\u0073\u003a\u0020\u0025\u0077",_bfg ,_fcd );};};_fcd =_ffc .Close ();
+if _fcd !=nil {return nil ,_ea .Errorf ("\u0066\u0061il\u0065\u0064\u0020t\u006f\u0020\u0063\u006cose\u0020mu\u006c\u0074\u0069\u0070\u0061\u0072\u0074 w\u0072\u0069\u0074\u0065\u0072\u003a\u0020%\u0077",_fcd );};_ggb ,_fcd :=_fe .NewRequestWithContext (ctx ,_dg ._cb .Method ,_dg ._cb .Url ,&_cca );
+if _fcd !=nil {return nil ,_ea .Errorf ("\u0066\u0061\u0069\u006ce\u0064\u0020\u0074\u006f\u0020\u0063\u0072\u0065\u0061\u0074e\u0020r\u0065\u0071\u0075\u0065\u0073\u0074\u003a \u0025\u0077",_fcd );};_ggb .Header .Set ("\u0043\u006f\u006et\u0065\u006e\u0074\u002d\u0054\u0079\u0070\u0065",_ffc .FormDataContentType ());
+for _cac ,_acf :=range _dg ._cb .Headers {_ggb .Header .Set (_cac ,_acf );};if _dg ._cb .RequestModifier !=nil {if _bbb :=_dg ._cb .RequestModifier (_ggb );_bbb !=nil {return nil ,_ea .Errorf ("r\u0065\u0071\u0075\u0065\u0073\u0074 \u006d\u006f\u0064\u0069\u0066\u0069\u0065\u0072\u0020f\u0061\u0069\u006ce\u0064:\u0020\u0025\u0077",_bbb );
+};};return _dg .executeRequestWithRetry (ctx ,_ggb );};func (_ebb *HTTPOCRService )executeRequestWithRetry (_fg _db .Context ,_fa *_fe .Request )([]byte ,error ){_abb :=_ebb ._cb .Client ;if _abb ==nil {_abb =&_fe .Client {Timeout :_f .Duration (_ebb ._cb .TimeoutSeconds )*_f .Second };
+};_ge :=_ebb ._cb .MaxRetries +1;var (_ef error ;_cag []byte ;_edc error ;);if _fa .Body !=nil {_cag ,_edc =_eb .ReadAll (_fa .Body );if _edc !=nil {return nil ,_ea .Errorf ("\u0066\u0061\u0069l\u0065\u0064\u0020\u0074o\u0020\u0072\u0065\u0061\u0064\u0020\u0072e\u0071\u0075\u0065\u0073\u0074\u0020\u0062\u006f\u0064\u0079\u003a\u0020\u0025\u0077",_edc );
+};_fa .Body .Close ();};for _bfd :=0;_bfd < _ge ;_bfd ++{_cfg :=_fa .Clone (_fg );if _cag !=nil {_cfg .Body =_eb .NopCloser (_a .NewReader (_cag ));};_gg ,_dff :=_abb .Do (_cfg );if _dff !=nil {_ef =_ea .Errorf ("\u0066a\u0069\u006ce\u0064\u0020\u0074o\u0020\u0065\u0078\u0065\u0063\u0075\u0074e\u0020\u0072\u0065\u0071\u0075\u0065s\u0074\u0020\u0028\u0061\u0074\u0074\u0065\u006d\u0070\u0074\u0020%\u0064\u002f\u0025\u0064\u0029\u003a\u0020\u0025\u0077",_bfd +1,_ge ,_dff );
+if _bfd < _ge -1{_f .Sleep (_f .Duration (_bfd +1)*_f .Second );continue ;};break ;};defer _gg .Body .Close ();_cbe ,_dff :=_eb .ReadAll (_gg .Body );if _dff !=nil {_ef =_ea .Errorf ("\u0066\u0061\u0069\u006c\u0065\u0064\u0020t\u006f\u0020\u0072e\u0061\u0064\u0020\u0072e\u0073\u0070\u006f\u006e\u0073\u0065\u0020\u0028\u0061\u0074\u0074\u0065\u006d\u0070\u0074\u0020\u0025\u0064\u002f\u0025\u0064\u0029\u003a\u0020\u0025\u0077",_bfd +1,_ge ,_dff );
+if _bfd < _ge -1{continue ;};break ;};if _gg .StatusCode < 200||_gg .StatusCode >=300{_ef =_ea .Errorf ("\u0072\u0065\u0071\u0075\u0065\u0073t\u0020\u0066\u0061\u0069\u006c\u0065\u0064\u0020\u0077\u0069\u0074\u0068\u0020\u0073\u0074\u0061\u0074\u0075\u0073\u0020%\u0073\u0020\u0028\u0061\u0074\u0074\u0065\u006d\u0070\u0074\u0020\u0025\u0064\u002f%\u0064)\u003a\u0020\u0025\u0073",_gg .Status ,_bfd +1,_ge ,string (_cbe ));
+if _bfd < _ge -1{continue ;};break ;};return _cbe ,nil ;};return nil ,_ef ;};
 
 // HTTPOCRService implements OCRService using HTTP requests.
 //
 // This service is mainly designed to work with https://github.com/unidoc/ocrserver
 // but can be adapted to other HTTP-based OCR services with similar APIs.
-type HTTPOCRService struct{_bc OCROptions };
+type HTTPOCRService struct{_cb OCROptions };
 
-// NewOCRHTTPClient creates a new OCR client using HTTP service with the given options.
-func NewOCRHTTPClient (options OCROptions )*Client {return &Client {_ddc :NewHTTPOCRService (options )}};
+// CallEndpoint executes an HTTP request using the underlying service's configured options.
+// The URL, method, headers, and other settings are taken from the OCROptions
+// used to create the service.
+//
+// To call different endpoints, create separate service instances with different URLs:
+//
+//	statusService := NewHTTPOCRService(OCROptions{Url: "http://localhost:8080/status", Method: "GET"})
+//	ocrService := NewHTTPOCRService(OCROptions{Url: "http://localhost:8080/ocr", Method: "POST"})
+//
+// Parameters:
+//   - body: Request body (can be nil for GET requests or when no body is needed)
+//
+// Example usage:
+//
+//	result, err := client.CallEndpoint(ctx, nil)              // GET request
+//	result, err := client.CallEndpoint(ctx, requestBody)      // POST request with body
+func (_gf *Client )CallEndpoint (ctx _db .Context ,body _eb .Reader )([]byte ,error ){return _gf ._ead .CallEndpoint (ctx ,body );};
 
 // NewClient creates a new OCR client with the given service.
-func NewClient (service OCRService )*Client {return &Client {_ddc :service }};
+func NewClient (service OCRService )*Client {return &Client {_ead :service }};
+
+// OCRService defines the interface for OCR services.
+type OCRService interface{
+
+// ExtractText extracts text from an image reader.
+// The filename parameter is used to set the filename in the multipart form data.
+// If filename is empty, a default name based on content type will be used.
+//
+// Parameters:
+//   - reader: Image data reader (e.g., file, buffer)
+//   - filename: Optional filename for the uploaded file (used in multipart form)
+ExtractText (_edf _db .Context ,_eec _eb .Reader ,_ffe string )([]byte ,error );
+
+// CallEndpoint executes an HTTP request using the service's configured URL and options.
+CallEndpoint (_fag _db .Context ,_efc _eb .Reader )([]byte ,error );};
+
+// BatchProcess processes multiple images concurrently.
+func (_gd *Client )BatchProcess (ctx _db .Context ,images []*_g .Image )([][]byte ,[]error ){if len (images )==0{return nil ,nil ;};_ab :=make ([][]byte ,len (images ));_ga :=make ([]error ,len (images ));_ba :=make (chan struct{},10);type result struct{_c int ;
+_fc []byte ;_dcc error ;};_bad :=make (chan result ,len (images ));for _ag ,_ca :=range images {go func (_fff int ,_cf *_g .Image ){_ba <-struct{}{};defer func (){<-_ba }();_cg ,_gaf :=_gd .ExtractTextFromImage (ctx ,_cf );_bad <-result {_c :_fff ,_fc :_cg ,_dcc :_gaf };
+}(_ag ,_ca );};for _da :=0;_da < len (images );_da ++{_gaa :=<-_bad ;_ab [_gaa ._c ]=_gaa ._fc ;_ga [_gaa ._c ]=_gaa ._dcc ;};return _ab ,_ga ;};
 
 // OCROptions provides configuration for HTTP-based OCR services.
 type OCROptions struct{
@@ -64,97 +133,29 @@ TimeoutSeconds int ;
 MaxRetries int ;
 
 // Custom HTTP client (optional - if provided, TimeoutSeconds is ignored).
-Client *_c .Client ;
+Client *_fe .Client ;
 
 // Custom request modifier function (called after request is created).
-RequestModifier func (*_c .Request )error ;};
+RequestModifier func (*_fe .Request )error ;};
 
-// ExtractTextFromFile extracts text from an image file.
-func (_dg *Client )ExtractTextFromFile (ctx _feg .Context ,filePath string )([]byte ,error ){if filePath ==""{return nil ,_ce .Errorf ("\u0066i\u006c\u0065\u0020\u0070a\u0074\u0068\u0020\u0063\u0061n\u006eo\u0074 \u0062\u0065\u0020\u0065\u006d\u0070\u0074y");
-};_dcd ,_af :=_cd .Open (filePath );if _af !=nil {return nil ,_ce .Errorf ("\u0065r\u0072\u006f\u0072\u0020o\u0070\u0065\u006e\u0069\u006eg\u0020f\u0069l\u0065\u0020\u0025\u0073\u003a\u0020\u0025w",filePath ,_af );};defer _dcd .Close ();_db :=_fe .Base (filePath );
-return _dg ._ddc .ExtractText (ctx ,_dcd ,_db );};
+// WithService returns a new client with the given service.
+func (_dbb *Client )WithService (service OCRService )*Client {return &Client {_ead :service }};
 
-// CallEndpoint executes an HTTP request using the underlying service's configured options.
-// The URL, method, headers, and other settings are taken from the OCROptions
-// used to create the service.
-//
-// To call different endpoints, create separate service instances with different URLs:
-//
-//	statusService := NewHTTPOCRService(OCROptions{Url: "http://localhost:8080/status", Method: "GET"})
-//	ocrService := NewHTTPOCRService(OCROptions{Url: "http://localhost:8080/ocr", Method: "POST"})
-//
-// Parameters:
-//   - body: Request body (can be nil for GET requests or when no body is needed)
-//
-// Example usage:
-//
-//	result, err := client.CallEndpoint(ctx, nil)              // GET request
-//	result, err := client.CallEndpoint(ctx, requestBody)      // POST request with body
-func (_cdc *Client )CallEndpoint (ctx _feg .Context ,body _b .Reader )([]byte ,error ){return _cdc ._ddc .CallEndpoint (ctx ,body );};
-
-// CallEndpoint executes an HTTP request to the configured URL.
-// This provides a general method for users to execute HTTP requests using
-// the service's configured options (URL, method, headers, timeout, etc.).
-//
-// The URL, method, and headers are taken from the OCROptions used to create this service.
-// To call different endpoints, create separate service instances with different URLs.
-//
-// Parameters:
-//   - body: Request body (can be nil for GET requests or when no body is needed)
-func (_cce *HTTPOCRService )CallEndpoint (ctx _feg .Context ,body _b .Reader )([]byte ,error ){if _cce ._bc .Url ==""{return nil ,_ce .Errorf ("\u006e\u006f\u0020U\u0052\u004c\u0020\u0063o\u006e\u0066\u0069\u0067\u0075\u0072\u0065d\u0020\u0069\u006e\u0020\u004f\u0043\u0052\u004f\u0070\u0074\u0069\u006f\u006e\u0073");
-};_cdcb :=_cce ._bc .Method ;if _cdcb ==""{_cdcb ="\u0047\u0045\u0054";};_bee ,_bfc :=_c .NewRequestWithContext (ctx ,_cdcb ,_cce ._bc .Url ,body );if _bfc !=nil {return nil ,_ce .Errorf ("\u0066\u0061\u0069\u006ce\u0064\u0020\u0074\u006f\u0020\u0063\u0072\u0065\u0061\u0074e\u0020r\u0065\u0071\u0075\u0065\u0073\u0074\u003a \u0025\u0077",_bfc );
-};for _abe ,_fd :=range _cce ._bc .Headers {_bee .Header .Set (_abe ,_fd );};if _cce ._bc .RequestModifier !=nil {if _ecc :=_cce ._bc .RequestModifier (_bee );_ecc !=nil {return nil ,_ce .Errorf ("r\u0065\u0071\u0075\u0065\u0073\u0074 \u006d\u006f\u0064\u0069\u0066\u0069\u0065\u0072\u0020f\u0061\u0069\u006ce\u0064:\u0020\u0025\u0077",_ecc );
-};};return _cce .executeRequestWithRetry (ctx ,_bee );};
-
-// ExtractTextFromImage extracts text from a UniPDF image
-func (_g *Client )ExtractTextFromImage (ctx _feg .Context ,image *_dd .Image )([]byte ,error ){if image ==nil {return nil ,_ce .Errorf ("\u0069\u006d\u0061\u0067e \u0063\u0061\u006e\u006e\u006f\u0074\u0020\u0062\u0065\u0020\u006e\u0069\u006c");};if len (image .Data )==0{return nil ,_ce .Errorf ("\u0069\u006d\u0061\u0067e \u0064\u0061\u0074\u0061\u0020\u0069\u0073\u0020\u0065\u006d\u0070\u0074\u0079");
-};_ad :=_d .NewReader (image .Data );_ae :="\u0069m\u0061\u0067\u0065\u002e\u006a\u0070g";return _g ._ddc .ExtractText (ctx ,_ad ,_ae );};
-
-// OCRService defines the interface for OCR services.
-type OCRService interface{
-
-// ExtractText extracts text from an image reader.
-// The filename parameter is used to set the filename in the multipart form data.
-// If filename is empty, a default name based on content type will be used.
-//
-// Parameters:
-//   - reader: Image data reader (e.g., file, buffer)
-//   - filename: Optional filename for the uploaded file (used in multipart form)
-ExtractText (_dgc _feg .Context ,_gee _b .Reader ,_beg string )([]byte ,error );
-
-// CallEndpoint executes an HTTP request using the service's configured URL and options.
-CallEndpoint (_ecf _feg .Context ,_bfg _b .Reader )([]byte ,error );};
-
-// Client provides a high-level interface for OCR operations.
-type Client struct{_ddc OCRService };
-
-// BatchProcess processes multiple images concurrently.
-func (_ba *Client )BatchProcess (ctx _feg .Context ,images []*_dd .Image )([][]byte ,[]error ){if len (images )==0{return nil ,nil ;};_gd :=make ([][]byte ,len (images ));_e :=make ([]error ,len (images ));_df :=make (chan struct{},10);type result struct{_cg int ;
-_ff []byte ;_ac error ;};_ef :=make (chan result ,len (images ));for _afg ,_dca :=range images {go func (_ec int ,_baa *_dd .Image ){_df <-struct{}{};defer func (){<-_df }();_abf ,_bf :=_ba .ExtractTextFromImage (ctx ,_baa );_ef <-result {_cg :_ec ,_ff :_abf ,_ac :_bf };
-}(_afg ,_dca );};for _cdf :=0;_cdf < len (images );_cdf ++{_aa :=<-_ef ;_gd [_aa ._cg ]=_aa ._ff ;_e [_aa ._cg ]=_aa ._ac ;};return _gd ,_e ;};func (_ece *HTTPOCRService )executeRequestWithRetry (_acc _feg .Context ,_agfd *_c .Request )([]byte ,error ){_bdb :=_ece ._bc .Client ;
-if _bdb ==nil {_bdb =&_c .Client {Timeout :_dc .Duration (_ece ._bc .TimeoutSeconds )*_dc .Second };};_agfa :=_ece ._bc .MaxRetries +1;var (_fb error ;_ecb []byte ;_efb error ;);if _agfd .Body !=nil {_ecb ,_efb =_b .ReadAll (_agfd .Body );if _efb !=nil {return nil ,_ce .Errorf ("\u0066\u0061\u0069l\u0065\u0064\u0020\u0074o\u0020\u0072\u0065\u0061\u0064\u0020\u0072e\u0071\u0075\u0065\u0073\u0074\u0020\u0062\u006f\u0064\u0079\u003a\u0020\u0025\u0077",_efb );
-};_agfd .Body .Close ();};for _dcc :=0;_dcc < _agfa ;_dcc ++{_ed :=_agfd .Clone (_acc );if _ecb !=nil {_ed .Body =_b .NopCloser (_d .NewReader (_ecb ));};_gf ,_cea :=_bdb .Do (_ed );if _cea !=nil {_fb =_ce .Errorf ("\u0066a\u0069\u006ce\u0064\u0020\u0074o\u0020\u0065\u0078\u0065\u0063\u0075\u0074e\u0020\u0072\u0065\u0071\u0075\u0065s\u0074\u0020\u0028\u0061\u0074\u0074\u0065\u006d\u0070\u0074\u0020%\u0064\u002f\u0025\u0064\u0029\u003a\u0020\u0025\u0077",_dcc +1,_agfa ,_cea );
-if _dcc < _agfa -1{_dc .Sleep (_dc .Duration (_dcc +1)*_dc .Second );continue ;};break ;};defer _gf .Body .Close ();_dgd ,_cea :=_b .ReadAll (_gf .Body );if _cea !=nil {_fb =_ce .Errorf ("\u0066\u0061\u0069\u006c\u0065\u0064\u0020t\u006f\u0020\u0072e\u0061\u0064\u0020\u0072e\u0073\u0070\u006f\u006e\u0073\u0065\u0020\u0028\u0061\u0074\u0074\u0065\u006d\u0070\u0074\u0020\u0025\u0064\u002f\u0025\u0064\u0029\u003a\u0020\u0025\u0077",_dcc +1,_agfa ,_cea );
-if _dcc < _agfa -1{continue ;};break ;};if _gf .StatusCode < 200||_gf .StatusCode >=300{_fb =_ce .Errorf ("\u0072\u0065\u0071\u0075\u0065\u0073t\u0020\u0066\u0061\u0069\u006c\u0065\u0064\u0020\u0077\u0069\u0074\u0068\u0020\u0073\u0074\u0061\u0074\u0075\u0073\u0020%\u0073\u0020\u0028\u0061\u0074\u0074\u0065\u006d\u0070\u0074\u0020\u0025\u0064\u002f%\u0064)\u003a\u0020\u0025\u0073",_gf .Status ,_dcc +1,_agfa ,string (_dgd ));
-if _dcc < _agfa -1{continue ;};break ;};return _dgd ,nil ;};return nil ,_fb ;};
-
-// ExtractText extracts text from an image reader.
-// The filename parameter is used to set the filename in the multipart form data.
-// If filename is empty, a default name based on content type will be used.
-//
-// Parameters:
-//   - reader: Image data reader (e.g., file, buffer)
-//   - filename: Optional filename for the uploaded file (used in multipart form)
-func (_fc *HTTPOCRService )ExtractText (ctx _feg .Context ,reader _b .Reader ,filename string )([]byte ,error ){if _fc ._bc .Url ==""{return nil ,_ce .Errorf ("n\u006f\u0020\u004f\u0043\u0052\u0020s\u0065\u0072\u0076\u0069\u0063\u0065\u0020\u0055\u0052L\u0020\u0070\u0072o\u0076i\u0064\u0065\u0064");
-};if reader ==nil {return nil ,_ce .Errorf ("r\u0065a\u0064\u0065\u0072\u0020\u0063\u0061\u006e\u006eo\u0074\u0020\u0062\u0065 n\u0069\u006c");};var _bda _d .Buffer ;_gfa :=_f .NewWriter (&_bda );if filename ==""{_bbe :=make ([]byte ,512);_fa ,_adg :=reader .Read (_bbe );
-if _adg !=nil &&_adg !=_b .EOF {return nil ,_ce .Errorf ("\u0066\u0061\u0069\u006c\u0065\u0064\u0020\u0074\u006f\u0020r\u0065\u0061\u0064\u0020\u0066\u0072\u006fm\u0020\u0072\u0065\u0061\u0064\u0065\u0072\u003a\u0020\u0025\u0077",_adg );};_gec :=_c .DetectContentType (_bbe [:_fa ]);
-switch _gec {case "\u0069\u006d\u0061\u0067\u0065\u002f\u006a\u0070\u0065\u0067":filename ="\u0069m\u0061\u0067\u0065\u002e\u006a\u0070g";case "\u0069m\u0061\u0067\u0065\u002f\u0070\u006eg":filename ="\u0069m\u0061\u0067\u0065\u002e\u0070\u006eg";case "\u0069m\u0061\u0067\u0065\u002f\u0067\u0069f":filename ="\u0069m\u0061\u0067\u0065\u002e\u0067\u0069f";
-default:filename ="\u0069m\u0061\u0067\u0065\u002e\u006a\u0070g";};reader =_b .MultiReader (_d .NewReader (_bbe [:_fa ]),reader );};_gdd ,_de :=_gfa .CreateFormFile (_fc ._bc .FileFieldName ,filename );if _de !=nil {return nil ,_ce .Errorf ("\u0066\u0061\u0069\u006c\u0065\u0064\u0020\u0074\u006f\u0020c\u0072\u0065\u0061\u0074\u0065\u0020\u0066o\u0072\u006d\u0020\u0066\u0069\u006c\u0065\u003a\u0020\u0025\u0077",_de );
-};_ ,_de =_b .Copy (_gdd ,reader );if _de !=nil {return nil ,_ce .Errorf ("\u0066\u0061\u0069le\u0064\u0020\u0074\u006f\u0020\u0063\u006f\u0070\u0079\u0020\u0064\u0061\u0074\u0061\u003a\u0020\u0025\u0077",_de );};for _daf ,_dge :=range _fc ._bc .FormFields {_de =_gfa .WriteField (_daf ,_dge );
-if _de !=nil {return nil ,_ce .Errorf ("\u0066\u0061\u0069l\u0065\u0064\u0020\u0074o\u0020\u0061\u0064\u0064\u0020\u0066\u006fr\u006d\u0020\u0066\u0069\u0065\u006c\u0064\u0020\u0025\u0073\u003a\u0020\u0025\u0077",_daf ,_de );};};_de =_gfa .Close ();if _de !=nil {return nil ,_ce .Errorf ("\u0066\u0061il\u0065\u0064\u0020t\u006f\u0020\u0063\u006cose\u0020mu\u006c\u0074\u0069\u0070\u0061\u0072\u0074 w\u0072\u0069\u0074\u0065\u0072\u003a\u0020%\u0077",_de );
-};_gc ,_de :=_c .NewRequestWithContext (ctx ,_fc ._bc .Method ,_fc ._bc .Url ,&_bda );if _de !=nil {return nil ,_ce .Errorf ("\u0066\u0061\u0069\u006ce\u0064\u0020\u0074\u006f\u0020\u0063\u0072\u0065\u0061\u0074e\u0020r\u0065\u0071\u0075\u0065\u0073\u0074\u003a \u0025\u0077",_de );
-};_gc .Header .Set ("\u0043\u006f\u006et\u0065\u006e\u0074\u002d\u0054\u0079\u0070\u0065",_gfa .FormDataContentType ());for _ffab ,_eb :=range _fc ._bc .Headers {_gc .Header .Set (_ffab ,_eb );};if _fc ._bc .RequestModifier !=nil {if _dfe :=_fc ._bc .RequestModifier (_gc );
-_dfe !=nil {return nil ,_ce .Errorf ("r\u0065\u0071\u0075\u0065\u0073\u0074 \u006d\u006f\u0064\u0069\u0066\u0069\u0065\u0072\u0020f\u0061\u0069\u006ce\u0064:\u0020\u0025\u0077",_dfe );};};return _fc .executeRequestWithRetry (ctx ,_gc );};
+// BatchProcessFiles processes multiple image files concurrently from a list of file paths.
+func (_ede *Client )BatchProcessFiles (ctx _db .Context ,filePaths []string )([][]byte ,[]error ){if len (filePaths )==0{return nil ,nil ;};_gca :=make ([][]byte ,len (filePaths ));_cc :=make ([]error ,len (filePaths ));_dbg :=make (chan struct{},10);type result struct{_ac int ;
+_gbd []byte ;_ee error ;};_df :=make (chan result ,len (filePaths ));for _acc ,_bb :=range filePaths {go func (_ce int ,_af string ){_dbg <-struct{}{};defer func (){<-_dbg }();_cec ,_bf :=_ede .ExtractTextFromFile (ctx ,_af );_df <-result {_ac :_ce ,_gbd :_cec ,_ee :_bf };
+}(_acc ,_bb );};for _eg :=0;_eg < len (filePaths );_eg ++{_bfb :=<-_df ;_gca [_bfb ._ac ]=_bfb ._gbd ;_cc [_bfb ._ac ]=_bfb ._ee ;};return _gca ,_cc ;};
 
 // Service returns the underlying OCR service.
-func (_ag *Client )Service ()OCRService {return _ag ._ddc };
+func (_ed *Client )Service ()OCRService {return _ed ._ead };
+
+// ExtractTextFromFile extracts text from an image file.
+func (_gb *Client )ExtractTextFromFile (ctx _db .Context ,filePath string )([]byte ,error ){if filePath ==""{return nil ,_ea .Errorf ("\u0066i\u006c\u0065\u0020\u0070a\u0074\u0068\u0020\u0063\u0061n\u006eo\u0074 \u0062\u0065\u0020\u0065\u006d\u0070\u0074y");
+};_eaa ,_aef :=_ae .Open (filePath );if _aef !=nil {return nil ,_ea .Errorf ("\u0065r\u0072\u006f\u0072\u0020o\u0070\u0065\u006e\u0069\u006eg\u0020f\u0069l\u0065\u0020\u0025\u0073\u003a\u0020\u0025w",filePath ,_aef );};defer _eaa .Close ();_gc :=_d .Base (filePath );
+return _gb ._ead .ExtractText (ctx ,_eaa ,_gc );};
+
+// NewOCRHTTPClient creates a new OCR client using HTTP service with the given options.
+func NewOCRHTTPClient (options OCROptions )*Client {return &Client {_ead :NewHTTPOCRService (options )}};
+
+// Client provides a high-level interface for OCR operations.
+type Client struct{_ead OCRService };
