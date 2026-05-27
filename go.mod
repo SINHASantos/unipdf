@@ -9,7 +9,7 @@ require (
 	github.com/h2non/filetype v1.1.3
 	github.com/stretchr/testify v1.11.1
 	github.com/trimmer-io/go-xmp v1.0.0
-	github.com/unidoc/freetype v0.2.3
+	github.com/unidoc/freetype v0.2.5
 	github.com/unidoc/garabic v0.0.0-20220702200334-8c7cb25baa11
 	github.com/unidoc/pkcs7 v0.3.0
 	github.com/unidoc/timestamp v0.0.0-20200412005513-91597fd3793a
