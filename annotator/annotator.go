@@ -14,383 +14,29 @@
 // can create the appearance streams which specify the exact appearance as needed by many pdf viewers for consistent
 // appearance of the annotations.
 // It also contains methods for generating appearance streams for fields via widget annotations.
-package annotator ;import (_f "bytes";_fe "errors";_fa "fmt";_d "github.com/unidoc/unipdf/v4/common";_aa "github.com/unidoc/unipdf/v4/contentstream";_ef "github.com/unidoc/unipdf/v4/contentstream/draw";_aag "github.com/unidoc/unipdf/v4/core";_b "github.com/unidoc/unipdf/v4/creator";
-_ff "github.com/unidoc/unipdf/v4/internal/precision";_dga "github.com/unidoc/unipdf/v4/internal/textencoding";_fba "github.com/unidoc/unipdf/v4/model";_dg "github.com/unidoc/unipdf/v4/textshaping";_gg "image";_g "math";_db "strings";_fb "time";_e "unicode";
-);
-
-// CheckboxFieldOptions defines optional parameters for a checkbox field a form.
-type CheckboxFieldOptions struct{Checked bool ;};
-
-// CreateInkAnnotation creates an ink annotation object that can be added to the annotation list of a PDF page.
-func CreateInkAnnotation (inkDef InkAnnotationDef )(*_fba .PdfAnnotation ,error ){_bac :=_fba .NewPdfAnnotationInk ();_bcb :=_aag .MakeArray ();for _ ,_cdda :=range inkDef .Paths {if _cdda .Length ()==0{continue ;};_cdbf :=[]float64 {};for _ ,_bdec :=range _cdda .Points {_ebe :=_ff .RoundDefault (_bdec .X );
-_afbd :=_ff .RoundDefault (_bdec .Y );_cdbf =append (_cdbf ,_ebe ,_afbd );};_bcb .Append (_aag .MakeArrayFromFloats (_cdbf ));};_bac .InkList =_bcb ;if inkDef .Color ==nil {inkDef .Color =_fba .NewPdfColorDeviceRGB (0.0,0.0,0.0);};_bac .C =_aag .MakeArrayFromFloats ([]float64 {inkDef .Color .R (),inkDef .Color .G (),inkDef .Color .B ()});
-_cge ,_badfb ,_ffcf :=_baffe (&inkDef );if _ffcf !=nil {return nil ,_ffcf ;};_bac .AP =_cge ;_bac .Rect =_aag .MakeArrayFromFloats ([]float64 {_badfb .Llx ,_badfb .Lly ,_badfb .Urx ,_badfb .Ury });return _bac .PdfAnnotation ,nil ;};func _adb (_ced *_fba .PdfAcroForm ,_aed *_fba .PdfAnnotationWidget ,_edec *_fba .PdfFieldChoice ,_cee AppearanceStyle )(*_aag .PdfObjectDictionary ,error ){_beb ,_bdd :=_aag .GetArray (_aed .Rect );
-if !_bdd {return nil ,_fe .New ("\u0069\u006e\u0076a\u006c\u0069\u0064\u0020\u0052\u0065\u0063\u0074");};_aaa ,_egfb :=_fba .NewPdfRectangle (*_beb );if _egfb !=nil {return nil ,_egfb ;};_afcd ,_edcd :=_aaa .Width (),_aaa .Height ();_d .Log .Debug ("\u0043\u0068\u006f\u0069\u0063\u0065\u002c\u0020\u0077\u0061\u0020\u0042S\u003a\u0020\u0025\u0076",_aed .BS );
-_adc ,_egfb :=_aa .NewContentStreamParser (_bcc (_edec .PdfField )).Parse ();if _egfb !=nil {return nil ,_egfb ;};_gfgf ,_cba :=_aag .GetDict (_aed .MK );if _cba {_ggd ,_ :=_aag .GetDict (_aed .BS );_eef :=_cee .applyAppearanceCharacteristics (_gfgf ,_ggd ,nil );
-if _eef !=nil {return nil ,_eef ;};};_dfb :=_aag .MakeDict ();for _ ,_bfg :=range _edec .Opt .Elements (){if _bebb ,_fcd :=_aag .GetArray (_bfg );_fcd &&_bebb .Len ()==2{_bfg =_bebb .Get (1);};var _ffab string ;if _bga ,_bgf :=_aag .GetString (_bfg );_bgf {_ffab =_bga .Decoded ();
-}else if _egg ,_fgga :=_aag .GetName (_bfg );_fgga {_ffab =_egg .String ();}else {_d .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u004f\u0070\u0074\u0020\u006e\u006f\u0074\u0020\u0061\u0020\u006e\u0061\u006de\u002f\u0073\u0074\u0072\u0069\u006e\u0067 \u002d\u0020\u0025\u0054",_bfg );
-return nil ,_fe .New ("\u006e\u006f\u0074\u0020\u0061\u0020\u006e\u0061\u006d\u0065\u002f\u0073t\u0072\u0069\u006e\u0067");};if len (_ffab )> 0{_afca ,_fddd :=_fcca (_edec .PdfField ,_afcd ,_edcd ,_ffab ,_cee ,_adc ,_ced .DR ,_gfgf );if _fddd !=nil {return nil ,_fddd ;
-};_dfb .Set (*_aag .MakeName (_ffab ),_afca .ToPdfObject ());};};_ggec :=_aag .MakeDict ();_ggec .Set ("\u004e",_dfb );return _ggec ,nil ;};
-
-// FormResetActionOptions holds options for creating a form reset button.
-type FormResetActionOptions struct{
-
-// Rectangle holds the button position, size, and color.
-Rectangle _ef .Rectangle ;
-
-// Label specifies the text that would be displayed on the button.
-Label string ;
-
-// LabelColor specifies the button label color.
-LabelColor _fba .PdfColor ;
-
-// Font specifies a font used for rendering the button label.
-// When omitted it will fallback to use a Helvetica font.
-Font *_fba .PdfFont ;
-
-// FontSize specifies the font size used in rendering the button label.
-// The default font size is 12pt.
-FontSize *float64 ;
-
-// Fields specifies list of fields that could be resetted.
-// This list may contain indirect object to fields or field names.
-Fields *_aag .PdfObjectArray ;
-
-// IsExclusionList specifies that the fields in the `Fields` array would be excluded form reset process.
-IsExclusionList bool ;};
-
-// NewSignatureLine returns a new signature line displayed as a part of the
-// signature field appearance.
-func NewSignatureLine (desc ,text string )*SignatureLine {return &SignatureLine {Desc :desc ,Text :text };};
+package annotator ;import (_b "bytes";_da "errors";_bb "fmt";_f "github.com/unidoc/unipdf/v4/common";_c "github.com/unidoc/unipdf/v4/contentstream";_af "github.com/unidoc/unipdf/v4/contentstream/draw";_fc "github.com/unidoc/unipdf/v4/core";_e "github.com/unidoc/unipdf/v4/creator";
+_ac "github.com/unidoc/unipdf/v4/internal/precision";_d "github.com/unidoc/unipdf/v4/internal/textencoding";_ef "github.com/unidoc/unipdf/v4/model";_bg "github.com/unidoc/unipdf/v4/textshaping";_gc "image";_fd "math";_ad "strings";_a "time";_cf "unicode";
+);func _dceac (_ggbf RectangleAnnotationDef ,_gfcdf string )([]byte ,*_ef .PdfRectangle ,*_ef .PdfRectangle ,error ){_cgfdf :=_af .Rectangle {X :0,Y :0,Width :_ggbf .Width ,Height :_ggbf .Height ,FillEnabled :_ggbf .FillEnabled ,FillColor :_ggbf .FillColor ,BorderEnabled :_ggbf .BorderEnabled ,BorderWidth :2*_ggbf .BorderWidth ,BorderColor :_ggbf .BorderColor ,Opacity :_ggbf .Opacity };
+_bgeb ,_cgfc ,_ebag :=_cgfdf .Draw (_gfcdf );if _ebag !=nil {return nil ,nil ,nil ,_ebag ;};_geag :=&_ef .PdfRectangle {};_geag .Llx =_ggbf .X +_cgfc .Llx ;_geag .Lly =_ggbf .Y +_cgfc .Lly ;_geag .Urx =_ggbf .X +_cgfc .Urx ;_geag .Ury =_ggbf .Y +_cgfc .Ury ;
+return _bgeb ,_cgfc ,_geag ,nil ;};
 
 // SetStyle applies appearance `style` to `fa`.
-func (_fecfd *ImageFieldAppearance )SetStyle (style AppearanceStyle ){_fecfd ._baefe =&style };
+func (_eg *FieldAppearance )SetStyle (style AppearanceStyle ){_eg ._fdf =&style };
 
 // Style returns the appearance style of `fa`. If not specified, returns default style.
-func (_cdfe FieldAppearance )Style ()AppearanceStyle {if _cdfe ._gaa !=nil {return *_cdfe ._gaa ;};_cgd :=_fg ;return AppearanceStyle {AutoFontSizeFraction :0.65,CheckmarkRune :'✔',BorderSize :0.0,BorderColor :_fba .NewPdfColorDeviceGray (0),FillColor :_fba .NewPdfColorDeviceGray (1),MultilineLineHeight :1.2,MultilineVAlignMiddle :false ,DrawAlignmentReticle :false ,AllowMK :true ,MarginLeft :&_cgd };
-};
-
-// FormSubmitActionOptions holds options for creating a form submit button.
-type FormSubmitActionOptions struct{
-
-// Rectangle holds the button position, size, and color.
-Rectangle _ef .Rectangle ;
-
-// Url specifies the URL where the fieds will be submitted.
-Url string ;
-
-// Label specifies the text that would be displayed on the button.
-Label string ;
-
-// LabelColor specifies the button label color.
-LabelColor _fba .PdfColor ;
-
-// Font specifies a font used for rendering the button label.
-// When omitted it will fallback to use a Helvetica font.
-Font *_fba .PdfFont ;
-
-// FontSize specifies the font size used in rendering the button label.
-// The default font size is 12pt.
-FontSize *float64 ;
-
-// Fields specifies list of fields that could be submitted.
-// This list may contain indirect object to fields or field names.
-Fields *_aag .PdfObjectArray ;
-
-// IsExclusionList specifies that the fields contain in `Fields` array would not be submitted.
-IsExclusionList bool ;
-
-// IncludeEmptyFields specifies if all fields would be submitted even though it's value is empty.
-IncludeEmptyFields bool ;
-
-// SubmitAsPDF specifies that the document shall be submitted as PDF.
-// If set then all the other flags shall be ignored.
-SubmitAsPDF bool ;};func _gcbb (_ecda string )string {if len (_ecda )==0{return _ecda ;};_edea :=_aag .IsTextWriteDirectionLTR (_ecda );if !_edea {_dagc ,_aee :=_dg .ArabicShape (_ecda );if _aee !=nil {_d .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0061\u0070\u0070\u006c\u0079\u0069\u006e\u0067\u0020\u0041\u0072\u0061\u0062\u0069\u0063\u0020\u0074\u0065x\u0074\u0020\u0073\u0068\u0061p\u0069\u006eg\u003a\u0020\u0025\u0076",_aee .Error ());
-return _ecda ;};return _aag .FormatWriteDirectionLTR (_dagc ,false );};return _ecda ;};
-
-// ImageFieldOptions defines optional parameters for a push button with image attach capability form field.
-type ImageFieldOptions struct{Image *_fba .Image ;_fefg AppearanceStyle ;};
-
-// NewFormSubmitButtonField would create a submit button in specified page according to the parameter in `FormSubmitActionOptions`.
-func NewFormSubmitButtonField (page *_fba .PdfPage ,opt FormSubmitActionOptions )(*_fba .PdfFieldButton ,error ){_cbga :=int64 (_bgabc );if opt .IsExclusionList {_cbga |=_cad ;};if opt .IncludeEmptyFields {_cbga |=_aec ;};if opt .SubmitAsPDF {_cbga |=_fea ;
-};_egag :=_fba .NewPdfActionSubmitForm ();_egag .Flags =_aag .MakeInteger (_cbga );_egag .F =_fba .NewPdfFilespec ();if opt .Fields !=nil {_egag .Fields =opt .Fields ;};_egag .F .F =_aag .MakeString (opt .Url );_egag .F .FS =_aag .MakeName ("\u0055\u0052\u004c");
-_eegc ,_fdeg :=_fcfec (page ,opt .Rectangle ,"\u0062t\u006e\u0053\u0075\u0062\u006d\u0069t",opt .Label ,opt .LabelColor ,opt .Font ,opt .FontSize ,_egag .ToPdfObject ());if _fdeg !=nil {return nil ,_fdeg ;};return _eegc ,nil ;};func _gdae (_cdb *_fba .PdfAnnotationWidget ,_fae *_fba .PdfFieldText ,_ggcc *_fba .PdfPageResources ,_ece AppearanceStyle )(*_aag .PdfObjectDictionary ,error ){_fde :=_fba .NewPdfPageResources ();
-_gdc ,_dgdd :=_aag .GetArray (_cdb .Rect );if !_dgdd {return nil ,_fe .New ("\u0069\u006e\u0076a\u006c\u0069\u0064\u0020\u0052\u0065\u0063\u0074");};_eag ,_dcec :=_fba .NewPdfRectangle (*_gdc );if _dcec !=nil {return nil ,_dcec ;};_fee ,_dcd :=_eag .Width (),_eag .Height ();
-_baf ,_ecb :=_fee ,_dcd ;_dgaa ,_abgd :=_aag .GetDict (_cdb .MK );if _abgd {_eccc ,_ :=_aag .GetDict (_cdb .BS );_cgaf :=_ece .applyAppearanceCharacteristics (_dgaa ,_eccc ,nil );if _cgaf !=nil {return nil ,_cgaf ;};};_dgc ,_abgd :=_aag .GetIntVal (_fae .MaxLen );
-if !_abgd {return nil ,_fe .New ("\u006d\u0061\u0078\u006c\u0065\u006e\u0020\u006e\u006ft\u0020\u0073\u0065\u0074");};if _dgc <=0{return nil ,_fe .New ("\u006d\u0061\u0078\u004c\u0065\u006e\u0020\u0069\u006ev\u0061\u006c\u0069\u0064");};_dcc :=_fee /float64 (_dgc );
-_eee ,_dcec :=_aa .NewContentStreamParser (_bcc (_fae .PdfField )).Parse ();if _dcec !=nil {return nil ,_dcec ;};_ccf :=_aa .NewContentCreator ();if _ece .BorderSize > 0{_ggeff (_ccf ,_ece ,_fee ,_dcd );};if _ece .DrawAlignmentReticle {_afcf :=_ece ;_afcf .BorderSize =0.2;
-_ccfa (_ccf ,_afcf ,_fee ,_dcd );};_ccf .Add_BMC ("\u0054\u0078");_ccf .Add_q ();_ ,_dcd =_ece .applyRotation (_dgaa ,_fee ,_dcd ,_ccf );_ccf .Add_BT ();_eacg ,_fbcc ,_dcec :=_ece .processDA (_fae .PdfField ,_eee ,_ggcc ,_fde ,_ccf );if _dcec !=nil {return nil ,_dcec ;
-};_cbb :=_eacg .Font ;_ddcd :=_aag .MakeName (_eacg .Name );_bgeac :=_eacg .Size ;_dgdc :=_bgeac ==0;if _dgdc &&_fbcc {_bgeac =_dcd *_ece .AutoFontSizeFraction ;};_gacb :=_cbb .Encoder ();if _gacb ==nil {_d .Log .Debug ("\u0057\u0041RN\u003a\u0020\u0066\u006f\u006e\u0074\u0020\u0065\u006e\u0063\u006f\u0064\u0065\u0072\u0020\u0069\u0073\u0020\u006e\u0069l\u002e\u0020\u0041\u0073s\u0075\u006d\u0069\u006eg \u0069\u0064e\u006et\u0069\u0074\u0079\u0020\u0065\u006ec\u006f\u0064\u0065r\u002e\u0020O\u0075\u0074\u0070\u0075\u0074\u0020\u006d\u0061\u0079\u0020\u0062\u0065\u0020\u0069n\u0063\u006f\u0072\u0072\u0065\u0063\u0074\u002e");
-_gacb =_dga .NewIdentityTextEncoder ("\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079\u002d\u0048");};var _gbd string ;if _ecff ,_ebg :=_aag .GetString (_fae .V );_ebg {_gbd =_ecff .Decoded ();};_gbd =_gcbb (_gbd );_ccf .Add_Tf (*_ddcd ,_bgeac );var _fdee float64 ;
-for _ ,_fccb :=range _gbd {_cbc ,_abbf :=_cbb .GetRuneMetrics (_fccb );if !_abbf {_d .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0052\u0075\u006e\u0065\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064\u0020\u0069\u006e\u0020\u0066\u006fn\u0074\u003a\u0020\u0025\u0076\u0020\u002d\u0020\u0073\u006b\u0069\u0070\u0070\u0069n\u0067 \u006f\u0076\u0065\u0072",_fccb );
-continue ;};_efe :=_cbc .Wy ;if int (_efe )<=0{_efe =_cbc .Wx ;};if _efe > _fdee {_fdee =_efe ;};};if int (_fdee )==0{_d .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0055\u006e\u0061\u0062\u006c\u0065\u0020\u0074o\u0020\u0064\u0065\u0074\u0065\u0072\u006d\u0069\u006e\u0065\u0020\u006d\u0061x\u0020\u0067\u006c\u0079\u0070\u0068\u0020\u0073\u0069\u007a\u0065\u0020- \u0075\u0073\u0069\u006e\u0067\u0020\u0031\u0030\u0030\u0030");
-_fdee =1000;};_cef ,_dcec :=_cbb .GetFontDescriptor ();if _dcec !=nil {_d .Log .Debug ("\u0045\u0072ro\u0072\u003a\u0020U\u006e\u0061\u0062\u006ce t\u006f g\u0065\u0074\u0020\u0066\u006f\u006e\u0074 d\u0065\u0073\u0063\u0072\u0069\u0070\u0074o\u0072");
-};var _ebd float64 ;if _cef !=nil {_ebd ,_dcec =_cef .GetCapHeight ();if _dcec !=nil {_d .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0055\u006e\u0061\u0062\u006c\u0065 \u0074\u006f\u0020\u0067\u0065\u0074 \u0066\u006f\u006e\u0074\u0020\u0043\u0061\u0070\u0048\u0065\u0069\u0067\u0068t\u003a\u0020\u0025\u0076",_dcec );
-};};if int (_ebd )<=0{_d .Log .Debug ("W\u0041\u0052\u004e\u003a\u0020\u0043\u0061\u0070\u0048e\u0069\u0067\u0068\u0074\u0020\u006e\u006ft \u0061\u0076\u0061\u0069l\u0061\u0062\u006c\u0065\u0020\u002d\u0020\u0073\u0065tt\u0069\u006eg\u0020\u0074\u006f\u0020\u0031\u0030\u0030\u0030");
-_ebd =1000.0;};_bad :=_ebd /1000.0*_bgeac ;_bfac :=0.0;_ffa :=1.0*_bgeac *(_fdee /1000.0);{_agfe :=_ffa ;if _dgdc &&_bfac +_agfe > _dcd {_bgeac =0.95*(_dcd -_bfac );_bad =_ebd /1000.0*_bgeac ;};if _dcd > _bad {_bfac =(_dcd -_bad )/2.0;};};_ccf .Add_Td (0,_bfac );
-if _aagg ,_beg :=_aag .GetIntVal (_fae .Q );_beg {switch _aagg {case 2:if len (_gbd )< _dgc {_fbb :=float64 (_dgc -len (_gbd ))*_dcc ;_ccf .Add_Td (_fbb ,0);};};};for _fbce ,_cgf :=range _gbd {_dgf :=_fg ;if _ece .MarginLeft !=nil {_dgf =*_ece .MarginLeft ;
-};_gcd :=string (_cgf );if _gacb !=nil {_acc ,_ecfa :=_cbb .GetRuneMetrics (_cgf );if !_ecfa {_d .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0052\u0075\u006e\u0065\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064\u0020\u0069\u006e\u0020\u0066\u006fn\u0074\u003a\u0020\u0025\u0076\u0020\u002d\u0020\u0073\u006b\u0069\u0070\u0070\u0069n\u0067 \u006f\u0076\u0065\u0072",_cgf );
-continue ;};_gcd =string (_gacb .Encode (_gcd ));_bbd :=_bgeac *_acc .Wx /1000.0;_cccd :=(_dcc -_bbd )/2;_dgf =_cccd ;};_ccf .Add_Td (_dgf ,0);_ccf .Add_Tj (*_aag .MakeString (_gcd ));if _fbce !=len (_gbd )-1{_ccf .Add_Td (_dcc -_dgf ,0);};};_ccf .Add_ET ();
-_ccf .Add_Q ();_ccf .Add_EMC ();_dac :=_fba .NewXObjectForm ();_dac .Resources =_fde ;_dac .BBox =_aag .MakeArrayFromFloats ([]float64 {0,0,_baf ,_ecb });_dac .SetContentStream (_ccf .Bytes (),_fff ());_fgbfd :=_aag .MakeDict ();_fgbfd .Set ("\u004e",_dac .ToPdfObject ());
-return _fgbfd ,nil ;};func _acb (_gbb *_fba .PdfFieldText ,_afc _fba .PdfColor )(*_aag .PdfObjectString ,error ){_bf :=_aa .ContentStreamOperations {};_bb :=_bcc (_gbb .PdfField );_cag ,_bgg :=_aa .NewContentStreamParser (_bb ).Parse ();if _bgg !=nil {return nil ,_bgg ;
-};for _ ,_abcc :=range *_cag {if _abcc .Operand =="\u0067"||_abcc .Operand =="\u0072\u0067"{continue ;};_bf =append (_bf ,_abcc );};_daf ,_abe :=_afc .(*_fba .PdfColorDeviceRGB );if !_abe {return nil ,_bgg ;};_ddg ,_ad ,_dad :=_aag .MakeFloat (_daf [0]),_aag .MakeFloat (_daf [1]),_aag .MakeFloat (_daf [2]);
-_cae :=&_aa .ContentStreamOperation {Params :[]_aag .PdfObject {_ddg ,_ad ,_dad },Operand :"\u0072\u0067"};_bf =append (_bf ,_cae );_caee :=_bf .String ();_caee =_db .ReplaceAll (_caee ,"\u000a","\u0020");_caee =_db .Trim (_caee ,"\u0020");return _aag .MakeHexString (_caee ),nil ;
-};
-
-// NewComboboxField generates a new combobox form field with partial name `name` at location `rect`
-// on specified `page` and with field specific options `opt`.
-func NewComboboxField (page *_fba .PdfPage ,name string ,rect []float64 ,opt ComboboxFieldOptions )(*_fba .PdfFieldChoice ,error ){if page ==nil {return nil ,_fe .New ("\u0070a\u0067e\u0020\u006e\u006f\u0074\u0020s\u0070\u0065c\u0069\u0066\u0069\u0065\u0064");
-};if len (name )<=0{return nil ,_fe .New ("\u0072\u0065\u0071\u0075\u0069\u0072\u0065\u0064\u0020\u0061\u0074\u0074\u0072\u0069\u0062u\u0074e\u0020\u006e\u006f\u0074\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069\u0065\u0064");};if len (rect )!=4{return nil ,_fe .New ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u0061\u006e\u0067\u0065");
-};_egdg :=_fba .NewPdfField ();_aacb :=&_fba .PdfFieldChoice {};_egdg .SetContext (_aacb );_aacb .PdfField =_egdg ;_aacb .T =_aag .MakeString (name );_aacb .Opt =_aag .MakeArray ();for _ ,_ccfbc :=range opt .Choices {_aacb .Opt .Append (_aag .MakeString (_ccfbc ));
-};_aacb .SetFlag (_fba .FieldFlagCombo );_eeef :=_fba .NewPdfAnnotationWidget ();_eeef .Rect =_aag .MakeArrayFromFloats (rect );_eeef .P =page .ToPdfObject ();_eeef .F =_aag .MakeInteger (4);_eeef .Parent =_aacb .ToPdfObject ();_aacb .Annotations =append (_aacb .Annotations ,_eeef );
-return _aacb ,nil ;};func _dfag (_bbc _gg .Image ,_gcec string ,_afac *SignatureFieldOpts ,_bafd []float64 ,_eefd *_aa .ContentCreator )(*_aag .PdfObjectName ,*_fba .XObjectImage ,error ){_eaea ,_edbc :=_fba .DefaultImageHandler {}.NewImageFromGoImage (_bbc );
-if _edbc !=nil {return nil ,nil ,_edbc ;};_fgce ,_edbc :=_fba .NewXObjectImageFromImage (_eaea ,nil ,_afac .Encoder );if _edbc !=nil {return nil ,nil ,_edbc ;};_edgb ,_eba :=float64 (*_fgce .Width ),float64 (*_fgce .Height );_bgfe :=_bafd [2]-_bafd [0];
-_cfde :=_bafd [3]-_bafd [1];if _afac .AutoSize {_bfaae :=_g .Min (_bgfe /_edgb ,_cfde /_eba );_edgb *=_bfaae ;_eba *=_bfaae ;_bafd [0]=_bafd [0]+(_bgfe /2)-(_edgb /2);_bafd [1]=_bafd [1]+(_cfde /2)-(_eba /2);};var _bbcg *_aag .PdfObjectName ;if _abed ,_cccf :=_aag .GetName (_fgce .Name );
-_cccf {_bbcg =_abed ;}else {_bbcg =_aag .MakeName (_gcec );};if _eefd !=nil {_eefd .Add_q ().Translate (_bafd [0],_bafd [1]).Scale (_edgb ,_eba ).Add_Do (*_bbcg ).Add_Q ();}else {return nil ,nil ,_fe .New ("\u0043\u006f\u006e\u0074en\u0074\u0043\u0072\u0065\u0061\u0074\u006f\u0072\u0020\u0069\u0073\u0020\u006e\u0075l\u006c");
-};return _bbcg ,_fgce ,nil ;};func _beaf (_fcfd []_ef .Point )(_eecc []_ef .Point ,_gefd []_ef .Point ,_ggdf error ){_cdeg :=len (_fcfd )-1;if len (_fcfd )< 1{return nil ,nil ,_fe .New ("\u0061\u0074\u0020\u006c\u0065\u0061\u0073\u0074\u0020\u0074\u0077\u006f\u0020\u0070\u006f\u0069\u006e\u0074s \u0072e\u0071\u0075\u0069\u0072\u0065\u0064\u0020\u0074\u006f\u0020\u0063\u0061l\u0063\u0075\u006c\u0061\u0074\u0065\u0020\u0063\u0075\u0072\u0076\u0065\u0020\u0063\u006f\u006e\u0074r\u006f\u006c\u0020\u0070\u006f\u0069\u006e\u0074\u0073");
-};if _cdeg ==1{_aggc :=_ef .Point {X :(2*_fcfd [0].X +_fcfd [1].X )/3,Y :(2*_fcfd [0].Y +_fcfd [1].Y )/3};_eecc =append (_eecc ,_aggc );_gefd =append (_gefd ,_ef .Point {X :2*_aggc .X -_fcfd [0].X ,Y :2*_aggc .Y -_fcfd [0].Y });return _eecc ,_gefd ,nil ;
-};_faceg :=make ([]float64 ,_cdeg );for _aba :=1;_aba < _cdeg -1;_aba ++{_faceg [_aba ]=4*_fcfd [_aba ].X +2*_fcfd [_aba +1].X ;};_faceg [0]=_fcfd [0].X +2*_fcfd [1].X ;_faceg [_cdeg -1]=(8*_fcfd [_cdeg -1].X +_fcfd [_cdeg ].X )/2.0;_agfc :=_fcbd (_faceg );
-for _gagg :=1;_gagg < _cdeg -1;_gagg ++{_faceg [_gagg ]=4*_fcfd [_gagg ].Y +2*_fcfd [_gagg +1].Y ;};_faceg [0]=_fcfd [0].Y +2*_fcfd [1].Y ;_faceg [_cdeg -1]=(8*_fcfd [_cdeg -1].Y +_fcfd [_cdeg ].Y )/2.0;_gcca :=_fcbd (_faceg );_eecc =make ([]_ef .Point ,_cdeg );
-_gefd =make ([]_ef .Point ,_cdeg );for _geed :=0;_geed < _cdeg ;_geed ++{_eecc [_geed ]=_ef .Point {X :_ff .RoundDefault (_agfc [_geed ]),Y :_ff .RoundDefault (_gcca [_geed ])};if _geed < _cdeg -1{_gefd [_geed ]=_ef .Point {X :_ff .RoundDefault (2*_fcfd [_geed +1].X -_agfc [_geed +1]),Y :_ff .RoundDefault (2*_fcfd [_geed +1].Y -_gcca [_geed +1])};
-}else {_gefd [_geed ]=_ef .Point {X :_ff .RoundDefault ((_fcfd [_cdeg ].X +_agfc [_cdeg -1])/2),Y :_ff .RoundDefault ((_fcfd [_cdeg ].Y +_gcca [_cdeg -1])/2)};};};return _eecc ,_gefd ,nil ;};const (_cad =1;_aec =2;_bgabc =4;_acfe =8;_cgg =16;_fedd =32;
-_fafa =64;_cec =128;_fea =256;_cbbg =512;_deag =1024;_cefe =2048;_aca =4096;);func _ggad (_aff *InkAnnotationDef )([]byte ,*_fba .PdfRectangle ,error ){_bgef :=[][]_ef .CubicBezierCurve {};for _ ,_bcac :=range _aff .Paths {if _bcac .Length ()==0{continue ;
-};_fefgf :=_bcac .Points ;_cfdef ,_deab ,_gfa :=_beaf (_fefgf );if _gfa !=nil {return nil ,nil ,_gfa ;};if len (_cfdef )!=len (_deab ){return nil ,nil ,_fe .New ("\u0069\u006e\u0065\u0071\u0075\u0061\u006c\u0020\u006e\u0075\u006d\u0062\u0065\u0072\u0020\u006f\u0066\u0020\u0063\u0061l\u0063\u0075\u006c\u0061\u0074\u0065\u0064\u0020\u0066\u0069\u0072\u0073\u0074\u0020\u0061\u006e\u0064\u0020\u0073\u0065\u0063\u006f\u006e\u0064\u0020\u0063\u006f\u006e\u0074\u0072o\u006c\u0020\u0070\u006f\u0069n\u0074");
-};_eagf :=[]_ef .CubicBezierCurve {};for _ddgfb :=0;_ddgfb < len (_cfdef );_ddgfb ++{_eagf =append (_eagf ,_ef .CubicBezierCurve {P0 :_fefgf [_ddgfb ],P1 :_cfdef [_ddgfb ],P2 :_deab [_ddgfb ],P3 :_fefgf [_ddgfb +1]});};if len (_eagf )> 0{_bgef =append (_bgef ,_eagf );
-};};_fegd ,_fbca ,_ada :=_bdf (_bgef ,_aff .Color ,_aff .LineWidth );if _ada !=nil {return nil ,nil ,_ada ;};return _fegd ,_fbca ,nil ;};
-
-// NewTextField generates a new text field with partial name `name` at location
-// specified by `rect` on given `page` and with field specific options `opt`.
-func NewTextField (page *_fba .PdfPage ,name string ,rect []float64 ,opt TextFieldOptions )(*_fba .PdfFieldText ,error ){if page ==nil {return nil ,_fe .New ("\u0070a\u0067e\u0020\u006e\u006f\u0074\u0020s\u0070\u0065c\u0069\u0066\u0069\u0065\u0064");};
-if len (name )<=0{return nil ,_fe .New ("\u0072\u0065\u0071\u0075\u0069\u0072\u0065\u0064\u0020\u0061\u0074\u0074\u0072\u0069\u0062u\u0074e\u0020\u006e\u006f\u0074\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069\u0065\u0064");};if len (rect )!=4{return nil ,_fe .New ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u0061\u006e\u0067\u0065");
-};_bafdc :=_fba .NewPdfField ();_badf :=&_fba .PdfFieldText {};_bafdc .SetContext (_badf );_badf .PdfField =_bafdc ;_badf .T =_aag .MakeString (name );if opt .MaxLen > 0{_badf .MaxLen =_aag .MakeInteger (int64 (opt .MaxLen ));};if len (opt .Value )> 0{_badf .V =_aag .MakeString (opt .Value );
-};if opt .TextColor !=""{_ddfa :=_b .ColorRGBFromHex (opt .TextColor );_eggb ,_bcf ,_faca :=_ddfa .ToRGB ();_gde :=12;if opt .FontSize > 0{_gde =opt .FontSize ;};_daff :="\u0048e\u006c\u0076\u0065\u0074\u0069\u0063a";if opt .FontName !=""{_daff =opt .FontName ;
-};_dggdc :=_fa .Sprintf ("/\u0025\u0073\u0020\u0025\u0064\u0020T\u0066\u0020\u0025\u002e\u0033\u0066\u0020\u0025\u002e3\u0066\u0020\u0025.\u0033f\u0020\u0072\u0067",_daff ,_gde ,_eggb ,_bcf ,_faca );_badf .DA =_aag .MakeString (_dggdc );};_bafdc .SetContext (_badf );
-_cda :=_fba .NewPdfAnnotationWidget ();_cda .Rect =_aag .MakeArrayFromFloats (rect );_cda .P =page .ToPdfObject ();_cda .F =_aag .MakeInteger (4);_cda .Parent =_badf .ToPdfObject ();_badf .Annotations =append (_badf .Annotations ,_cda );return _badf ,nil ;
-};func _bcc (_edeg *_fba .PdfField )string {if _edeg ==nil {return "";};_ecee ,_aea :=_edeg .GetContext ().(*_fba .PdfFieldText );if !_aea {return _bcc (_edeg .Parent );};if _ecee .DA !=nil {return _ecee .DA .Str ();};return _bcc (_ecee .Parent );};func _dbe (_egf *_fba .PdfAnnotationWidget ,_ *_fba .PdfFieldButton ,_ *_fba .PdfPageResources ,_fdg AppearanceStyle )(*_aag .PdfObjectDictionary ,error ){_gdg ,_feda :=_aag .GetArray (_egf .Rect );
-if !_feda {return nil ,_fe .New ("\u0069\u006e\u0076a\u006c\u0069\u0064\u0020\u0052\u0065\u0063\u0074");};_fcg ,_abdf :=_fba .NewPdfRectangle (*_gdg );if _abdf !=nil {return nil ,_abdf ;};_bc ,_gacf :=_fcg .Width (),_fcg .Height ();_fcgb ,_eca :=_bc ,_gacf ;
-_d .Log .Debug ("\u0043\u0068\u0065\u0063kb\u006f\u0078\u002c\u0020\u0077\u0061\u0020\u0042\u0053\u003a\u0020\u0025\u0076",_egf .BS );_bce ,_abdf :=_fba .NewStandard14Font ("\u005a\u0061\u0070f\u0044\u0069\u006e\u0067\u0062\u0061\u0074\u0073");if _abdf !=nil {return nil ,_abdf ;
-};_bgc ,_cccc :=_aag .GetDict (_egf .MK );if _cccc {_faga ,_ :=_aag .GetDict (_egf .BS );_gfd :=_fdg .applyAppearanceCharacteristics (_bgc ,_faga ,_bce );if _gfd !=nil {return nil ,_gfd ;};};_ddf :=_fba .NewXObjectForm ();{_dfa :=_aa .NewContentCreator ();
-if _fdg .BorderSize > 0{_ggeff (_dfa ,_fdg ,_bc ,_gacf );};if _fdg .DrawAlignmentReticle {_acca :=_fdg ;_acca .BorderSize =0.2;_ccfa (_dfa ,_acca ,_bc ,_gacf );};_bc ,_gacf =_fdg .applyRotation (_bgc ,_bc ,_gacf ,_dfa );_aeg :=_fdg .AutoFontSizeFraction *_gacf ;
-_ccgb ,_bda :=_bce .GetRuneMetrics (_fdg .CheckmarkRune );if !_bda {return nil ,_fe .New ("\u0067l\u0079p\u0068\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064");};_fdgc :=_bce .Encoder ();_bfaa :=_fdgc .Encode (string (_fdg .CheckmarkRune ));
-_afe :=_ccgb .Wx *_aeg /1000.0;_efac :=705.0;_cbg :=_efac /1000.0*_aeg ;_bcef :=_fg ;if _fdg .MarginLeft !=nil {_bcef =*_fdg .MarginLeft ;};_eed :=1.0;if _afe < _bc {_bcef =(_bc -_afe )/2.0;};if _cbg < _gacf {_eed =(_gacf -_cbg )/2.0;};_dfa .Add_q ().Add_g (0).Add_BT ().Add_Tf ("\u005a\u0061\u0044\u0062",_aeg ).Add_Td (_bcef ,_eed ).Add_Tj (*_aag .MakeStringFromBytes (_bfaa )).Add_ET ().Add_Q ();
-_ddf .Resources =_fba .NewPdfPageResources ();_ddf .Resources .SetFontByName ("\u005a\u0061\u0044\u0062",_bce .ToPdfObject ());_ddf .BBox =_aag .MakeArrayFromFloats ([]float64 {0,0,_fcgb ,_eca });_ddf .SetContentStream (_dfa .Bytes (),_fff ());};_bgca :=_fba .NewXObjectForm ();
-{_badc :=_aa .NewContentCreator ();if _fdg .BorderSize > 0{_ggeff (_badc ,_fdg ,_bc ,_gacf );};_bgca .BBox =_aag .MakeArrayFromFloats ([]float64 {0,0,_fcgb ,_eca });_bgca .SetContentStream (_badc .Bytes (),_fff ());};_gec :=_aag .PdfObjectName ("\u0059\u0065\u0073");
-_gebc ,_cccc :=_aag .GetDict (_egf .AP );if _cccc &&_gebc !=nil {_ceg :=_aag .TraceToDirectObject (_gebc .Get ("\u004e"));switch _fgd :=_ceg .(type ){case *_aag .PdfObjectDictionary :_aadd :=_fgd .Keys ();for _ ,_afed :=range _aadd {if _afed !="\u004f\u0066\u0066"{_gec =_afed ;
-};};};};_fgge :=_aag .MakeDict ();_fgge .Set ("\u004f\u0066\u0066",_bgca .ToPdfObject ());_fgge .Set (_gec ,_ddf .ToPdfObject ());_ccfb :=_aag .MakeDict ();_ccfb .Set ("\u004e",_fgge );return _ccfb ,nil ;};
-
-// NewImageField generates a new image field with partial name `name` at location `rect`
-// on specified `page` and with field specific options `opt`.
-func NewImageField (page *_fba .PdfPage ,name string ,rect []float64 ,opt ImageFieldOptions )(*_fba .PdfFieldButton ,error ){if page ==nil {return nil ,_fe .New ("\u0070a\u0067e\u0020\u006e\u006f\u0074\u0020s\u0070\u0065c\u0069\u0066\u0069\u0065\u0064");
-};if len (name )<=0{return nil ,_fe .New ("\u0072\u0065\u0071\u0075\u0069\u0072\u0065\u0064\u0020\u0061\u0074\u0074\u0072\u0069\u0062u\u0074e\u0020\u006e\u006f\u0074\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069\u0065\u0064");};if len (rect )!=4{return nil ,_fe .New ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u0061\u006e\u0067\u0065");
-};_faeg :=_fba .NewPdfField ();_dgfg :=&_fba .PdfFieldButton {};_dgfg .PdfField =_faeg ;_faeg .SetContext (_dgfg );_dgfg .SetType (_fba .ButtonTypePush );_dgfg .T =_aag .MakeString (name );_bafed :=_fba .NewPdfAnnotationWidget ();_bafed .Rect =_aag .MakeArrayFromFloats (rect );
-_bafed .P =page .ToPdfObject ();_bafed .F =_aag .MakeInteger (4);_bafed .Parent =_dgfg .ToPdfObject ();_ecfe :=rect [2]-rect [0];_ccfga :=rect [3]-rect [1];_fgcg :=opt ._fefg ;_eaec :=_aa .NewContentCreator ();if _fgcg .BorderSize > 0{_ggeff (_eaec ,_fgcg ,_ecfe ,_ccfga );
-};if _fgcg .DrawAlignmentReticle {_eaad :=_fgcg ;_eaad .BorderSize =0.2;_ccfa (_eaec ,_eaad ,_ecfe ,_ccfga );};_gfdea ,_cfa :=_agbd (_ecfe ,_ccfga ,opt .Image ,_fgcg );if _cfa !=nil {return nil ,_cfa ;};_bgab ,_effb :=_aag .GetDict (_bafed .MK );if _effb {_bgab .Set ("\u006c",_gfdea .ToPdfObject ());
-};_agbe :=_aag .MakeDict ();_agbe .Set ("\u0046\u0052\u004d",_gfdea .ToPdfObject ());_gad :=_fba .NewPdfPageResources ();_gad .ProcSet =_aag .MakeArray (_aag .MakeName ("\u0050\u0044\u0046"));_gad .XObject =_agbe ;_eaadc :=_ecfe -2;_fggc :=_ccfga -2;_eaec .Add_q ();
-_eaec .Add_re (1,1,_eaadc ,_fggc );_eaec .Add_W ();_eaec .Add_n ();_eaadc -=2;_fggc -=2;_eaec .Add_q ();_eaec .Add_re (2,2,_eaadc ,_fggc );_eaec .Add_W ();_eaec .Add_n ();_eeg :=_g .Min (_eaadc /float64 (opt .Image .Width ),_fggc /float64 (opt .Image .Height ));
-_eaec .Add_cm (_eeg ,0,0,_eeg ,(_ecfe /2)-(float64 (opt .Image .Width )*_eeg /2)+2,2);_eaec .Add_Do ("\u0046\u0052\u004d");_eaec .Add_Q ();_eaec .Add_Q ();_dfgb :=_fba .NewXObjectForm ();_dfgb .FormType =_aag .MakeInteger (1);_dfgb .Resources =_gad ;_dfgb .BBox =_aag .MakeArrayFromFloats ([]float64 {0,0,_ecfe ,_ccfga });
-_dfgb .Matrix =_aag .MakeArrayFromFloats ([]float64 {1.0,0.0,0.0,1.0,0.0,0.0});_dfgb .SetContentStream (_eaec .Bytes (),_fff ());_gab :=_aag .MakeDict ();_gab .Set ("\u004e",_dfgb .ToPdfObject ());_bafed .AP =_gab ;_dgfg .Annotations =append (_dgfg .Annotations ,_bafed );
-return _dgfg ,nil ;};
-
-// SignatureLine represents a line of information in the signature field appearance.
-type SignatureLine struct{Desc string ;Text string ;};
-
-// AppearanceStyle defines style parameters for appearance stream generation.
-type AppearanceStyle struct{
-
-// How much of Rect height to fill when autosizing text.
-AutoFontSizeFraction float64 ;
-
-// CheckmarkRune is a rune used for check mark in checkboxes (for ZapfDingbats font).
-CheckmarkRune rune ;BorderSize float64 ;BorderColor _fba .PdfColor ;FillColor _fba .PdfColor ;
-
-// Multiplier for lineheight for multi line text.
-MultilineLineHeight float64 ;MultilineVAlignMiddle bool ;
-
-// Visual guide checking alignment of field contents (debugging).
-DrawAlignmentReticle bool ;
-
-// Allow field MK appearance characteristics to override style settings.
-AllowMK bool ;
-
-// Fonts holds appearance styles for fonts.
-Fonts *AppearanceFontStyle ;
-
-// MarginLeft represents the amount of space to leave on the left side of
-// the form field bounding box when generating appearances (default: 2.0).
-MarginLeft *float64 ;TextColor _fba .PdfColor ;
-
-// FieldColors holds separate set of appearance styles for fields.
-FieldColors map[string ]_fba .PdfColor ;};
-
-// RectangleAnnotationDef is a rectangle defined with a specified Width and Height and a lower left corner at (X,Y).
-// The rectangle can optionally have a border and a filling color.
-// The Width/Height includes the border (if any specified).
-type RectangleAnnotationDef struct{X float64 ;Y float64 ;Width float64 ;Height float64 ;FillEnabled bool ;FillColor *_fba .PdfColorDeviceRGB ;BorderEnabled bool ;BorderWidth float64 ;BorderColor *_fba .PdfColorDeviceRGB ;Opacity float64 ;};func _gbe (_feb []*SignatureLine ,_abgf *SignatureFieldOpts )(*_aag .PdfObjectDictionary ,error ){if _abgf ==nil {_abgf =NewSignatureFieldOpts ();
-};var _gcb error ;var _ceb *_aag .PdfObjectName ;_aaceb :=_abgf .Font ;if _aaceb !=nil {_ebcc ,_ :=_aaceb .GetFontDescriptor ();if _ebcc !=nil {if _gcba ,_fcda :=_ebcc .FontName .(*_aag .PdfObjectName );_fcda {_ceb =_gcba ;};};if _ceb ==nil {_ceb =_aag .MakeName ("\u0046\u006f\u006et\u0031");
-};}else {if _aaceb ,_gcb =_fba .NewStandard14Font ("\u0048e\u006c\u0076\u0065\u0074\u0069\u0063a");_gcb !=nil {return nil ,_gcb ;};_ceb =_aag .MakeName ("\u0048\u0065\u006c\u0076");};_cgc :=_abgf .FontSize ;if _cgc <=0{_cgc =10;};if _abgf .LineHeight <=0{_abgf .LineHeight =1;
-};_gfeg :=_abgf .LineHeight *_cgc ;_eafa ,_cbec :=_aaceb .GetRuneMetrics (' ');if !_cbec {return nil ,_fe .New ("\u0074\u0068e \u0066\u006f\u006et\u0020\u0064\u006f\u0065s n\u006ft \u0068\u0061\u0076\u0065\u0020\u0061\u0020sp\u0061\u0063\u0065\u0020\u0067\u006c\u0079p\u0068");
-};_faefe :=_eafa .Wx ;var _faf float64 ;var _daa []string ;for _ ,_ceff :=range _feb {if _ceff .Text ==""{continue ;};_edce :=_ceff .Text ;if _ceff .Desc !=""{_edce =_ceff .Desc +"\u003a\u0020"+_edce ;};_daa =append (_daa ,_edce );var _ggcg float64 ;for _ ,_cfca :=range _edce {_ccccd ,_efaa :=_aaceb .GetRuneMetrics (_cfca );
-if !_efaa {continue ;};_ggcg +=_ccccd .Wx ;};if _ggcg > _faf {_faf =_ggcg ;};};_faf =_faf *_cgc /1000.0;_bccg :=float64 (len (_daa ))*_gfeg ;_edbb :=_abgf .Image !=nil ;_fddf :=_abgf .Rect ;if _fddf ==nil {_fddf =[]float64 {0,0,_faf ,_bccg };if _edbb {_fddf [2]=_faf *2;
-_fddf [3]=_bccg *2;};_abgf .Rect =_fddf ;};_agg :=_fddf [2]-_fddf [0];_cgab :=_fddf [3]-_fddf [1];_fecf ,_gbaa :=_fddf ,_fddf ;var _bgb ,_dbg float64 ;if _edbb &&len (_daa )> 0{if _abgf .ImagePosition <=SignatureImageRight {_ggcgb :=[]float64 {_fddf [0],_fddf [1],_fddf [0]+(_agg /2),_fddf [3]};
-_gcbf :=[]float64 {_fddf [0]+(_agg /2),_fddf [1],_fddf [2],_fddf [3]};if _abgf .ImagePosition ==SignatureImageLeft {_fecf ,_gbaa =_ggcgb ,_gcbf ;}else {_fecf ,_gbaa =_gcbf ,_ggcgb ;};}else {_dcf :=[]float64 {_fddf [0],_fddf [1],_fddf [2],_fddf [1]+(_cgab /2)};
-_cfgg :=[]float64 {_fddf [0],_fddf [1]+(_cgab /2),_fddf [2],_fddf [3]};if _abgf .ImagePosition ==SignatureImageTop {_fecf ,_gbaa =_cfgg ,_dcf ;}else {_fecf ,_gbaa =_dcf ,_cfgg ;};};};_bgb =_gbaa [2]-_gbaa [0];_dbg =_gbaa [3]-_gbaa [1];var _dff float64 ;
-if _abgf .AutoSize {if _faf > _bgb ||_bccg > _dbg {_daae :=_g .Min (_bgb /_faf ,_dbg /_bccg );_cgc *=_daae ;};_gfeg =_abgf .LineHeight *_cgc ;_dff +=(_dbg -float64 (len (_daa ))*_gfeg )/2;};_adda :=_aa .NewContentCreator ();_dae :=_fba .NewPdfPageResources ();
-_dae .SetFontByName (*_ceb ,_aaceb .ToPdfObject ());if _abgf .BorderSize <=0{_abgf .BorderSize =0;_abgf .BorderColor =_fba .NewPdfColorDeviceGray (1);};_adda .Add_q ();if _abgf .FillColor !=nil {_adda .SetNonStrokingColor (_abgf .FillColor );};if _abgf .BorderColor !=nil {_adda .SetStrokingColor (_abgf .BorderColor );
-};_fbe :="";if _abgf .FillOpacity < 1.0{_cfcd :=0;_fbe =_fa .Sprintf ("\u0047\u0053\u0025\u0064",_cfcd );for {_ ,_gdgc :=_dae .GetExtGState (_aag .PdfObjectName (_fbe ));if !_gdgc {break ;};_cfcd ++;_fbe =_fa .Sprintf ("\u0047\u0053\u0025\u0064",_cfcd );
-};_dbc :=_aag .MakeDict ();_dbc .Set ("\u0063\u0061",_aag .MakeFloat (_abgf .FillOpacity ));_cgfc :=_dae .AddExtGState (_aag .PdfObjectName (_fbe ),_aag .MakeIndirectObject (_dbc ));if _cgfc !=nil {_d .Log .Debug (_cgfc .Error ());}else {_adda .Add_gs (_aag .PdfObjectName (_fbe ));
-};};_adda .Add_w (_abgf .BorderSize ).Add_re (_fddf [0],_fddf [1],_agg ,_cgab );if _abgf .FillColor !=nil &&_abgf .BorderColor !=nil {_adda .Add_B ();}else if _abgf .FillColor !=nil {_adda .Add_f ();}else if _abgf .BorderColor !=nil {_adda .Add_S ();};
-_adda .Add_Q ();if _abgf .WatermarkImage !=nil {_bafe :=[]float64 {_fddf [0],_fddf [1],_fddf [2],_fddf [3]};_dceb ,_gce ,_bfaad :=_dfag (_abgf .WatermarkImage ,"\u0049\u006d\u0061\u0067\u0065\u0057\u0061\u0074\u0065r\u006d\u0061\u0072\u006b",_abgf ,_bafe ,_adda );
-if _bfaad !=nil {return nil ,_bfaad ;};_dae .SetXObjectImageByName (*_dceb ,_gce );};_adda .Add_q ();_adda .Translate (_gbaa [0],_gbaa [3]-_gfeg -_dff );_adda .Add_BT ();_baff :=_aaceb .Encoder ();for _ ,_cgcc :=range _daa {var _dbgc []byte ;for _ ,_dafe :=range _cgcc {if _e .IsSpace (_dafe ){if len (_dbgc )> 0{_adda .SetNonStrokingColor (_abgf .TextColor ).Add_Tf (*_ceb ,_cgc ).Add_TL (_gfeg ).Add_TJ ([]_aag .PdfObject {_aag .MakeStringFromBytes (_dbgc )}...);
-_dbgc =nil ;};_adda .Add_Tf (*_ceb ,_cgc ).Add_TL (_gfeg ).Add_TJ ([]_aag .PdfObject {_aag .MakeFloat (-_faefe )}...);}else {_dbgc =append (_dbgc ,_baff .Encode (string (_dafe ))...);};};if len (_dbgc )> 0{_adda .SetNonStrokingColor (_abgf .TextColor ).Add_Tf (*_ceb ,_cgc ).Add_TL (_gfeg ).Add_TJ ([]_aag .PdfObject {_aag .MakeStringFromBytes (_dbgc )}...);
-};_adda .Add_Td (0,-_gfeg );};_adda .Add_ET ();_adda .Add_Q ();if _edbb {_caeb ,_ffede ,_bccca :=_dfag (_abgf .Image ,"\u0049\u006d\u0061\u0067\u0065\u0053\u0069\u0067\u006ea\u0074\u0075\u0072\u0065",_abgf ,_fecf ,_adda );if _bccca !=nil {return nil ,_bccca ;
-};_dae .SetXObjectImageByName (*_caeb ,_ffede );};_ffd :=_fba .NewXObjectForm ();_ffd .Resources =_dae ;_ffd .BBox =_aag .MakeArrayFromFloats (_fddf );_ffd .SetContentStream (_adda .Bytes (),_fff ());_dafg :=_aag .MakeDict ();_dafg .Set ("\u004e",_ffd .ToPdfObject ());
-return _dafg ,nil ;};
-
-// SignatureImagePosition specifies the image signature location relative to the text signature.
-// If text signature is not defined, this position will be ignored.
-type SignatureImagePosition int ;
-
-// LineAnnotationDef defines a line between point 1 (X1,Y1) and point 2 (X2,Y2).  The line ending styles can be none
-// (regular line), or arrows at either end.  The line also has a specified width, color and opacity.
-type LineAnnotationDef struct{X1 float64 ;Y1 float64 ;X2 float64 ;Y2 float64 ;LineColor *_fba .PdfColorDeviceRGB ;Opacity float64 ;LineWidth float64 ;LineEndingStyle1 _ef .LineEndingStyle ;LineEndingStyle2 _ef .LineEndingStyle ;};func _agbd (_ ,_ float64 ,_fdfe *_fba .Image ,_ AppearanceStyle )(*_fba .XObjectForm ,error ){_dfad ,_bddb :=_fba .NewXObjectImageFromImage (_fdfe ,nil ,_aag .NewFlateEncoder ());
-if _bddb !=nil {return nil ,_bddb ;};_dfad .Decode =_aag .MakeArrayFromFloats ([]float64 {0.0,1.0,0.0,1.0,0.0,1.0});_fdddf :=_fba .NewPdfPageResources ();_fdddf .ProcSet =_aag .MakeArray (_aag .MakeName ("\u0050\u0044\u0046"),_aag .MakeName ("\u0049\u006d\u0061\u0067\u0065\u0043"));
-_fdddf .SetXObjectImageByName (_aag .PdfObjectName ("\u0049\u006d\u0030"),_dfad );_fcdaa :=_aa .NewContentCreator ();_fcdaa .Add_q ();_fcdaa .Add_cm (float64 (_fdfe .Width ),0,0,float64 (_fdfe .Height ),0,0);_fcdaa .Add_Do ("\u0049\u006d\u0030");_fcdaa .Add_Q ();
-_fbg :=_fba .NewXObjectForm ();_fbg .FormType =_aag .MakeInteger (1);_fbg .BBox =_aag .MakeArrayFromFloats ([]float64 {0,0,float64 (_fdfe .Width ),float64 (_fdfe .Height )});_fbg .Resources =_fdddf ;_fbg .SetContentStream (_fcdaa .Bytes (),_fff ());return _fbg ,nil ;
-};func (_gbbe *AppearanceStyle )processDA (_ebb *_fba .PdfField ,_faea *_aa .ContentStreamOperations ,_afg ,_faed *_fba .PdfPageResources ,_eaa *_aa .ContentCreator )(*AppearanceFont ,bool ,error ){var _ebbc *AppearanceFont ;var _bbad bool ;if _gbbe .Fonts !=nil {if _gbbe .Fonts .Fallback !=nil {_ebbc =_gbbe .Fonts .Fallback ;
-};if _cfb :=_gbbe .Fonts .FieldFallbacks ;_cfb !=nil {if _dee ,_ccee :=_cfb [_ebb .PartialName ()];_ccee {_ebbc =_dee ;}else if _gcc ,_baag :=_ebb .FullName ();_baag ==nil {if _bfaag ,_gbde :=_cfb [_gcc ];_gbde {_ebbc =_bfaag ;};};};if _ebbc !=nil {_ebbc .fillName ();
-};_bbad =_gbbe .Fonts .ForceReplace ;};var _fegc string ;var _cdcf float64 ;var _faef bool ;if _faea !=nil {for _ ,_ddge :=range *_faea {if _ddge .Operand =="\u0054\u0066"&&len (_ddge .Params )==2{if _aaac ,_cdca :=_aag .GetNameVal (_ddge .Params [0]);
-_cdca {_fegc =_aaac ;};if _cagf ,_dgag :=_aag .GetNumberAsFloat (_ddge .Params [1]);_dgag ==nil {_cdcf =_cagf ;};_faef =true ;continue ;};_eaa .AddOperand (*_ddge );};};var _bccc *AppearanceFont ;var _fcee _aag .PdfObject ;if _bbad &&_ebbc !=nil {_bccc =_ebbc ;
-}else {if _afg !=nil &&_fegc !=""{if _fcfb ,_eagea :=_afg .GetFontByName (*_aag .MakeName (_fegc ));_eagea {if _ebgf ,_gef :=_fba .NewPdfFontFromPdfObject (_fcfb );_gef ==nil {_fcee =_fcfb ;_bccc =&AppearanceFont {Name :_fegc ,Font :_ebgf ,Size :_cdcf };
-}else {_d .Log .Debug ("\u0045\u0052\u0052\u004f\u0052:\u0020\u0063\u006f\u0075\u006c\u0064\u0020\u006e\u006f\u0074\u0020\u006c\u006fa\u0064\u0020\u0061\u0070\u0070\u0065\u0061\u0072\u0061\u006e\u0063\u0065\u0020\u0066\u006f\u006e\u0074\u003a\u0020\u0025\u0076",_gef );
-};};};if _bccc ==nil &&_ebbc !=nil {_bccc =_ebbc ;};if _bccc ==nil {_edf ,_face :=_fba .NewStandard14Font ("\u0048e\u006c\u0076\u0065\u0074\u0069\u0063a");if _face !=nil {return nil ,false ,_face ;};_bccc =&AppearanceFont {Name :"\u0048\u0065\u006c\u0076",Font :_edf ,Size :_cdcf };
-};};if _bccc .Size <=0&&_gbbe .Fonts !=nil &&_gbbe .Fonts .FallbackSize > 0{_bccc .Size =_gbbe .Fonts .FallbackSize ;};_bec :=*_aag .MakeName (_bccc .Name );if _fcee ==nil {_fcee =_bccc .Font .ToPdfObject ();};if _afg !=nil &&!_afg .HasFontByName (_bec ){_afg .SetFontByName (_bec ,_fcee );
-};if _faed !=nil &&!_faed .HasFontByName (_bec ){_faed .SetFontByName (_bec ,_fcee );};return _bccc ,_faef ,nil ;};
-
-// CreateFileAttachmentAnnotation creates a file attachment annotation object that can be added to the annotation list of a PDF page.
-func CreateFileAttachmentAnnotation (fileDef FileAnnotationDef )(*_fba .PdfAnnotation ,error ){_bgec :=_fba .NewPdfFileSpecFromEmbeddedFile (fileDef .EmbeddedFile );if fileDef .Color ==nil {fileDef .Color =_fba .NewPdfColorDeviceRGB (0.0,0.0,0.0);};if fileDef .Description ==""{fileDef .Description =fileDef .EmbeddedFile .Name ;
-};if fileDef .CreationDate ==nil {_ecab :=_fb .Now ();fileDef .CreationDate =&_ecab ;};if fileDef .IconName ==""{fileDef .IconName ="\u0050u\u0073\u0068\u0050\u0069\u006e";};_dbca ,_bgd :=_fba .NewPdfDateFromTime (*fileDef .CreationDate );if _bgd !=nil {return nil ,_bgd ;
-};_bfdc :=_fba .NewPdfAnnotationFileAttachment ();_bfdc .FS =_bgec .ToPdfObject ();_bfdc .C =_aag .MakeArrayFromFloats ([]float64 {fileDef .Color .R (),fileDef .Color .G (),fileDef .Color .B ()});_bfdc .Contents =_aag .MakeString (fileDef .Description );
-_bfdc .CreationDate =_dbca .ToPdfObject ();_bfdc .M =_dbca .ToPdfObject ();_bfdc .Name =_aag .MakeName (fileDef .IconName );_bfdc .Rect =_aag .MakeArrayFromFloats ([]float64 {fileDef .X ,fileDef .Y ,fileDef .X +fileDef .Width ,fileDef .Y +fileDef .Height });
-_bfdc .T =_aag .MakeString (fileDef .Author );_bfdc .Subj =_aag .MakeString (fileDef .Subject );return _bfdc .PdfAnnotation ,nil ;};const (SignatureImageLeft SignatureImagePosition =iota ;SignatureImageRight ;SignatureImageTop ;SignatureImageBottom ;);
-
-
-// CreateCircleAnnotation creates a circle/ellipse annotation object with appearance stream that can be added to
-// page PDF annotations.
-func CreateCircleAnnotation (circDef CircleAnnotationDef )(*_fba .PdfAnnotation ,error ){_fc :=_fba .NewPdfAnnotationCircle ();if circDef .BorderEnabled {_c ,_dd ,_gf :=circDef .BorderColor .R (),circDef .BorderColor .G (),circDef .BorderColor .B ();_fc .C =_aag .MakeArrayFromFloats ([]float64 {_c ,_dd ,_gf });
-_aad :=_fba .NewBorderStyle ();_aad .SetBorderWidth (circDef .BorderWidth );_fc .BS =_aad .ToPdfObject ();};if circDef .FillEnabled {_be ,_ce ,_cg :=circDef .FillColor .R (),circDef .FillColor .G (),circDef .FillColor .B ();_fc .IC =_aag .MakeArrayFromFloats ([]float64 {_be ,_ce ,_cg });
-}else {_fc .IC =_aag .MakeArrayFromIntegers ([]int {});};if circDef .Opacity < 1.0{_fc .CA =_aag .MakeFloat (circDef .Opacity );};_aae ,_ac ,_gb :=_aac (circDef );if _gb !=nil {return nil ,_gb ;};_fc .AP =_aae ;_fc .Rect =_aag .MakeArrayFromFloats ([]float64 {_ac .Llx ,_ac .Lly ,_ac .Urx ,_ac .Ury });
-return _fc .PdfAnnotation ,nil ;};type quadding int ;
-
-// SignatureFieldOpts represents a set of options used to configure
-// an appearance widget dictionary.
-type SignatureFieldOpts struct{
-
-// Rect represents the area the signature annotation is displayed on.
-Rect []float64 ;
-
-// AutoSize specifies if the content of the appearance should be
-// scaled to fit in the annotation rectangle.
-AutoSize bool ;
-
-// Font specifies the font of the text content.
-Font *_fba .PdfFont ;
-
-// FontSize specifies the size of the text content.
-FontSize float64 ;
-
-// LineHeight specifies the height of a line of text in the appearance annotation.
-LineHeight float64 ;
-
-// TextColor represents the color of the text content displayed.
-TextColor _fba .PdfColor ;
-
-// FillColor represents the background color of the appearance annotation area.
-FillColor _fba .PdfColor ;
-
-// FillOpacity sets the opacity of the background of the appearance annotation area.
-// Range is 0.0 - 1.0. Default is 1.0, opaque.
-FillOpacity float64 ;
-
-// BorderSize represents border size of the appearance annotation area.
-BorderSize float64 ;
-
-// BorderColor represents the border color of the appearance annotation area.
-BorderColor _fba .PdfColor ;
-
-// WatermarkImage specifies the image used as a watermark that will be rendered
-// behind the signature.
-WatermarkImage _gg .Image ;
-
-// Image represents the image used for the signature appearance.
-Image _gg .Image ;
-
-// Encoder specifies the image encoder used for image signature. Defaults to flate encoder.
-Encoder _aag .StreamEncoder ;
-
-// ImagePosition specifies the image location relative to the text signature.
-ImagePosition SignatureImagePosition ;};func _ccfa (_bebbd *_aa .ContentCreator ,_fggg AppearanceStyle ,_gbbd ,_fec float64 ){_bebbd .Add_q ().Add_re (0,0,_gbbd ,_fec ).Add_re (0,_fec /2,_gbbd ,_fec /2).Add_re (0,0,_gbbd ,_fec ).Add_re (_gbbd /2,0,_gbbd /2,_fec ).Add_w (_fggg .BorderSize ).SetStrokingColor (_fggg .BorderColor ).SetNonStrokingColor (_fggg .FillColor ).Add_B ().Add_Q ();
-};
-
-// ComboboxFieldOptions defines optional parameters for a combobox form field.
-type ComboboxFieldOptions struct{
-
-// Choices is the list of string values that can be selected.
-Choices []string ;};
-
-// GenerateAppearanceDict generates an appearance dictionary for widget annotation `wa` for the `field` in `form`.
-// Implements interface model.FieldAppearanceGenerator.
-func (_eaca ImageFieldAppearance )GenerateAppearanceDict (form *_fba .PdfAcroForm ,field *_fba .PdfField ,wa *_fba .PdfAnnotationWidget )(*_aag .PdfObjectDictionary ,error ){_ ,_degb :=field .GetContext ().(*_fba .PdfFieldButton );if !_degb {if _d .Log .IsLogLevel (_d .LogLevelTrace ){_d .Log .Trace ("C\u006f\u0075\u006c\u0064\u0020\u006fn\u006c\u0079\u0020\u0068\u0061\u006ed\u006c\u0065\u0020\u0062\u0075\u0074\u0074o\u006e\u0020\u002d\u0020\u0069\u0067\u006e\u006f\u0072\u0069n\u0067");
-};return nil ,nil ;};_abga ,_dddd :=_aag .GetDict (wa .AP );if _dddd &&_eaca .OnlyIfMissing {if _d .Log .IsLogLevel (_d .LogLevelTrace ){_d .Log .Trace ("\u0041\u006c\u0072\u0065a\u0064\u0079\u0020\u0070\u006f\u0070\u0075\u006c\u0061\u0074e\u0064 \u002d\u0020\u0069\u0067\u006e\u006f\u0072i\u006e\u0067");
-};return _abga ,nil ;};if form .DR ==nil {form .DR =_fba .NewPdfPageResources ();};switch _afcaab :=field .GetContext ().(type ){case *_fba .PdfFieldButton :if _afcaab .IsPush (){_gbdea ,_dbce :=_ffc (_afcaab ,wa ,_eaca .Style ());if _dbce !=nil {return nil ,_dbce ;
-};return _gbdea ,nil ;};};return nil ,nil ;};func _efa (_faa CircleAnnotationDef ,_af string )([]byte ,*_fba .PdfRectangle ,*_fba .PdfRectangle ,error ){_eg :=_ef .Circle {X :_faa .X ,Y :_faa .Y ,Width :_faa .Width ,Height :_faa .Height ,FillEnabled :_faa .FillEnabled ,FillColor :_faa .FillColor ,BorderEnabled :_faa .BorderEnabled ,BorderWidth :_faa .BorderWidth ,BorderColor :_faa .BorderColor ,Opacity :_faa .Opacity };
-_gge ,_ddbg ,_fbd :=_eg .Draw (_af );if _fbd !=nil {return nil ,nil ,nil ,_fbd ;};_ga :=&_fba .PdfRectangle {};_ga .Llx =_faa .X +_ddbg .Llx ;_ga .Lly =_faa .Y +_ddbg .Lly ;_ga .Urx =_faa .X +_ddbg .Urx ;_ga .Ury =_faa .Y +_ddbg .Ury ;return _gge ,_ddbg ,_ga ,nil ;
-};
-
-// NewFormResetButtonField would create a reset button in specified page according to the parameter in `FormResetActionOptions`.
-func NewFormResetButtonField (page *_fba .PdfPage ,opt FormResetActionOptions )(*_fba .PdfFieldButton ,error ){_daad :=_fba .NewPdfActionResetForm ();_daad .Fields =opt .Fields ;_daad .Flags =_aag .MakeInteger (0);if opt .IsExclusionList {_daad .Flags =_aag .MakeInteger (1);
-};_bcce ,_gca :=_fcfec (page ,opt .Rectangle ,"\u0062\u0074\u006e\u0052\u0065\u0073\u0065\u0074",opt .Label ,opt .LabelColor ,opt .Font ,opt .FontSize ,_daad .ToPdfObject ());if _gca !=nil {return nil ,_gca ;};return _bcce ,nil ;};func _aac (_cd CircleAnnotationDef )(*_aag .PdfObjectDictionary ,*_fba .PdfRectangle ,error ){_ea :=_fba .NewXObjectForm ();
-_ea .Resources =_fba .NewPdfPageResources ();_fca :="";if _cd .Opacity < 1.0{_eb :=_aag .MakeDict ();_eb .Set ("\u0063\u0061",_aag .MakeFloat (_cd .Opacity ));_eb .Set ("\u0043\u0041",_aag .MakeFloat (_cd .Opacity ));_cb :=_ea .Resources .AddExtGState ("\u0067\u0073\u0031",_eb );
-if _cb !=nil {_d .Log .Debug ("U\u006e\u0061\u0062\u006c\u0065\u0020t\u006f\u0020\u0061\u0064\u0064\u0020\u0065\u0078\u0074g\u0073\u0074\u0061t\u0065 \u0067\u0073\u0031");return nil ,nil ,_cb ;};_fca ="\u0067\u0073\u0031";};_ca ,_fce ,_ddb ,_ace :=_efa (_cd ,_fca );
-if _ace !=nil {return nil ,nil ,_ace ;};_ace =_ea .SetContentStream (_ca ,nil );if _ace !=nil {return nil ,nil ,_ace ;};_ea .BBox =_fce .ToPdfObject ();_cdf :=_aag .MakeDict ();_cdf .Set ("\u004e",_ea .ToPdfObject ());return _cdf ,_ddb ,nil ;};
-
-// CircleAnnotationDef defines a circle annotation or ellipse at position (X, Y) and Width and Height.
-// The annotation has various style parameters including Fill and Border options and Opacity.
-type CircleAnnotationDef struct{X float64 ;Y float64 ;Width float64 ;Height float64 ;FillEnabled bool ;FillColor *_fba .PdfColorDeviceRGB ;BorderEnabled bool ;BorderWidth float64 ;BorderColor *_fba .PdfColorDeviceRGB ;Opacity float64 ;};
-
-// Style returns the appearance style of `fa`. If not specified, returns default style.
-func (_gdeg ImageFieldAppearance )Style ()AppearanceStyle {if _gdeg ._baefe !=nil {return *_gdeg ._baefe ;};return AppearanceStyle {BorderSize :0.0,BorderColor :_fba .NewPdfColorDeviceGray (0),FillColor :_fba .NewPdfColorDeviceGray (1),DrawAlignmentReticle :false };
-};
-
-// ImageFieldAppearance implements interface model.FieldAppearanceGenerator and generates appearance streams
-// for attaching an image to a button field.
-type ImageFieldAppearance struct{OnlyIfMissing bool ;_baefe *AppearanceStyle ;};
-
-// WrapContentStream ensures that the entire content stream for a `page` is wrapped within q ... Q operands.
-// Ensures that following operands that are added are not affected by additional operands that are added.
-// Implements interface model.ContentStreamWrapper.
-func (_dffa ImageFieldAppearance )WrapContentStream (page *_fba .PdfPage )error {_acbb ,_cggf :=page .GetAllContentStreams ();if _cggf !=nil {return _cggf ;};_baeaa :=_aa .NewContentStreamParser (_acbb );_gaaa ,_cggf :=_baeaa .Parse ();if _cggf !=nil {return _cggf ;
-};_gaaa .WrapIfNeeded ();_abeb :=[]string {_gaaa .String ()};return page .SetContentStreams (_abeb ,_fff ());};
-
-// NewSignatureFieldOpts returns a new initialized instance of options
-// used to generate a signature appearance.
-func NewSignatureFieldOpts ()*SignatureFieldOpts {return &SignatureFieldOpts {Font :_fba .DefaultFont (),FontSize :10,LineHeight :1,AutoSize :true ,TextColor :_fba .NewPdfColorDeviceGray (0),BorderColor :_fba .NewPdfColorDeviceGray (0),FillColor :_fba .NewPdfColorDeviceGray (1),FillOpacity :1.0,Encoder :_aag .NewFlateEncoder (),ImagePosition :SignatureImageLeft };
-};
-
-// GenerateAppearanceDict generates an appearance dictionary for widget annotation `wa` for the `field` in `form`.
-// Implements interface model.FieldAppearanceGenerator.
-func (_dc FieldAppearance )GenerateAppearanceDict (form *_fba .PdfAcroForm ,field *_fba .PdfField ,wa *_fba .PdfAnnotationWidget )(*_aag .PdfObjectDictionary ,error ){if _d .Log .IsLogLevel (_d .LogLevelTrace ){_d .Log .Trace ("\u0047\u0065n\u0065\u0072\u0061\u0074e\u0041\u0070p\u0065\u0061\u0072\u0061\u006e\u0063\u0065\u0044i\u0063\u0074\u0020\u0066\u006f\u0072\u0020\u0025\u0076\u0020\u0020\u0056:\u0020\u0025\u002b\u0076",field .PartialName (),field .V );
-};_ ,_da :=field .GetContext ().(*_fba .PdfFieldText );_efb ,_fag :=_aag .GetDict (wa .AP );if _fag &&_dc .OnlyIfMissing &&(!_da ||!_dc .RegenerateTextFields ){if _d .Log .IsLogLevel (_d .LogLevelTrace ){_d .Log .Trace ("\u0041\u006c\u0072\u0065a\u0064\u0079\u0020\u0070\u006f\u0070\u0075\u006c\u0061\u0074e\u0064 \u002d\u0020\u0069\u0067\u006e\u006f\u0072i\u006e\u0067");
-};return _efb ,nil ;};if form .DR ==nil {form .DR =_fba .NewPdfPageResources ();};switch _bea :=field .GetContext ().(type ){case *_fba .PdfFieldText :_fcaf :=_bea ;if _bge :=_bcc (_fcaf .PdfField );_bge ==""{_fcaf .DA =form .DA ;};if _dc ._gaa !=nil {if _dc ._gaa .FieldColors !=nil &&_dc ._gaa .FieldColors [field .PartialName ()]!=nil {_ab :=_dc ._gaa .FieldColors [field .PartialName ()];
-_fbf ,_fgg :=_acb (_fcaf ,_ab );if _fgg !=nil {return nil ,_fgg ;};_fcaf .DA =_fbf ;}else if _dc ._gaa .TextColor !=nil {_dba ,_ed :=_acb (_fcaf ,_dc ._gaa .TextColor );if _ed !=nil {return nil ,_ed ;};_fcaf .DA =_dba ;};};switch {case _fcaf .Flags ().Has (_fba .FieldFlagPassword ):return nil ,nil ;
-case _fcaf .Flags ().Has (_fba .FieldFlagFileSelect ):return nil ,nil ;case _fcaf .Flags ().Has (_fba .FieldFlagComb ):if _fcaf .MaxLen !=nil {_dgg ,_cac :=_gdae (wa ,_fcaf ,form .DR ,_dc .Style ());if _cac !=nil {return nil ,_cac ;};return _dgg ,nil ;
-};};_edd ,_gac :=_afd (wa ,_fcaf ,form .DR ,_dc .Style ());if _gac !=nil {return nil ,_gac ;};return _edd ,nil ;case *_fba .PdfFieldButton :_ba :=_bea ;if _ba .IsCheckbox (){_fed ,_gfb :=_dbe (wa ,_ba ,form .DR ,_dc .Style ());if _gfb !=nil {return nil ,_gfb ;
-};return _fed ,nil ;};_d .Log .Debug ("\u0054\u004f\u0044\u004f\u003a\u0020\u0055\u004e\u0048\u0041\u004e\u0044\u004c\u0045\u0044 \u0062u\u0074\u0074\u006f\u006e\u0020\u0074\u0079\u0070\u0065\u003a\u0020\u0025\u002b\u0076",_ba .GetType ());case *_fba .PdfFieldChoice :_abb :=_bea ;
-switch {case _abb .Flags ().Has (_fba .FieldFlagCombo ):_ggb ,_abc :=_adb (form ,wa ,_abb ,_dc .Style ());if _abc !=nil {return nil ,_abc ;};return _ggb ,nil ;default:_d .Log .Debug ("\u0054\u004f\u0044\u004f\u003a\u0020\u0055N\u0048\u0041\u004eD\u004c\u0045\u0044\u0020c\u0068\u006f\u0069\u0063\u0065\u0020\u0066\u0069\u0065\u006c\u0064\u0020\u0077\u0069\u0074\u0068\u0020\u0066\u006c\u0061\u0067\u0073\u003a\u0020\u0025\u0073",_abb .Flags ().String ());
-};default:_d .Log .Debug ("\u0054\u004f\u0044\u004f\u003a\u0020\u0055\u004e\u0048\u0041N\u0044\u004c\u0045\u0044\u0020\u0066\u0069e\u006c\u0064\u0020\u0074\u0079\u0070\u0065\u003a\u0020\u0025\u0054",_bea );};return nil ,nil ;};func _baffe (_cab *InkAnnotationDef )(*_aag .PdfObjectDictionary ,*_fba .PdfRectangle ,error ){_ecfd :=_fba .NewXObjectForm ();
-_eebe ,_efed ,_fdga :=_ggad (_cab );if _fdga !=nil {return nil ,nil ,_fdga ;};_fdga =_ecfd .SetContentStream (_eebe ,nil );if _fdga !=nil {return nil ,nil ,_fdga ;};_ecfd .BBox =_efed .ToPdfObject ();_ecfd .Resources =_fba .NewPdfPageResources ();_ecfd .Resources .ProcSet =_aag .MakeArray (_aag .MakeName ("\u0050\u0044\u0046"));
-_dafgb :=_aag .MakeDict ();_dafgb .Set ("\u004e",_ecfd .ToPdfObject ());return _dafgb ,_efed ,nil ;};func _cebd (_ffedf RectangleAnnotationDef ,_caegd string )([]byte ,*_fba .PdfRectangle ,*_fba .PdfRectangle ,error ){_adgb :=_ef .Rectangle {X :0,Y :0,Width :_ffedf .Width ,Height :_ffedf .Height ,FillEnabled :_ffedf .FillEnabled ,FillColor :_ffedf .FillColor ,BorderEnabled :_ffedf .BorderEnabled ,BorderWidth :2*_ffedf .BorderWidth ,BorderColor :_ffedf .BorderColor ,Opacity :_ffedf .Opacity };
-_ccbd ,_efcd ,_eda :=_adgb .Draw (_caegd );if _eda !=nil {return nil ,nil ,nil ,_eda ;};_ccbdf :=&_fba .PdfRectangle {};_ccbdf .Llx =_ffedf .X +_efcd .Llx ;_ccbdf .Lly =_ffedf .Y +_efcd .Lly ;_ccbdf .Urx =_ffedf .X +_efcd .Urx ;_ccbdf .Ury =_ffedf .Y +_efcd .Ury ;
-return _ccbd ,_efcd ,_ccbdf ,nil ;};
+func (_afd FieldAppearance )Style ()AppearanceStyle {if _afd ._fdf !=nil {return *_afd ._fdf ;};_bac :=_bc ;return AppearanceStyle {AutoFontSizeFraction :0.65,CheckmarkRune :'✔',BorderSize :0.0,BorderColor :_ef .NewPdfColorDeviceGray (0),FillColor :_ef .NewPdfColorDeviceGray (1),MultilineLineHeight :1.2,MultilineVAlignMiddle :false ,DrawAlignmentReticle :false ,AllowMK :true ,MarginLeft :&_bac ,ListBoxHighlightColor :_add ()};
+};func _cce (_fffb *_c .ContentCreator ,_baag AppearanceStyle ,_bbb ,_adgf float64 ){_fffb .Add_q ().Add_re (0,0,_bbb ,_adgf ).Add_re (0,_adgf /2,_bbb ,_adgf /2).Add_re (0,0,_bbb ,_adgf ).Add_re (_bbb /2,0,_bbb /2,_adgf ).Add_w (_baag .BorderSize ).SetStrokingColor (_baag .BorderColor ).SetNonStrokingColor (_baag .FillColor ).Add_B ().Add_Q ();
+};func _fga (_gcde *_ef .PdfFieldText ,_ffc _ef .PdfColor )(*_fc .PdfObjectString ,error ){_dd :=_c .ContentStreamOperations {};_afa :=_bad (_gcde .PdfField );_gbc ,_aegf :=_c .NewContentStreamParser (_afa ).Parse ();if _aegf !=nil {return nil ,_aegf ;
+};for _ ,_baaa :=range *_gbc {if _baaa .Operand =="\u0067"||_baaa .Operand =="\u0072\u0067"{continue ;};_dd =append (_dd ,_baaa );};_cc ,_gfg :=_ffc .(*_ef .PdfColorDeviceRGB );if !_gfg {return nil ,_aegf ;};_deec ,_cda ,_fcd :=_fc .MakeFloat (_cc [0]),_fc .MakeFloat (_cc [1]),_fc .MakeFloat (_cc [2]);
+_bef :=&_c .ContentStreamOperation {Params :[]_fc .PdfObject {_deec ,_cda ,_fcd },Operand :"\u0072\u0067"};_dd =append (_dd ,_bef );_bda :=_dd .String ();_bda =_ad .ReplaceAll (_bda ,"\u000a","\u0020");_bda =_ad .Trim (_bda ,"\u0020");return _fc .MakeHexString (_bda ),nil ;
+};func (_ecdf *AppearanceStyle )applyAppearanceCharacteristics (_bceb *_fc .PdfObjectDictionary ,_gcdd *_fc .PdfObjectDictionary ,_ffg *_ef .PdfFont )error {if !_ecdf .AllowMK {return nil ;};if CA ,_bcd :=_fc .GetString (_bceb .Get ("\u0043\u0041"));_bcd &&_ffg !=nil {_ccec :=CA .Bytes ();
+if len (_ccec )!=0{_fcba :=[]rune (_ffg .Encoder ().Decode (_ccec ));if len (_fcba )==1{_ecdf .CheckmarkRune =_fcba [0];};};};if BC ,_beac :=_fc .GetArray (_bceb .Get ("\u0042\u0043"));_beac {_ggca ,_gbbg :=BC .ToFloat64Array ();if _gbbg !=nil {return _gbbg ;
+};switch len (_ggca ){case 1:_ecdf .BorderColor =_ef .NewPdfColorDeviceGray (_ggca [0]);case 3:_ecdf .BorderColor =_ef .NewPdfColorDeviceRGB (_ggca [0],_ggca [1],_ggca [2]);case 4:_ecdf .BorderColor =_ef .NewPdfColorDeviceCMYK (_ggca [0],_ggca [1],_ggca [2],_ggca [3]);
+default:_f .Log .Debug ("\u0045\u0052\u0052\u004f\u0052:\u0020\u0042\u0043\u0020\u002d\u0020\u0049\u006e\u0076\u0061\u006c\u0069\u0064 \u006e\u0075\u006d\u0062\u0065\u0072\u0020\u006f\u0066\u0020\u0063\u006f\u006c\u006f\u0072\u0020\u0063\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u0073\u0020\u0028\u0025\u0064)",len (_ggca ));
+};if _gcdd !=nil {if _fgde ,_gbfc :=_fc .GetNumberAsFloat (_gcdd .Get ("\u0057"));_gbfc ==nil {_ecdf .BorderSize =_fgde ;};};};if BG ,_ddc :=_fc .GetArray (_bceb .Get ("\u0042\u0047"));_ddc {_ecad ,_degc :=BG .ToFloat64Array ();if _degc !=nil {return _degc ;
+};switch len (_ecad ){case 1:_ecdf .FillColor =_ef .NewPdfColorDeviceGray (_ecad [0]);case 3:_ecdf .FillColor =_ef .NewPdfColorDeviceRGB (_ecad [0],_ecad [1],_ecad [2]);case 4:_ecdf .FillColor =_ef .NewPdfColorDeviceCMYK (_ecad [0],_ecad [1],_ecad [2],_ecad [3]);
+default:_f .Log .Debug ("\u0045\u0052\u0052\u004f\u0052:\u0020\u0042\u0047\u0020\u002d\u0020\u0049\u006e\u0076\u0061\u006c\u0069\u0064 \u006e\u0075\u006d\u0062\u0065\u0072\u0020\u006f\u0066\u0020\u0063\u006f\u006c\u006f\u0072\u0020\u0063\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u0073\u0020\u0028\u0025\u0064)",len (_ecad ));
+};};return nil ;};
 
 // FieldAppearance implements interface model.FieldAppearanceGenerator and generates appearance streams
 // for fields taking into account what value is in the field. A common use case is for generating the
@@ -399,14 +45,73 @@ return _ccbd ,_efcd ,_ccbdf ,nil ;};
 // If `OnlyIfMissing` is true, the field appearance is generated only for fields that do not have an
 // appearance stream specified.
 // If `RegenerateTextFields` is true, all text fields are regenerated (even if OnlyIfMissing is true).
-type FieldAppearance struct{OnlyIfMissing bool ;RegenerateTextFields bool ;_gaa *AppearanceStyle ;};func _ffc (_bced *_fba .PdfFieldButton ,_gfbe *_fba .PdfAnnotationWidget ,_ddbe AppearanceStyle )(*_aag .PdfObjectDictionary ,error ){_dafa ,_bgbf :=_aag .GetArray (_gfbe .Rect );
-if !_bgbf {return nil ,_fe .New ("\u0069\u006e\u0076a\u006c\u0069\u0064\u0020\u0052\u0065\u0063\u0074");};_egb ,_dddae :=_fba .NewPdfRectangle (*_dafa );if _dddae !=nil {return nil ,_dddae ;};_gbee ,_fgcb :=_egb .Width (),_egb .Height ();_bbaa :=_aa .NewContentCreator ();
-if _ddbe .BorderSize > 0{_ggeff (_bbaa ,_ddbe ,_gbee ,_fgcb );};if _ddbe .DrawAlignmentReticle {_gaea :=_ddbe ;_gaea .BorderSize =0.2;_ccfa (_bbaa ,_gaea ,_gbee ,_fgcb );};_cbcf :=_bced .GetFillImage ();_ebaa ,_dddae :=_agbd (_gbee ,_fgcb ,_cbcf ,_ddbe );
-if _dddae !=nil {return nil ,_dddae ;};_fceed ,_begc :=_aag .GetDict (_gfbe .MK );if _begc {_fceed .Set ("\u006c",_ebaa .ToPdfObject ());};_cbdg :=_aag .MakeDict ();_cbdg .Set ("\u0046\u0052\u004d",_ebaa .ToPdfObject ());_bdg :=_fba .NewPdfPageResources ();
-_bdg .ProcSet =_aag .MakeArray (_aag .MakeName ("\u0050\u0044\u0046"));_bdg .XObject =_cbdg ;_gbed :=_gbee -2;_efgd :=_fgcb -2;_bbaa .Add_q ();_bbaa .Add_re (1,1,_gbed ,_efgd );_bbaa .Add_W ();_bbaa .Add_n ();_gbed -=2;_efgd -=2;_bbaa .Add_q ();_bbaa .Add_re (2,2,_gbed ,_efgd );
-_bbaa .Add_W ();_bbaa .Add_n ();_baea :=_g .Min (_gbed /float64 (_cbcf .Width ),_efgd /float64 (_cbcf .Height ));_bbaa .Add_cm (_baea ,0,0,_baea ,(_gbee /2)-(float64 (_cbcf .Width )*_baea /2)+2,2);_bbaa .Add_Do ("\u0046\u0052\u004d");_bbaa .Add_Q ();_bbaa .Add_Q ();
-_eaag :=_fba .NewXObjectForm ();_eaag .FormType =_aag .MakeInteger (1);_eaag .Resources =_bdg ;_eaag .BBox =_aag .MakeArrayFromFloats ([]float64 {0,0,_gbee ,_fgcb });_eaag .Matrix =_aag .MakeArrayFromFloats ([]float64 {1.0,0.0,0.0,1.0,0.0,0.0});_eaag .SetContentStream (_bbaa .Bytes (),_fff ());
-_afb :=_aag .MakeDict ();_afb .Set ("\u004e",_eaag .ToPdfObject ());return _afb ,nil ;};
+type FieldAppearance struct{OnlyIfMissing bool ;RegenerateTextFields bool ;_fdf *AppearanceStyle ;};
+
+// AppearanceFont represents a font used for generating the appearance of a
+// field in the filling/flattening process.
+type AppearanceFont struct{
+
+// Name represents the name of the font which will be added to the
+// AcroForm resources (DR).
+Name string ;
+
+// Font represents the actual font used for the field appearance.
+Font *_ef .PdfFont ;
+
+// Size represents the size of the font used for the field appearance.
+// If the font size is 0, the value of the FallbackSize field of the
+// AppearanceFontStyle is used, if set. Otherwise, the font size is
+// calculated based on the available annotation height and on the
+// AutoFontSizeFraction field of the AppearanceStyle.
+Size float64 ;};func _cbgf (_gbafb _fc .PdfObject )(string ,bool ){if _abbe ,_cad :=_fc .GetString (_gbafb );_cad {return _abbe .Decoded (),true ;};if _gcgd ,_gdc :=_fc .GetName (_gbafb );_gdc {return _gcgd .String (),true ;};return "",false ;};func (_aeab *AppearanceStyle )processDA (_addd *_ef .PdfField ,_aade *_c .ContentStreamOperations ,_faae ,_ecac *_ef .PdfPageResources ,_cdee *_c .ContentCreator )(*AppearanceFont ,bool ,error ){var _aba *AppearanceFont ;
+var _fdec bool ;if _aeab .Fonts !=nil {if _aeab .Fonts .Fallback !=nil {_aba =_aeab .Fonts .Fallback ;};if _beda :=_aeab .Fonts .FieldFallbacks ;_beda !=nil {if _fbdb ,_gag :=_beda [_addd .PartialName ()];_gag {_aba =_fbdb ;}else if _dfff ,_faac :=_addd .FullName ();
+_faac ==nil {if _dedf ,_cab :=_beda [_dfff ];_cab {_aba =_dedf ;};};};if _aba !=nil {_aba .fillName ();};_fdec =_aeab .Fonts .ForceReplace ;};var _gabd string ;var _fdgf float64 ;var _afae bool ;if _aade !=nil {for _ ,_aed :=range *_aade {if _aed .Operand =="\u0054\u0066"&&len (_aed .Params )==2{if _ceaf ,_dbgf :=_fc .GetNameVal (_aed .Params [0]);
+_dbgf {_gabd =_ceaf ;};if _fddcf ,_bfac :=_fc .GetNumberAsFloat (_aed .Params [1]);_bfac ==nil {_fdgf =_fddcf ;};_afae =true ;continue ;};_cdee .AddOperand (*_aed );};};var _ecgaf *AppearanceFont ;var _aegg _fc .PdfObject ;if _fdec &&_aba !=nil {_ecgaf =_aba ;
+}else {if _faae !=nil &&_gabd !=""{if _dfgc ,_gabf :=_faae .GetFontByName (*_fc .MakeName (_gabd ));_gabf {if _fed ,_baf :=_ef .NewPdfFontFromPdfObject (_dfgc );_baf ==nil {_aegg =_dfgc ;_ecgaf =&AppearanceFont {Name :_gabd ,Font :_fed ,Size :_fdgf };}else {_f .Log .Debug ("\u0045\u0052\u0052\u004f\u0052:\u0020\u0063\u006f\u0075\u006c\u0064\u0020\u006e\u006f\u0074\u0020\u006c\u006fa\u0064\u0020\u0061\u0070\u0070\u0065\u0061\u0072\u0061\u006e\u0063\u0065\u0020\u0066\u006f\u006e\u0074\u003a\u0020\u0025\u0076",_baf );
+};};};if _ecgaf ==nil &&_aba !=nil {_ecgaf =_aba ;};if _ecgaf ==nil {_gfec ,_acbc :=_ef .NewStandard14Font ("\u0048e\u006c\u0076\u0065\u0074\u0069\u0063a");if _acbc !=nil {return nil ,false ,_acbc ;};_ecgaf =&AppearanceFont {Name :"\u0048\u0065\u006c\u0076",Font :_gfec ,Size :_fdgf };
+};};if _ecgaf .Size <=0&&_aeab .Fonts !=nil &&_aeab .Fonts .FallbackSize > 0{_ecgaf .Size =_aeab .Fonts .FallbackSize ;};_fgae :=*_fc .MakeName (_ecgaf .Name );if _aegg ==nil {_aegg =_ecgaf .Font .ToPdfObject ();};if _faae !=nil &&!_faae .HasFontByName (_fgae ){_faae .SetFontByName (_fgae ,_aegg );
+};if _ecac !=nil &&!_ecac .HasFontByName (_fgae ){_ecac .SetFontByName (_fgae ,_aegg );};return _ecgaf ,_afae ,nil ;};
+
+// FormResetActionOptions holds options for creating a form reset button.
+type FormResetActionOptions struct{
+
+// Rectangle holds the button position, size, and color.
+Rectangle _af .Rectangle ;
+
+// Label specifies the text that would be displayed on the button.
+Label string ;
+
+// LabelColor specifies the button label color.
+LabelColor _ef .PdfColor ;
+
+// Font specifies a font used for rendering the button label.
+// When omitted it will fallback to use a Helvetica font.
+Font *_ef .PdfFont ;
+
+// FontSize specifies the font size used in rendering the button label.
+// The default font size is 12pt.
+FontSize *float64 ;
+
+// Fields specifies list of fields that could be resetted.
+// This list may contain indirect object to fields or field names.
+Fields *_fc .PdfObjectArray ;
+
+// IsExclusionList specifies that the fields in the `Fields` array would be excluded form reset process.
+IsExclusionList bool ;};type quadding int ;func _gaa (_gcd CircleAnnotationDef )(*_fc .PdfObjectDictionary ,*_ef .PdfRectangle ,error ){_gee :=_ef .NewXObjectForm ();_gee .Resources =_ef .NewPdfPageResources ();_cd :="";if _gcd .Opacity < 1.0{_acc :=_fc .MakeDict ();
+_acc .Set ("\u0063\u0061",_fc .MakeFloat (_gcd .Opacity ));_acc .Set ("\u0043\u0041",_fc .MakeFloat (_gcd .Opacity ));_cg :=_gee .Resources .AddExtGState ("\u0067\u0073\u0031",_acc );if _cg !=nil {_f .Log .Debug ("U\u006e\u0061\u0062\u006c\u0065\u0020t\u006f\u0020\u0061\u0064\u0064\u0020\u0065\u0078\u0074g\u0073\u0074\u0061t\u0065 \u0067\u0073\u0031");
+return nil ,nil ,_cg ;};_cd ="\u0067\u0073\u0031";};_cb ,_ff ,_ce ,_gab :=_bd (_gcd ,_cd );if _gab !=nil {return nil ,nil ,_gab ;};_gab =_gee .SetContentStream (_cb ,nil );if _gab !=nil {return nil ,nil ,_gab ;};_gee .BBox =_ff .ToPdfObject ();_abg :=_fc .MakeDict ();
+_abg .Set ("\u004e",_gee .ToPdfObject ());return _abg ,_ce ,nil ;};func _ceab (_ecga *_c .ContentCreator ,_fecb AppearanceStyle ,_bcaf ,_agb float64 ){_ecga .Add_q ().Add_re (0,0,_bcaf ,_agb ).Add_w (_fecb .BorderSize ).SetStrokingColor (_fecb .BorderColor ).SetNonStrokingColor (_fecb .FillColor ).Add_B ().Add_Q ();
+};func _aede (_eae _fc .PdfObject ,_gbdbf *_ef .PdfPageResources )(*_fc .PdfObjectName ,float64 ,bool ){var (_gdebf *_fc .PdfObjectName ;_bee float64 ;_fefb bool ;);if _gfdc ,_ggcg :=_fc .GetDict (_eae );_ggcg &&_gfdc !=nil {_dde :=_fc .TraceToDirectObject (_gfdc .Get ("\u004e"));
+switch _fbf :=_dde .(type ){case *_fc .PdfObjectStream :_cgb ,_gdcb :=_fc .DecodeStream (_fbf );if _gdcb !=nil {_f .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0075\u006e\u0061\u0062\u006c\u0065\u0020\u0064\u0065\u0063\u006f\u0064\u0065\u0020\u0063\u006f\u006e\u0074e\u006e\u0074\u0020\u0073\u0074r\u0065\u0061m\u003a\u0020\u0025\u0076",_gdcb .Error ());
+return nil ,0,false ;};_ecf ,_gdcb :=_c .NewContentStreamParser (string (_cgb )).Parse ();if _gdcb !=nil {_f .Log .Debug ("\u0045\u0052R\u004f\u0052\u0020\u0075n\u0061\u0062l\u0065\u0020\u0070\u0061\u0072\u0073\u0065\u0020c\u006f\u006e\u0074\u0065\u006e\u0074\u0020\u0073\u0074\u0072\u0065\u0061m\u003a\u0020\u0025\u0076",_gdcb .Error ());
+return nil ,0,false ;};_dad :=_c .NewContentStreamProcessor (*_ecf );_dad .AddHandler (_c .HandlerConditionEnumOperand ,"\u0054\u0066",func (_fdge *_c .ContentStreamOperation ,_ddef _c .GraphicsState ,_bebc *_ef .PdfPageResources )error {if len (_fdge .Params )==2{if _gdbb ,_ebcfb :=_fc .GetName (_fdge .Params [0]);
+_ebcfb {_gdebf =_gdbb ;};if _cbcb ,_aefd :=_fc .GetNumberAsFloat (_fdge .Params [1]);_aefd ==nil {_bee =_cbcb ;};_fefb =true ;return _c .ErrEarlyExit ;};return nil ;});_dad .Process (_gbdbf );return _gdebf ,_bee ,_fefb ;};};return nil ,0,false ;};
+
+// WrapContentStream ensures that the entire content stream for a `page` is wrapped within q ... Q operands.
+// Ensures that following operands that are added are not affected by additional operands that are added.
+// Implements interface model.ContentStreamWrapper.
+func (_bccf FieldAppearance )WrapContentStream (page *_ef .PdfPage )error {_bdee ,_cbb :=page .GetAllContentStreams ();if _cbb !=nil {return _cbb ;};_gdfd :=_c .NewContentStreamParser (_bdee );_gdef ,_cbb :=_gdfd .Parse ();if _cbb !=nil {return _cbb ;};
+_gdef .WrapIfNeeded ();_fbbg :=[]string {_gdef .String ()};return page .SetContentStreams (_fbbg ,_gbae ());};
 
 // AppearanceFontStyle defines font style characteristics for form fields,
 // used in the filling/flattening process.
@@ -432,112 +137,287 @@ FieldFallbacks map[string ]*AppearanceFont ;
 // ForceReplace forces the replacement of fonts in the filling/flattening
 // process, even if the default appearance (DA) specifies a valid font.
 // If no fallback font is provided, setting this field has no effect.
-ForceReplace bool ;};
+ForceReplace bool ;};func _edfg (_bfec *_ef .PdfAcroForm ,_bfdc *_ef .PdfAnnotationWidget ,_bfaa *_ef .PdfFieldChoice ,_dffae AppearanceStyle )(*_fc .PdfObjectDictionary ,error ){_cge ,_cdgc :=_fc .GetArray (_bfdc .Rect );if !_cdgc {return nil ,_da .New ("\u0069\u006e\u0076a\u006c\u0069\u0064\u0020\u0052\u0065\u0063\u0074");
+};_bdcdf ,_eee :=_ef .NewPdfRectangle (*_cge );if _eee !=nil {return nil ,_eee ;};_fee ,_fcg :=_bdcdf .Width (),_bdcdf .Height ();_f .Log .Debug ("\u0043\u0068\u006f\u0069\u0063\u0065\u002c\u0020\u0077\u0061\u0020\u0042S\u003a\u0020\u0025\u0076",_bfdc .BS );
+_gea ,_eee :=_c .NewContentStreamParser (_bad (_bfaa .PdfField )).Parse ();if _eee !=nil {return nil ,_eee ;};_gcfg ,_fdc :=_fc .GetDict (_bfdc .MK );if _fdc {_ceg ,_ :=_fc .GetDict (_bfdc .BS );_aef :=_dffae .applyAppearanceCharacteristics (_gcfg ,_ceg ,nil );
+if _aef !=nil {return nil ,_aef ;};};_fdda :=_fc .MakeDict ();for _ ,_bcc :=range _bfaa .Opt .Elements (){if _efbe ,_fgd :=_fc .GetArray (_bcc );_fgd &&_efbe .Len ()==2{_bcc =_efbe .Get (1);};var _cgfe string ;if _afea ,_dag :=_fc .GetString (_bcc );_dag {_cgfe =_afea .Decoded ();
+}else if _bgcd ,_egd :=_fc .GetName (_bcc );_egd {_cgfe =_bgcd .String ();}else {_f .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u004f\u0070\u0074\u0020\u006e\u006f\u0074\u0020\u0061\u0020\u006e\u0061\u006de\u002f\u0073\u0074\u0072\u0069\u006e\u0067 \u002d\u0020\u0025\u0054",_bcc );
+return nil ,_da .New ("\u006e\u006f\u0074\u0020\u0061\u0020\u006e\u0061\u006d\u0065\u002f\u0073t\u0072\u0069\u006e\u0067");};if len (_cgfe )> 0{_dbgeg ,_faef :=_feff (_bfaa .PdfField ,_fee ,_fcg ,_cgfe ,_dffae ,_gea ,_bfec .DR ,_gcfg );if _faef !=nil {return nil ,_faef ;
+};_fdda .Set (*_fc .MakeName (_cgfe ),_dbgeg .ToPdfObject ());};};_abf :=_fc .MakeDict ();_abf .Set ("\u004e",_fdda );return _abf ,nil ;};func (_ae *AppearanceFont )fillName (){if _ae .Font ==nil ||_ae .Name !=""{return ;};_gcb :=_ae .Font .FontDescriptor ();
+if _gcb ==nil ||_gcb .FontName ==nil {return ;};_ae .Name =_gcb .FontName .String ();};
 
-// AppearanceFont represents a font used for generating the appearance of a
-// field in the filling/flattening process.
-type AppearanceFont struct{
+// CreateRectangleAnnotation creates a rectangle annotation object that can be added to page PDF annotations.
+func CreateRectangleAnnotation (rectDef RectangleAnnotationDef )(*_ef .PdfAnnotation ,error ){_baeec :=_ef .NewPdfAnnotationSquare ();if rectDef .BorderEnabled {_gbcd ,_ecaa ,_ebfe :=rectDef .BorderColor .R (),rectDef .BorderColor .G (),rectDef .BorderColor .B ();
+_baeec .C =_fc .MakeArrayFromFloats ([]float64 {_gbcd ,_ecaa ,_ebfe });_fgac :=_ef .NewBorderStyle ();_fgac .SetBorderWidth (rectDef .BorderWidth );_baeec .BS =_fgac .ToPdfObject ();};if rectDef .FillEnabled {_ffadc ,_cdbb ,_ceeb :=rectDef .FillColor .R (),rectDef .FillColor .G (),rectDef .FillColor .B ();
+_baeec .IC =_fc .MakeArrayFromFloats ([]float64 {_ffadc ,_cdbb ,_ceeb });}else {_baeec .IC =_fc .MakeArrayFromIntegers ([]int {});};if rectDef .Opacity < 1.0{_baeec .CA =_fc .MakeFloat (rectDef .Opacity );};_bfcec ,_abgbd ,_cggf :=_aeeg (rectDef );if _cggf !=nil {return nil ,_cggf ;
+};_baeec .AP =_bfcec ;_baeec .Rect =_fc .MakeArrayFromFloats ([]float64 {_abgbd .Llx ,_abgbd .Lly ,_abgbd .Urx ,_abgbd .Ury });return _baeec .PdfAnnotation ,nil ;};const (_gbdbd =1;_dba =2;_ddac =4;_gfeb =8;_deab =16;_bbfg =32;_gbbe =64;_fbde =128;_aaf =256;
+_geddg =512;_ffaa =1024;_ebeb =2048;_eff =4096;);
 
-// Name represents the name of the font which will be added to the
-// AcroForm resources (DR).
-Name string ;
+// TextFieldOptions defines optional parameter for a text field in a form.
+type TextFieldOptions struct{MaxLen int ;Value string ;
 
-// Font represents the actual font used for the field appearance.
-Font *_fba .PdfFont ;
+// TextColor defines the color of the text in hex format. e.g #43fd23.
+// If it has an invalid value a #000000 (black) color is taken as default
+TextColor string ;
 
-// Size represents the size of the font used for the field appearance.
-// If the font size is 0, the value of the FallbackSize field of the
-// AppearanceFontStyle is used, if set. Otherwise, the font size is
-// calculated based on the available annotation height and on the
-// AutoFontSizeFraction field of the AppearanceStyle.
-Size float64 ;};func (_afee *AppearanceStyle )applyRotation (_eagd *_aag .PdfObjectDictionary ,_gee ,_cbe float64 ,_ffb *_aa .ContentCreator )(float64 ,float64 ){if !_afee .AllowMK {return _gee ,_cbe ;};if _eagd ==nil {return _gee ,_cbe ;};_gag ,_ :=_aag .GetNumberAsFloat (_eagd .Get ("\u0052"));
-if _gag ==0{return _gee ,_cbe ;};_eage :=-_gag ;_efbg :=_ef .Path {Points :[]_ef .Point {_ef .NewPoint (0,0).Rotate (_eage ),_ef .NewPoint (_gee ,0).Rotate (_eage ),_ef .NewPoint (0,_cbe ).Rotate (_eage ),_ef .NewPoint (_gee ,_cbe ).Rotate (_eage )}}.GetBoundingBox ();
-_ffb .RotateDeg (_gag );_ffb .Translate (_efbg .X ,_efbg .Y );return _efbg .Width ,_efbg .Height ;};
+// FontName defines the font of the text. Helvetica font is the default one.
+// It is recommended to use one of 14 standard PDF fonts.
+FontName string ;
+
+// FontSize defines the font size of the text, 12 is used by default.
+FontSize int ;};
+
+// ImageFieldAppearance implements interface model.FieldAppearanceGenerator and generates appearance streams
+// for attaching an image to a button field.
+type ImageFieldAppearance struct{OnlyIfMissing bool ;_dac *AppearanceStyle ;};func _ag (_bbf *_ef .PdfAnnotationWidget ,_cgf *_ef .PdfFieldText ,_ebce *_ef .PdfPageResources ,_fec AppearanceStyle )(*_fc .PdfObjectDictionary ,error ){_geb :=_ef .NewPdfPageResources ();
+_bfa ,_dcf :=_fc .GetArray (_bbf .Rect );if !_dcf {return nil ,_da .New ("\u0069\u006e\u0076a\u006c\u0069\u0064\u0020\u0052\u0065\u0063\u0074");};_cgfd ,_daec :=_ef .NewPdfRectangle (*_bfa );if _daec !=nil {return nil ,_daec ;};_gfc ,_dfb :=_cgfd .Width (),_cgfd .Height ();
+_efb ,_bce :=_gfc ,_dfb ;_gbcb :=true ;_ffcb :=_ef .NewXObjectForm ();_ffcb .BBox =_fc .MakeArrayFromFloats ([]float64 {0,0,_efb ,_bce });if _bbf .AP !=nil {if _adeg ,_dce :=_fc .GetDict (_bbf .AP );_dce &&_adeg !=nil {_dffg :=_fc .TraceToDirectObject (_adeg .Get ("\u004e"));
+switch _cde :=_dffg .(type ){case *_fc .PdfObjectStream :_afg ,_deef :=_fc .DecodeStream (_cde );if _deef !=nil {_f .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0075\u006e\u0061\u0062\u006c\u0065\u0020\u0064\u0065\u0063\u006f\u0064\u0065\u0020\u0063\u006f\u006e\u0074e\u006e\u0074\u0020\u0073\u0074r\u0065\u0061m\u003a\u0020\u0025\u0076",_deef .Error ());
+break ;};_dbg ,_deef :=_c .NewContentStreamParser (string (_afg )).Parse ();if _deef !=nil {_f .Log .Debug ("\u0045\u0052R\u004f\u0052\u0020\u0075n\u0061\u0062l\u0065\u0020\u0070\u0061\u0072\u0073\u0065\u0020c\u006f\u006e\u0074\u0065\u006e\u0074\u0020\u0073\u0074\u0072\u0065\u0061m\u003a\u0020\u0025\u0076",_deef .Error ());
+break ;};_abb :=_c .NewContentStreamProcessor (*_dbg );_abb .AddHandler (_c .HandlerConditionEnumAllOperands ,"",func (_ee *_c .ContentStreamOperation ,_bdg _c .GraphicsState ,_deb *_ef .PdfPageResources )error {if _ee .Operand =="\u0054\u006a"||_ee .Operand =="\u0054\u004a"{if len (_ee .Params )==1{if _ecb ,_cef :=_fc .GetString (_ee .Params [0]);
+_cef {_gbcb =_ad .TrimSpace (_ecb .Str ())=="";};return _c .ErrEarlyExit ;};return nil ;};return nil ;});_abb .Process (_geb );if !_gbcb {if _bca ,_gbb :=_fc .GetDict (_cde .Get ("\u0052e\u0073\u006f\u0075\u0072\u0063\u0065s"));_gbb {_geb ,_deef =_ef .NewPdfPageResourcesFromDict (_bca );
+if _deef !=nil {return nil ,_deef ;};};if _dgd ,_fb :=_fc .GetArray (_cde .Get ("\u004d\u0061\u0074\u0072\u0069\u0078"));_fb {_ffcb .Matrix =_dgd ;};_ffcb .SetContentStream (_afg ,_gbae ());};};};};if _gbcb {_cdad ,_feg :=_fc .GetDict (_bbf .MK );if _feg {_gff ,_ :=_fc .GetDict (_bbf .BS );
+_cag :=_fec .applyAppearanceCharacteristics (_cdad ,_gff ,nil );if _cag !=nil {return nil ,_cag ;};};_cbc ,_bfg :=_c .NewContentStreamParser (_bad (_cgf .PdfField )).Parse ();if _bfg !=nil {return nil ,_bfg ;};_gca :=_c .NewContentCreator ();if _fec .BorderSize > 0{_ceab (_gca ,_fec ,_gfc ,_dfb );
+};if _fec .DrawAlignmentReticle {_bbfd :=_fec ;_bbfd .BorderSize =0.2;_cce (_gca ,_bbfd ,_gfc ,_dfb );};_gca .Add_BMC ("\u0054\u0078");_gca .Add_q ();_gfc ,_dfb =_fec .applyRotation (_cdad ,_gfc ,_dfb ,_gca );_gca .Add_BT ();_bcg ,_fa ,_bfg :=_fec .processDA (_cgf .PdfField ,_cbc ,_ebce ,_geb ,_gca );
+if _bfg !=nil {return nil ,_bfg ;};_afb :=_bcg .Font ;_ece :=_bcg .Size ;_gaf :=_fc .MakeName (_bcg .Name );if _cgf .Flags ().Has (_ef .FieldFlagMultiline )&&_cgf .MaxLen !=nil {_f .Log .Debug ("\u004c\u006f\u006f\u006b\u0020\u0066\u006f\u0072\u0020\u0041\u0050\u0020\u0064\u0069\u0063\u0074\u0069\u006fn\u0061\u0072\u0079\u0020\u0066\u006f\u0072 \u004e\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0063\u006fn\u0074\u0065\u006e\u0074\u0020\u0073\u0074\u0072\u0065\u0061\u006d");
+if _bage ,_fba ,_aeb :=_aede (_bbf .AP ,_ebce );_aeb {_gaf =_bage ;_ece =_fba ;_fa =true ;};};_gae :=_ece ==0;if _gae &&_fa {_ece =_dfb *_fec .AutoFontSizeFraction ;};_fdfg :=_afb .Encoder ();if _fdfg ==nil {_f .Log .Debug ("\u0057\u0041RN\u003a\u0020\u0066\u006f\u006e\u0074\u0020\u0065\u006e\u0063\u006f\u0064\u0065\u0072\u0020\u0069\u0073\u0020\u006e\u0069l\u002e\u0020\u0041\u0073s\u0075\u006d\u0069\u006eg \u0069\u0064e\u006et\u0069\u0074\u0079\u0020\u0065\u006ec\u006f\u0064\u0065r\u002e\u0020O\u0075\u0074\u0070\u0075\u0074\u0020\u006d\u0061\u0079\u0020\u0062\u0065\u0020\u0069n\u0063\u006f\u0072\u0072\u0065\u0063\u0074\u002e");
+_fdfg =_d .NewIdentityTextEncoder ("\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079\u002d\u0048");};_fbc ,_bfg :=_afb .GetFontDescriptor ();if _bfg !=nil {_f .Log .Debug ("\u0045\u0072ro\u0072\u003a\u0020U\u006e\u0061\u0062\u006ce t\u006f g\u0065\u0074\u0020\u0066\u006f\u006e\u0074 d\u0065\u0073\u0063\u0072\u0069\u0070\u0074o\u0072");
+};var _ceb string ;if _bab ,_gge :=_fc .GetString (_cgf .V );_gge {_ceb =_bab .Decoded ();};if len (_ceb )==0{return nil ,nil ;};_ceb =_gbcf (_ceb );_eda :=[]string {_ceb };_abcg :=false ;if _cgf .Flags ().Has (_ef .FieldFlagMultiline ){_abcg =true ;_ceb =_ad .ReplaceAll (_ceb ,"\u000d\u000a","\u000a");
+_ceb =_ad .ReplaceAll (_ceb ,"\u000d","\u000a");_eda =_ad .Split (_ceb ,"\u000a");};_gfee :=make ([]string ,len (_eda ));copy (_gfee ,_eda );_eea :=_fec .MultilineLineHeight ;_efg :=0.0;_bfae :=0;if _fdfg !=nil {for _ece >=0{_bdab :=make ([]string ,len (_eda ));
+copy (_bdab ,_eda );_ccc :=make ([]string ,len (_gfee ));copy (_ccc ,_gfee );_efg =0.0;_bfae =0;_fdfb :=len (_bdab );_aebg :=0;for _aebg < _fdfb {var _cccg float64 ;_accg :=-1;_aca :=_bc ;if _fec .MarginLeft !=nil {_aca =*_fec .MarginLeft ;};for _cga ,_cbg :=range _bdab [_aebg ]{if _cbg ==' '{_accg =_cga ;
+};_ebca ,_bdb :=_afb .GetRuneMetrics (_cbg );if !_bdb {_f .Log .Debug ("\u0046\u006f\u006e\u0074\u0020\u0064o\u0065\u0073\u0020\u006e\u006f\u0074\u0020\u0068\u0061\u0076\u0065\u0020\u0072\u0075\u006e\u0065\u0020\u006d\u0065\u0074r\u0069\u0063\u0073\u0020\u0066\u006f\u0072\u0020\u0025\u0076\u0020\u002d\u0020\u0073k\u0069p\u0070\u0069\u006e\u0067",_cbg );
+continue ;};_cccg =_aca ;_aca +=_ebca .Wx ;if _abcg &&!_gae &&_ece *_aca /1000.0> _gfc {_ggf :=_cga ;_bea :=_cga ;if _accg > 0{_ggf =_accg +1;_bea =_accg ;};_bbd :=_bdab [_aebg ][_ggf :];_gbbd :=_ccc [_aebg ][_ggf :];if _aebg < len (_bdab )-1{_bdab =append (_bdab [:_aebg +1],_bdab [_aebg :]...);
+_bdab [_aebg +1]=_bbd ;_ccc =append (_ccc [:_aebg +1],_ccc [_aebg :]...);_ccc [_aebg +1]=_gbbd ;}else {_bdab =append (_bdab ,_bbd );_ccc =append (_ccc ,_gbbd );};_bdab [_aebg ]=_bdab [_aebg ][0:_bea ];_ccc [_aebg ]=_ccc [_aebg ][0:_bea ];_fdfb ++;_aca =_cccg ;
+break ;};};if _aca > _efg {_efg =_aca ;};_bdab [_aebg ]=string (_fdfg .Encode (_bdab [_aebg ]));if len (_bdab [_aebg ])> 0{_bfae ++;};_aebg ++;};_beb :=_ece ;if _bfae > 1{_beb *=_eea ;};_bcff :=float64 (_bfae )*_beb ;if _gae ||_bcff <=_dfb {_eda =_bdab ;
+_gfee =_ccc ;break ;};_ece --;};};_ffcf :=_bc ;if _fec .MarginLeft !=nil {_ffcf =*_fec .MarginLeft ;};if _ece ==0||_gae &&_efg > 0&&_ffcf +_efg *_ece /1000.0> _gfc {_ece =0.95*1000.0*(_gfc -_ffcf )/_efg ;};_cdg :=_gdb ;{if _gcg ,_ddf :=_fc .GetIntVal (_cgf .Q );
+_ddf {switch _gcg {case 0:_cdg =_gdb ;case 1:_cdg =_de ;case 2:_cdg =_gcbc ;default:_f .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0055\u006e\u0073\u0075\u0070\u0070\u006f\u0072t\u0065\u0064\u0020\u0071\u0075\u0061\u0064\u0064\u0069\u006e\u0067\u003a\u0020%\u0064\u0020\u002d\u0020\u0075\u0073\u0069\u006e\u0067\u0020\u006c\u0065ft\u0020\u0061\u006c\u0069\u0067\u006e\u006d\u0065\u006e\u0074",_gcg );
+};};};_ffcg :=_ece ;if _abcg &&_bfae > 1{_ffcg =_eea *_ece ;};var _bbae float64 ;if _fbc !=nil {_bbae ,_bfg =_fbc .GetCapHeight ();if _bfg !=nil {_f .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0055\u006e\u0061\u0062\u006c\u0065 \u0074\u006f\u0020\u0067\u0065\u0074 \u0066\u006f\u006e\u0074\u0020\u0043\u0061\u0070\u0048\u0065\u0069\u0067\u0068t\u003a\u0020\u0025\u0076",_bfg );
+};};if int (_bbae )<=0{_f .Log .Debug ("W\u0041\u0052\u004e\u003a\u0020\u0043\u0061\u0070\u0048e\u0069\u0067\u0068\u0074\u0020\u006e\u006ft \u0061\u0076\u0061\u0069l\u0061\u0062\u006c\u0065\u0020\u002d\u0020\u0073\u0065tt\u0069\u006eg\u0020\u0074\u006f\u0020\u0031\u0030\u0030\u0030");
+_bbae =1000;};_dab :=_bbae /1000.0*_ece ;_dbge :=0.0;{_fbb :=float64 (_bfae )*_ffcg ;if _gae &&_dbge +_fbb > _dfb {_ece =0.95*(_dfb -_dbge )/float64 (_bfae );_ffcg =_ece ;if _abcg &&_bfae > 1{_ffcg =_eea *_ece ;};_dab =_bbae /1000.0*_ece ;_fbb =float64 (_bfae )*_ffcg ;
+};if _dfb > _fbb {if _abcg {if _fec .MultilineVAlignMiddle {_bfgd :=(_dfb -(_fbb +_dab ))/2.0;_gba :=_bfgd +_fbb +_dab -_ffcg ;_dbge =_gba ;if _bfae > 1{_dbge =_dbge +(_fbb /_ece *float64 (_bfae ))-_ffcg -_dab ;};if _dbge < _fbb {_dbge =(_dfb -_dab )/2.0;
+};}else {_dbge =_dfb -_ffcg ;if _dbge > _ece {_cea :=0.0;if _abcg &&_fec .MultilineLineHeight > 1&&_bfae > 1{_cea =_fec .MultilineLineHeight -1;};_dbge -=_ece *(0.5-_cea );};};}else {_dbge =(_dfb -_dab )/2.0;};};};if _fec .TextColor !=nil {_aa :=_fec .TextColor ;
+_gaaa ,_debd :=_aa .(*_ef .PdfColorDeviceRGB );if !_debd {_gaaa =_ef .NewPdfColorDeviceRGB (0,0,0);};_gca .Add_rg (_gaaa .R (),_gaaa .G (),_gaaa .B ());}else {for _ ,_daf :=range *_cbc {if _daf .Operand =="\u0072\u0067"||_daf .Operand =="\u0067"{_gca .AddOperand (*_daf );
+};};};_gca .Add_Tf (*_gaf ,_ece );_gca .Add_Td (_ffcf ,_dbge );_adc :=_ffcf ;_cdadg :=_ffcf ;for _fdd ,_bdc :=range _eda {_edaf :=0.0;for _ ,_ebcea :=range _gfee [_fdd ]{_gafc ,_ebf :=_afb .GetRuneMetrics (_ebcea );if !_ebf {continue ;};_edaf +=_gafc .Wx ;
+};_cfb :=_edaf /1000.0*_ece ;_ada :=_gfc -_cfb ;var _ffd float64 ;switch _cdg {case _gdb :_ffd =_adc ;case _de :_ffd =_ada /2;case _gcbc :_ffd =_ada ;};_ffcf =_ffd -_cdadg ;if _ffcf > 0.0{_gca .Add_Td (_ffcf ,0);};_cdadg =_ffd ;_gca .Add_Tj (*_fc .MakeString (_bdc ));
+if _fdd < len (_eda )-1{_gca .Add_Td (0,-_ece *_eea );};};_gca .Add_ET ();_gca .Add_Q ();_gca .Add_EMC ();_ffcb .SetContentStream (_gca .Bytes (),_gbae ());};_ffcb .Resources =_geb ;_bfd :=_fc .MakeDict ();_bfd .Set ("\u004e",_ffcb .ToPdfObject ());return _bfd ,nil ;
+};
+
+// NewCheckboxField generates a new checkbox field with partial name `name` at location `rect`
+// on specified `page` and with field specific options `opt`.
+func NewCheckboxField (page *_ef .PdfPage ,name string ,rect []float64 ,opt CheckboxFieldOptions )(*_ef .PdfFieldButton ,error ){if page ==nil {return nil ,_da .New ("\u0070a\u0067e\u0020\u006e\u006f\u0074\u0020s\u0070\u0065c\u0069\u0066\u0069\u0065\u0064");
+};if len (name )<=0{return nil ,_da .New ("\u0072\u0065\u0071\u0075\u0069\u0072\u0065\u0064\u0020\u0061\u0074\u0074\u0072\u0069\u0062u\u0074e\u0020\u006e\u006f\u0074\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069\u0065\u0064");};if len (rect )!=4{return nil ,_da .New ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u0061\u006e\u0067\u0065");
+};_degg ,_acdaf :=_ef .NewStandard14Font (_ef .ZapfDingbatsName );if _acdaf !=nil {return nil ,_acdaf ;};_fcga :=_ef .NewPdfField ();_dgcg :=&_ef .PdfFieldButton {};_fcga .SetContext (_dgcg );_dgcg .PdfField =_fcga ;_dgcg .T =_fc .MakeString (name );_dgcg .SetType (_ef .ButtonTypeCheckbox );
+_edef :="\u004f\u0066\u0066";if opt .Checked {_edef ="\u0059\u0065\u0073";};_dgcg .V =_fc .MakeName (_edef );_bfcc :=_ef .NewPdfAnnotationWidget ();_bfcc .Rect =_fc .MakeArrayFromFloats (rect );_bfcc .P =page .ToPdfObject ();_bfcc .F =_fc .MakeInteger (4);
+_bfcc .Parent =_dgcg .ToPdfObject ();_dfef :=rect [2]-rect [0];_dfeb :=rect [3]-rect [1];var _cbda _b .Buffer ;_cbda .WriteString ("\u0071\u000a");_cbda .WriteString ("\u0030 \u0030\u0020\u0031\u0020\u0072\u0067\n");_cbda .WriteString ("\u0042\u0054\u000a");
+_cbda .WriteString ("\u002f\u005a\u0061D\u0062\u0020\u0031\u0032\u0020\u0054\u0066\u000a");_cbda .WriteString ("\u0045\u0054\u000a");_cbda .WriteString ("\u0051\u000a");_bgef :=_c .NewContentCreator ();_bgef .Add_q ();_bgef .Add_rg (0,0,1);_bgef .Add_BT ();
+_bgef .Add_Tf (*_fc .MakeName ("\u005a\u0061\u0044\u0062"),12);_bgef .Add_Td (0,0);_bgef .Add_ET ();_bgef .Add_Q ();_bdbc :=_ef .NewXObjectForm ();_bdbc .SetContentStream (_bgef .Bytes (),_fc .NewRawEncoder ());_bdbc .BBox =_fc .MakeArrayFromFloats ([]float64 {0,0,_dfef ,_dfeb });
+_bdbc .Resources =_ef .NewPdfPageResources ();_bdbc .Resources .SetFontByName ("\u005a\u0061\u0044\u0062",_degg .ToPdfObject ());_bgef =_c .NewContentCreator ();_bgef .Add_q ();_bgef .Add_re (0,0,_dfef ,_dfeb );_bgef .Add_W ().Add_n ();_bgef .Add_rg (0,0,1);
+_bgef .Translate (0,3.0);_bgef .Add_BT ();_bgef .Add_Tf (*_fc .MakeName ("\u005a\u0061\u0044\u0062"),12);_bgef .Add_Td (0,0);_bgef .Add_Tj (*_fc .MakeString ("\u0034"));_bgef .Add_ET ();_bgef .Add_Q ();_cdgg :=_ef .NewXObjectForm ();_cdgg .SetContentStream (_bgef .Bytes (),_fc .NewRawEncoder ());
+_cdgg .BBox =_fc .MakeArrayFromFloats ([]float64 {0,0,_dfef ,_dfeb });_cdgg .Resources =_ef .NewPdfPageResources ();_cdgg .Resources .SetFontByName ("\u005a\u0061\u0044\u0062",_degg .ToPdfObject ());_fffge :=_fc .MakeDict ();_fffge .Set ("\u004f\u0066\u0066",_bdbc .ToPdfObject ());
+_fffge .Set ("\u0059\u0065\u0073",_cdgg .ToPdfObject ());_aeac :=_fc .MakeDict ();_aeac .Set ("\u004e",_fffge );_bfcc .AP =_aeac ;_bfcc .AS =_fc .MakeName (_edef );_dgcg .Annotations =append (_dgcg .Annotations ,_bfcc );return _dgcg ,nil ;};
+
+// SignatureLine represents a line of information in the signature field appearance.
+type SignatureLine struct{Desc string ;Text string ;};func _add ()_ef .PdfColor {return _ef .NewPdfColorDeviceRGB (0.6,0.757,0.855)};func _bbg (_adb *_ef .PdfAcroForm ,_dec *_ef .PdfAnnotationWidget ,_dcb *_ef .PdfFieldChoice ,_aee AppearanceStyle )(*_fc .PdfObjectDictionary ,error ){_fgg ,_fgge :=_fc .GetArray (_dec .Rect );
+if !_fgge {return nil ,_da .New ("\u0069\u006e\u0076a\u006c\u0069\u0064\u0020\u0052\u0065\u0063\u0074");};_feeb ,_cbf :=_ef .NewPdfRectangle (*_fgg );if _cbf !=nil {return nil ,_cbf ;};_beae ,_bgf :=_feeb .Width (),_feeb .Height ();_gbf ,_ccg :=_beae ,_bgf ;
+_f .Log .Debug ("\u0043\u0068\u006f\u0069c\u0065\u0020\u0028\u006c\u0069\u0073\u0074\u0020\u0062\u006fx\u0029,\u0020\u0077\u0061\u0020\u0042\u0053\u003a \u0025\u0076",_dec .BS );_bgff ,_cbf :=_c .NewContentStreamParser (_bad (_dcb .PdfField )).Parse ();
+if _cbf !=nil {return nil ,_cbf ;};_fcdf ,_fde :=_fc .GetDict (_dec .MK );if _fde {_ebe ,_ :=_fc .GetDict (_dec .BS );if _adaf :=_aee .applyAppearanceCharacteristics (_fcdf ,_ebe ,nil );_adaf !=nil {return nil ,_adaf ;};};var _baee []listboxOption ;if _dcb .Opt !=nil {for _ ,_cfda :=range _dcb .Opt .Elements (){var _gabg listboxOption ;
+if _egc ,_cbcg :=_fc .GetArray (_cfda );_cbcg &&_egc .Len ()==2{_dbf ,_bed :=_cbgf (_egc .Get (0));_addf ,_ecd :=_cbgf (_egc .Get (1));if !_bed ||!_ecd {_f .Log .Debug ("\u0045R\u0052\u004fR\u003a\u0020\u004fp\u0074\u0020\u0070\u0061\u0069\u0072\u0020e\u006c\u0065\u006d\u0065\u006e\u0074s\u0020\u006e\u006f\u0074\u0020\u006e\u0061\u006d\u0065\u002f\u0073t\u0072\u0069\u006e\u0067\u0020\u002d\u0020\u0025\u0076",_egc );
+return nil ,_da .New ("\u0069\u006e\u0076\u0061li\u0064\u0020\u006f\u0070\u0074\u0069\u006f\u006e\u0020\u0070\u0061\u0069\u0072");};_gabg ._gdeb ,_gabg ._bfc =_dbf ,_addf ;}else if _dfed ,_ffa :=_cbgf (_cfda );_ffa {_gabg ._bfc =_dfed ;_gabg ._gdeb =_dfed ;
+}else {_f .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u004f\u0070\u0074\u0020\u006e\u006f\u0074\u0020\u0061\u0020\u006e\u0061\u006de\u002f\u0073\u0074\u0072\u0069\u006e\u0067 \u002d\u0020\u0025\u0054",_cfda );return nil ,_da .New ("\u006e\u006f\u0074\u0020\u0061\u0020\u006e\u0061\u006d\u0065\u002f\u0073t\u0072\u0069\u006e\u0067");
+};_baee =append (_baee ,_gabg );};};_edafg :=_adce (_dcb ,_baee );_ebcf :=_ef .NewPdfPageResources ();_adeb :=_c .NewContentCreator ();_adeb .Add_q ();_beae ,_bgf =_aee .applyRotation (_fcdf ,_beae ,_bgf ,_adeb );if _aee .BorderSize > 0{_ceab (_adeb ,_aee ,_beae ,_bgf );
+};if _aee .DrawAlignmentReticle {_beg :=_aee ;_beg .BorderSize =0.2;_cce (_adeb ,_beg ,_beae ,_bgf );};_bbde ,_ ,_cbf :=_aee .processDA (_dcb .PdfField ,_bgff ,_adb .DR ,_ebcf ,_adeb );if _cbf !=nil {return nil ,_cbf ;};_bfb :=_bbde .Font ;_gdf :=_bbde .Size ;
+if _gdf <=0{_gdf =12.0;};_cagf :=_bfb .Encoder ();if _cagf ==nil {_f .Log .Debug ("\u0057\u0041RN\u003a\u0020\u0066\u006f\u006e\u0074\u0020\u0065\u006e\u0063\u006f\u0064\u0065\u0072\u0020\u0069\u0073\u0020\u006e\u0069l\u002e\u0020\u0041\u0073s\u0075\u006d\u0069\u006eg \u0069\u0064e\u006et\u0069\u0074\u0079\u0020\u0065\u006ec\u006f\u0064\u0065r\u002e\u0020O\u0075\u0074\u0070\u0075\u0074\u0020\u006d\u0061\u0079\u0020\u0062\u0065\u0020\u0069n\u0063\u006f\u0072\u0072\u0065\u0063\u0074\u002e");
+_cagf =_d .NewIdentityTextEncoder ("\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079\u002d\u0048");};_cff :=_bc ;if _aee .MarginLeft !=nil {_cff =*_aee .MarginLeft ;};_abcb :=_gdf *1.15;if _abcb > _bgf &&_bgf > 0{_gdf =_bgf /1.15;_abcb =_bgf ;};_egeg :=int (_bgf /_abcb );
+if _egeg < 1{_egeg =1;};_fcfd :=0;if _dgdg ,_cgge :=_fc .GetIntVal (_dcb .TI );_cgge &&_dgdg >=0&&_dgdg < len (_baee ){_fcfd =_dgdg ;}else if len (_edafg )> 0{_acdf :=len (_baee );for _fddc :=range _edafg {if _fddc < _acdf {_acdf =_fddc ;};};if _acdf >=_egeg {_fcfd =_acdf ;
+if _fgb :=len (_baee )-_egeg ;_fcfd > _fgb {_fcfd =_fgb ;};};};_bge :=_aee .ListBoxHighlightColor ;if _bge ==nil {_bge =_add ();};_eeab :=_aee .BorderSize ;if _eeab < 0{_eeab =0;};type visibleRow struct{_aea int ;_decg float64 ;_fgged float64 ;};var _dea []visibleRow ;
+_adde :=_bgf ;for _cbge :=_fcfd ;_cbge < len (_baee )&&len (_dea )< _egeg ;_cbge ++{_gbdc :=_adde -_abcb ;_dcba :=_gbdc +(_abcb -_gdf )/2.0+_gdf *0.2;_dea =append (_dea ,visibleRow {_aea :_cbge ,_decg :_dcba ,_fgged :_gbdc });_adde =_gbdc ;};_cfe :=_beae -2*_eeab ;
+if _cfe < 0{_cfe =0;};for _ ,_cee :=range _dea {if !_edafg [_cee ._aea ]{continue ;};_adeb .Add_q ().SetNonStrokingColor (_bge ).Add_re (_eeab ,_cee ._fgged ,_cfe ,_abcb ).Add_f ().Add_Q ();};_adeb .Add_BMC ("\u0054\u0078");_adeb .Add_q ();_adeb .Add_BT ();
+_adeb .Add_Tf (*_fc .MakeName (_bbde .Name ),_gdf );_fcdd :=0.0;for _fdg ,_egec :=range _dea {if _fdg ==0{_adeb .Add_Td (_cff ,_egec ._decg );}else {_adeb .Add_Td (0,_egec ._decg -_fcdd );};_fcdd =_egec ._decg ;_gfdb :=_baee [_egec ._aea ]._bfc ;if len (_gfdb )==0{continue ;
+};_adeb .Add_Tj (*_fc .MakeString (string (_cagf .Encode (_gfdb ))));};_adeb .Add_ET ();_adeb .Add_Q ();_adeb .Add_EMC ();_adeb .Add_Q ();_gcad :=_ef .NewXObjectForm ();_gcad .Resources =_ebcf ;_gcad .BBox =_fc .MakeArrayFromFloats ([]float64 {0,0,_gbf ,_ccg });
+_gcad .SetContentStream (_adeb .Bytes (),_gbae ());_efge :=_fc .MakeDict ();_efge .Set ("\u004e",_gcad .ToPdfObject ());return _efge ,nil ;};
+
+// NewSignatureField returns a new signature field with a visible appearance
+// containing the specified signature lines and styled according to the
+// specified options.
+func NewSignatureField (signature *_ef .PdfSignature ,lines []*SignatureLine ,opts *SignatureFieldOpts )(*_ef .PdfFieldSignature ,error ){if signature ==nil {return nil ,_da .New ("\u0073\u0069\u0067na\u0074\u0075\u0072\u0065\u0020\u0063\u0061\u006e\u006e\u006f\u0074\u0020\u0062\u0065\u0020\u006e\u0069\u006c");
+};_eaag ,_cdaa :=_cdec (lines ,opts );if _cdaa !=nil {return nil ,_cdaa ;};_bcbd :=_ef .NewPdfFieldSignature (signature );_bcbd .Rect =_fc .MakeArrayFromFloats (opts .Rect );_bcbd .AP =_eaag ;return _bcbd ,nil ;};
+
+// NewTextField generates a new text field with partial name `name` at location
+// specified by `rect` on given `page` and with field specific options `opt`.
+func NewTextField (page *_ef .PdfPage ,name string ,rect []float64 ,opt TextFieldOptions )(*_ef .PdfFieldText ,error ){if page ==nil {return nil ,_da .New ("\u0070a\u0067e\u0020\u006e\u006f\u0074\u0020s\u0070\u0065c\u0069\u0066\u0069\u0065\u0064");};if len (name )<=0{return nil ,_da .New ("\u0072\u0065\u0071\u0075\u0069\u0072\u0065\u0064\u0020\u0061\u0074\u0074\u0072\u0069\u0062u\u0074e\u0020\u006e\u006f\u0074\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069\u0065\u0064");
+};if len (rect )!=4{return nil ,_da .New ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u0061\u006e\u0067\u0065");};_bbfc :=_ef .NewPdfField ();_febe :=&_ef .PdfFieldText {};_bbfc .SetContext (_febe );_febe .PdfField =_bbfc ;_febe .T =_fc .MakeString (name );
+if opt .MaxLen > 0{_febe .MaxLen =_fc .MakeInteger (int64 (opt .MaxLen ));};if len (opt .Value )> 0{_febe .V =_fc .MakeString (opt .Value );};if opt .TextColor !=""{_caf :=_e .ColorRGBFromHex (opt .TextColor );_fffa ,_fgdc ,_egegb :=_caf .ToRGB ();_ggb :=12;
+if opt .FontSize > 0{_ggb =opt .FontSize ;};_ecfc :="\u0048e\u006c\u0076\u0065\u0074\u0069\u0063a";if opt .FontName !=""{_ecfc =opt .FontName ;};_adegc :=_bb .Sprintf ("/\u0025\u0073\u0020\u0025\u0064\u0020T\u0066\u0020\u0025\u002e\u0033\u0066\u0020\u0025\u002e3\u0066\u0020\u0025.\u0033f\u0020\u0072\u0067",_ecfc ,_ggb ,_fffa ,_fgdc ,_egegb );
+_febe .DA =_fc .MakeString (_adegc );};_bbfc .SetContext (_febe );_eaff :=_ef .NewPdfAnnotationWidget ();_eaff .Rect =_fc .MakeArrayFromFloats (rect );_eaff .P =page .ToPdfObject ();_eaff .F =_fc .MakeInteger (4);_eaff .Parent =_febe .ToPdfObject ();_febe .Annotations =append (_febe .Annotations ,_eaff );
+return _febe ,nil ;};
+
+// ImageFieldOptions defines optional parameters for a push button with image attach capability form field.
+type ImageFieldOptions struct{Image *_ef .Image ;_febec AppearanceStyle ;};func _gfad (_cfg []float64 )[]float64 {var (_egfda =len (_cfg );_bead =make ([]float64 ,_egfda );_feef =make ([]float64 ,_egfda ););_aagg :=2.0;_bead [0]=_cfg [0]/_aagg ;for _dcd :=1;
+_dcd < _egfda ;_dcd ++{_feef [_dcd ]=1/_aagg ;if _dcd < _egfda -1{_aagg =4.0;}else {_aagg =3.5;};_aagg -=_feef [_dcd ];_bead [_dcd ]=(_cfg [_dcd ]-_bead [_dcd -1])/_aagg ;};for _bdeb :=1;_bdeb < _egfda ;_bdeb ++{_bead [_egfda -_bdeb -1]-=_feef [_egfda -_bdeb ]*_bead [_egfda -_bdeb ];
+};return _bead ;};
+
+// CircleAnnotationDef defines a circle annotation or ellipse at position (X, Y) and Width and Height.
+// The annotation has various style parameters including Fill and Border options and Opacity.
+type CircleAnnotationDef struct{X float64 ;Y float64 ;Width float64 ;Height float64 ;FillEnabled bool ;FillColor *_ef .PdfColorDeviceRGB ;BorderEnabled bool ;BorderWidth float64 ;BorderColor *_ef .PdfColorDeviceRGB ;Opacity float64 ;};
 
 // InkAnnotationDef holds base information for constructing an ink annotation.
 type InkAnnotationDef struct{
 
 // Paths is the array of stroked paths which compose the annotation.
-Paths []_ef .Path ;
+Paths []_af .Path ;
 
 // Color is the color of the line. Default to black.
-Color *_fba .PdfColorDeviceRGB ;
+Color *_ef .PdfColorDeviceRGB ;
 
 // LineWidth is the width of the line.
-LineWidth float64 ;};func (_cdc *AppearanceFont )fillName (){if _cdc .Font ==nil ||_cdc .Name !=""{return ;};_ggc :=_cdc .Font .FontDescriptor ();if _ggc ==nil ||_ggc .FontName ==nil {return ;};_cdc .Name =_ggc .FontName .String ();};func _bada (_deea LineAnnotationDef )(*_aag .PdfObjectDictionary ,*_fba .PdfRectangle ,error ){_dgge :=_fba .NewXObjectForm ();
-_dgge .Resources =_fba .NewPdfPageResources ();_bag :="";if _deea .Opacity < 1.0{_bbaf :=_aag .MakeDict ();_bbaf .Set ("\u0063\u0061",_aag .MakeFloat (_deea .Opacity ));_ffcfg :=_dgge .Resources .AddExtGState ("\u0067\u0073\u0031",_bbaf );if _ffcfg !=nil {_d .Log .Debug ("U\u006e\u0061\u0062\u006c\u0065\u0020t\u006f\u0020\u0061\u0064\u0064\u0020\u0065\u0078\u0074g\u0073\u0074\u0061t\u0065 \u0067\u0073\u0031");
-return nil ,nil ,_ffcfg ;};_bag ="\u0067\u0073\u0031";};_gdga ,_feae ,_caadb ,_cdg :=_cafb (_deea ,_bag );if _cdg !=nil {return nil ,nil ,_cdg ;};_cdg =_dgge .SetContentStream (_gdga ,nil );if _cdg !=nil {return nil ,nil ,_cdg ;};_dgge .BBox =_feae .ToPdfObject ();
-_dagce :=_aag .MakeDict ();_dagce .Set ("\u004e",_dgge .ToPdfObject ());return _dagce ,_caadb ,nil ;};func _cedg (_cbgd _aag .PdfObject ,_aagb *_fba .PdfPageResources )(*_aag .PdfObjectName ,float64 ,bool ){var (_def *_aag .PdfObjectName ;_faead float64 ;
-_ebdd bool ;);if _abbg ,_eedb :=_aag .GetDict (_cbgd );_eedb &&_abbg !=nil {_abca :=_aag .TraceToDirectObject (_abbg .Get ("\u004e"));switch _gccd :=_abca .(type ){case *_aag .PdfObjectStream :_fcac ,_bggd :=_aag .DecodeStream (_gccd );if _bggd !=nil {_d .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0075\u006e\u0061\u0062\u006c\u0065\u0020\u0064\u0065\u0063\u006f\u0064\u0065\u0020\u0063\u006f\u006e\u0074e\u006e\u0074\u0020\u0073\u0074r\u0065\u0061m\u003a\u0020\u0025\u0076",_bggd .Error ());
-return nil ,0,false ;};_ade ,_bggd :=_aa .NewContentStreamParser (string (_fcac )).Parse ();if _bggd !=nil {_d .Log .Debug ("\u0045\u0052R\u004f\u0052\u0020\u0075n\u0061\u0062l\u0065\u0020\u0070\u0061\u0072\u0073\u0065\u0020c\u006f\u006e\u0074\u0065\u006e\u0074\u0020\u0073\u0074\u0072\u0065\u0061m\u003a\u0020\u0025\u0076",_bggd .Error ());
-return nil ,0,false ;};_dfg :=_aa .NewContentStreamProcessor (*_ade );_dfg .AddHandler (_aa .HandlerConditionEnumOperand ,"\u0054\u0066",func (_ccbf *_aa .ContentStreamOperation ,_egfe _aa .GraphicsState ,_bfd *_fba .PdfPageResources )error {if len (_ccbf .Params )==2{if _baed ,_cdbc :=_aag .GetName (_ccbf .Params [0]);
-_cdbc {_def =_baed ;};if _bdde ,_ceec :=_aag .GetNumberAsFloat (_ccbf .Params [1]);_ceec ==nil {_faead =_bdde ;};_ebdd =true ;return _aa .ErrEarlyExit ;};return nil ;});_dfg .Process (_aagb );return _def ,_faead ,_ebdd ;};};return nil ,0,false ;};func _fcbd (_geff []float64 )[]float64 {var (_eaga =len (_geff );
-_dbag =make ([]float64 ,_eaga );_deef =make ([]float64 ,_eaga ););_gcbbf :=2.0;_dbag [0]=_geff [0]/_gcbbf ;for _beec :=1;_beec < _eaga ;_beec ++{_deef [_beec ]=1/_gcbbf ;if _beec < _eaga -1{_gcbbf =4.0;}else {_gcbbf =3.5;};_gcbbf -=_deef [_beec ];_dbag [_beec ]=(_geff [_beec ]-_dbag [_beec -1])/_gcbbf ;
-};for _bbddd :=1;_bbddd < _eaga ;_bbddd ++{_dbag [_eaga -_bbddd -1]-=_deef [_eaga -_bbddd ]*_dbag [_eaga -_bbddd ];};return _dbag ;};func _ggeff (_fccf *_aa .ContentCreator ,_ffed AppearanceStyle ,_cffb ,_deb float64 ){_fccf .Add_q ().Add_re (0,0,_cffb ,_deb ).Add_w (_ffed .BorderSize ).SetStrokingColor (_ffed .BorderColor ).SetNonStrokingColor (_ffed .FillColor ).Add_B ().Add_Q ();
-};func _afd (_eaf *_fba .PdfAnnotationWidget ,_gba *_fba .PdfFieldText ,_add *_fba .PdfPageResources ,_gd AppearanceStyle )(*_aag .PdfObjectDictionary ,error ){_gcf :=_fba .NewPdfPageResources ();_bgea ,_ead :=_aag .GetArray (_eaf .Rect );if !_ead {return nil ,_fe .New ("\u0069\u006e\u0076a\u006c\u0069\u0064\u0020\u0052\u0065\u0063\u0074");
-};_abg ,_cc :=_fba .NewPdfRectangle (*_bgea );if _cc !=nil {return nil ,_cc ;};_gfe ,_gae :=_abg .Width (),_abg .Height ();_dcg ,_fd :=_gfe ,_gae ;_dcgf :=true ;_afdc :=_fba .NewXObjectForm ();_afdc .BBox =_aag .MakeArrayFromFloats ([]float64 {0,0,_dcg ,_fd });
-if _eaf .AP !=nil {if _eeb ,_ec :=_aag .GetDict (_eaf .AP );_ec &&_eeb !=nil {_df :=_aag .TraceToDirectObject (_eeb .Get ("\u004e"));switch _fgbf :=_df .(type ){case *_aag .PdfObjectStream :_efd ,_ag :=_aag .DecodeStream (_fgbf );if _ag !=nil {_d .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0075\u006e\u0061\u0062\u006c\u0065\u0020\u0064\u0065\u0063\u006f\u0064\u0065\u0020\u0063\u006f\u006e\u0074e\u006e\u0074\u0020\u0073\u0074r\u0065\u0061m\u003a\u0020\u0025\u0076",_ag .Error ());
-break ;};_edc ,_ag :=_aa .NewContentStreamParser (string (_efd )).Parse ();if _ag !=nil {_d .Log .Debug ("\u0045\u0052R\u004f\u0052\u0020\u0075n\u0061\u0062l\u0065\u0020\u0070\u0061\u0072\u0073\u0065\u0020c\u006f\u006e\u0074\u0065\u006e\u0074\u0020\u0073\u0074\u0072\u0065\u0061m\u003a\u0020\u0025\u0076",_ag .Error ());
-break ;};_dgd :=_aa .NewContentStreamProcessor (*_edc );_dgd .AddHandler (_aa .HandlerConditionEnumAllOperands ,"",func (_eae *_aa .ContentStreamOperation ,_dce _aa .GraphicsState ,_bgge *_fba .PdfPageResources )error {if _eae .Operand =="\u0054\u006a"||_eae .Operand =="\u0054\u004a"{if len (_eae .Params )==1{if _ccg ,_bed :=_aag .GetString (_eae .Params [0]);
-_bed {_dcgf =_db .TrimSpace (_ccg .Str ())=="";};return _aa .ErrEarlyExit ;};return nil ;};return nil ;});_dgd .Process (_gcf );if !_dcgf {if _fdd ,_dca :=_aag .GetDict (_fgbf .Get ("\u0052e\u0073\u006f\u0075\u0072\u0063\u0065s"));_dca {_gcf ,_ag =_fba .NewPdfPageResourcesFromDict (_fdd );
-if _ag !=nil {return nil ,_ag ;};};if _cbd ,_abd :=_aag .GetArray (_fgbf .Get ("\u004d\u0061\u0074\u0072\u0069\u0078"));_abd {_afdc .Matrix =_cbd ;};_afdc .SetContentStream (_efd ,_fff ());};};};};if _dcgf {_cdfc ,_ge :=_aag .GetDict (_eaf .MK );if _ge {_eec ,_ :=_aag .GetDict (_eaf .BS );
-_fgbd :=_gd .applyAppearanceCharacteristics (_cdfc ,_eec ,nil );if _fgbd !=nil {return nil ,_fgbd ;};};_bba ,_agf :=_aa .NewContentStreamParser (_bcc (_gba .PdfField )).Parse ();if _agf !=nil {return nil ,_agf ;};_dadg :=_aa .NewContentCreator ();if _gd .BorderSize > 0{_ggeff (_dadg ,_gd ,_gfe ,_gae );
-};if _gd .DrawAlignmentReticle {_de :=_gd ;_de .BorderSize =0.2;_ccfa (_dadg ,_de ,_gfe ,_gae );};_dadg .Add_BMC ("\u0054\u0078");_dadg .Add_q ();_gfe ,_gae =_gd .applyRotation (_cdfc ,_gfe ,_gae ,_dadg );_dadg .Add_BT ();_caeg ,_bae ,_agf :=_gd .processDA (_gba .PdfField ,_bba ,_add ,_gcf ,_dadg );
-if _agf !=nil {return nil ,_agf ;};_fdb :=_caeg .Font ;_efba :=_caeg .Size ;_fede :=_aag .MakeName (_caeg .Name );if _gba .Flags ().Has (_fba .FieldFlagMultiline )&&_gba .MaxLen !=nil {_d .Log .Debug ("\u004c\u006f\u006f\u006b\u0020\u0066\u006f\u0072\u0020\u0041\u0050\u0020\u0064\u0069\u0063\u0074\u0069\u006fn\u0061\u0072\u0079\u0020\u0066\u006f\u0072 \u004e\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0063\u006fn\u0074\u0065\u006e\u0074\u0020\u0073\u0074\u0072\u0065\u0061\u006d");
-if _bee ,_ecf ,_cce :=_cedg (_eaf .AP ,_add );_cce {_fede =_bee ;_efba =_ecf ;_bae =true ;};};_fagb :=_efba ==0;if _fagb &&_bae {_efba =_gae *_gd .AutoFontSizeFraction ;};_eff :=_fdb .Encoder ();if _eff ==nil {_d .Log .Debug ("\u0057\u0041RN\u003a\u0020\u0066\u006f\u006e\u0074\u0020\u0065\u006e\u0063\u006f\u0064\u0065\u0072\u0020\u0069\u0073\u0020\u006e\u0069l\u002e\u0020\u0041\u0073s\u0075\u006d\u0069\u006eg \u0069\u0064e\u006et\u0069\u0074\u0079\u0020\u0065\u006ec\u006f\u0064\u0065r\u002e\u0020O\u0075\u0074\u0070\u0075\u0074\u0020\u006d\u0061\u0079\u0020\u0062\u0065\u0020\u0069n\u0063\u006f\u0072\u0072\u0065\u0063\u0074\u002e");
-_eff =_dga .NewIdentityTextEncoder ("\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079\u002d\u0048");};_ccc ,_agf :=_fdb .GetFontDescriptor ();if _agf !=nil {_d .Log .Debug ("\u0045\u0072ro\u0072\u003a\u0020U\u006e\u0061\u0062\u006ce t\u006f g\u0065\u0074\u0020\u0066\u006f\u006e\u0074 d\u0065\u0073\u0063\u0072\u0069\u0070\u0074o\u0072");
-};var _bedc string ;if _afa ,_baa :=_aag .GetString (_gba .V );_baa {_bedc =_afa .Decoded ();};if len (_bedc )==0{return nil ,nil ;};_bedc =_gcbb (_bedc );_eac :=[]string {_bedc };_ecc :=false ;if _gba .Flags ().Has (_fba .FieldFlagMultiline ){_ecc =true ;
-_bedc =_db .ReplaceAll (_bedc ,"\u000d\u000a","\u000a");_bedc =_db .ReplaceAll (_bedc ,"\u000d","\u000a");_eac =_db .Split (_bedc ,"\u000a");};_acg :=make ([]string ,len (_eac ));copy (_acg ,_eac );_fbc :=_gd .MultilineLineHeight ;_gaab :=0.0;_fdf :=0;
-if _eff !=nil {for _efba >=0{_gfg :=make ([]string ,len (_eac ));copy (_gfg ,_eac );_bfc :=make ([]string ,len (_acg ));copy (_bfc ,_acg );_gaab =0.0;_fdf =0;_gcg :=len (_gfg );_gbac :=0;for _gbac < _gcg {var _feg float64 ;_fcf :=-1;_fbdb :=_fg ;if _gd .MarginLeft !=nil {_fbdb =*_gd .MarginLeft ;
-};for _fdc ,_gbg :=range _gfg [_gbac ]{if _gbg ==' '{_fcf =_fdc ;};_dag ,_ecfg :=_fdb .GetRuneMetrics (_gbg );if !_ecfg {_d .Log .Debug ("\u0046\u006f\u006e\u0074\u0020\u0064o\u0065\u0073\u0020\u006e\u006f\u0074\u0020\u0068\u0061\u0076\u0065\u0020\u0072\u0075\u006e\u0065\u0020\u006d\u0065\u0074r\u0069\u0063\u0073\u0020\u0066\u006f\u0072\u0020\u0025\u0076\u0020\u002d\u0020\u0073k\u0069p\u0070\u0069\u006e\u0067",_gbg );
-continue ;};_feg =_fbdb ;_fbdb +=_dag .Wx ;if _ecc &&!_fagb &&_efba *_fbdb /1000.0> _gfe {_efc :=_fdc ;_gfbb :=_fdc ;if _fcf > 0{_efc =_fcf +1;_gfbb =_fcf ;};_cea :=_gfg [_gbac ][_efc :];_gbgf :=_bfc [_gbac ][_efc :];if _gbac < len (_gfg )-1{_gfg =append (_gfg [:_gbac +1],_gfg [_gbac :]...);
-_gfg [_gbac +1]=_cea ;_bfc =append (_bfc [:_gbac +1],_bfc [_gbac :]...);_bfc [_gbac +1]=_gbgf ;}else {_gfg =append (_gfg ,_cea );_bfc =append (_bfc ,_gbgf );};_gfg [_gbac ]=_gfg [_gbac ][0:_gfbb ];_bfc [_gbac ]=_bfc [_gbac ][0:_gfbb ];_gcg ++;_fbdb =_feg ;
-break ;};};if _fbdb > _gaab {_gaab =_fbdb ;};_gfg [_gbac ]=string (_eff .Encode (_gfg [_gbac ]));if len (_gfg [_gbac ])> 0{_fdf ++;};_gbac ++;};_cga :=_efba ;if _fdf > 1{_cga *=_fbc ;};_caa :=float64 (_fdf )*_cga ;if _fagb ||_caa <=_gae {_eac =_gfg ;_acg =_bfc ;
-break ;};_efba --;};};_ffe :=_fg ;if _gd .MarginLeft !=nil {_ffe =*_gd .MarginLeft ;};if _efba ==0||_fagb &&_gaab > 0&&_ffe +_gaab *_efba /1000.0> _gfe {_efba =0.95*1000.0*(_gfe -_ffe )/_gaab ;};_eacf :=_gc ;{if _ddc ,_dfc :=_aag .GetIntVal (_gba .Q );
-_dfc {switch _ddc {case 0:_eacf =_gc ;case 1:_eacf =_bg ;case 2:_eacf =_fcc ;default:_d .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0055\u006e\u0073\u0075\u0070\u0070\u006f\u0072t\u0065\u0064\u0020\u0071\u0075\u0061\u0064\u0064\u0069\u006e\u0067\u003a\u0020%\u0064\u0020\u002d\u0020\u0075\u0073\u0069\u006e\u0067\u0020\u006c\u0065ft\u0020\u0061\u006c\u0069\u0067\u006e\u006d\u0065\u006e\u0074",_ddc );
-};};};_ffeg :=_efba ;if _ecc &&_fdf > 1{_ffeg =_fbc *_efba ;};var _cf float64 ;if _ccc !=nil {_cf ,_agf =_ccc .GetCapHeight ();if _agf !=nil {_d .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0055\u006e\u0061\u0062\u006c\u0065 \u0074\u006f\u0020\u0067\u0065\u0074 \u0066\u006f\u006e\u0074\u0020\u0043\u0061\u0070\u0048\u0065\u0069\u0067\u0068t\u003a\u0020\u0025\u0076",_agf );
-};};if int (_cf )<=0{_d .Log .Debug ("W\u0041\u0052\u004e\u003a\u0020\u0043\u0061\u0070\u0048e\u0069\u0067\u0068\u0074\u0020\u006e\u006ft \u0061\u0076\u0061\u0069l\u0061\u0062\u006c\u0065\u0020\u002d\u0020\u0073\u0065tt\u0069\u006eg\u0020\u0074\u006f\u0020\u0031\u0030\u0030\u0030");
-_cf =1000;};_dab :=_cf /1000.0*_efba ;_bd :=0.0;{_edg :=float64 (_fdf )*_ffeg ;if _fagb &&_bd +_edg > _gae {_efba =0.95*(_gae -_bd )/float64 (_fdf );_ffeg =_efba ;if _ecc &&_fdf > 1{_ffeg =_fbc *_efba ;};_dab =_cf /1000.0*_efba ;_edg =float64 (_fdf )*_ffeg ;
-};if _gae > _edg {if _ecc {if _gd .MultilineVAlignMiddle {_geb :=(_gae -(_edg +_dab ))/2.0;_dea :=_geb +_edg +_dab -_ffeg ;_bd =_dea ;if _fdf > 1{_bd =_bd +(_edg /_efba *float64 (_fdf ))-_ffeg -_dab ;};if _bd < _edg {_bd =(_gae -_dab )/2.0;};}else {_bd =_gae -_ffeg ;
-if _bd > _efba {_gbf :=0.0;if _ecc &&_gd .MultilineLineHeight > 1&&_fdf > 1{_gbf =_gd .MultilineLineHeight -1;};_bd -=_efba *(0.5-_gbf );};};}else {_bd =(_gae -_dab )/2.0;};};};if _gd .TextColor !=nil {_cdfeg :=_gd .TextColor ;_ege ,_fab :=_cdfeg .(*_fba .PdfColorDeviceRGB );
-if !_fab {_ege =_fba .NewPdfColorDeviceRGB (0,0,0);};_dadg .Add_rg (_ege .R (),_ege .G (),_ege .B ());}else {for _ ,_fac :=range *_bba {if _fac .Operand =="\u0072\u0067"||_fac .Operand =="\u0067"{_dadg .AddOperand (*_fac );};};};_dadg .Add_Tf (*_fede ,_efba );
-_dadg .Add_Td (_ffe ,_bd );_aace :=_ffe ;_caaf :=_ffe ;for _bfa ,_ecfga :=range _eac {_ae :=0.0;for _ ,_edcg :=range _acg [_bfa ]{_gda ,_ffea :=_fdb .GetRuneMetrics (_edcg );if !_ffea {continue ;};_ae +=_gda .Wx ;};_dggd :=_ae /1000.0*_efba ;_caad :=_gfe -_dggd ;
-var _dfe float64 ;switch _eacf {case _gc :_dfe =_aace ;case _bg :_dfe =_caad /2;case _fcc :_dfe =_caad ;};_ffe =_dfe -_caaf ;if _ffe > 0.0{_dadg .Add_Td (_ffe ,0);};_caaf =_dfe ;_dadg .Add_Tj (*_aag .MakeString (_ecfga ));if _bfa < len (_eac )-1{_dadg .Add_Td (0,-_efba *_fbc );
-};};_dadg .Add_ET ();_dadg .Add_Q ();_dadg .Add_EMC ();_afdc .SetContentStream (_dadg .Bytes (),_fff ());};_afdc .Resources =_gcf ;_cfc :=_aag .MakeDict ();_cfc .Set ("\u004e",_afdc .ToPdfObject ());return _cfc ,nil ;};func _fcfec (_gdcg *_fba .PdfPage ,_dfd _ef .Rectangle ,_ffdb string ,_cdd string ,_cada _fba .PdfColor ,_gga *_fba .PdfFont ,_cgabb *float64 ,_cgdd _aag .PdfObject )(*_fba .PdfFieldButton ,error ){_eea ,_bade :=_dfd .X ,_dfd .Y ;
-_efg :=_dfd .Width ;_acaa :=_dfd .Height ;if _dfd .FillColor ==nil {_dfd .FillColor =_fba .NewPdfColorDeviceGray (0.7);};if _cada ==nil {_cada =_fba .NewPdfColorDeviceGray (0);};if _gga ==nil {_gdf ,_afcaa :=_fba .NewStandard14Font ("\u0048e\u006c\u0076\u0065\u0074\u0069\u0063a");
-if _afcaa !=nil {return nil ,_afcaa ;};_gga =_gdf ;};_dbcg :=_fba .NewPdfField ();_cbeg :=&_fba .PdfFieldButton {};_dbcg .SetContext (_cbeg );_cbeg .PdfField =_dbcg ;_cbeg .T =_aag .MakeString (_ffdb );_cbeg .SetType (_fba .ButtonTypePush );_cbeg .V =_aag .MakeName ("\u004f\u0066\u0066");
-_cbeg .Ff =_aag .MakeInteger (4);_addc :=_aag .MakeDict ();_addc .Set (*_aag .MakeName ("\u0043\u0041"),_aag .MakeString (_cdd ));_dfba ,_bdc :=_gga .GetFontDescriptor ();if _bdc !=nil {return nil ,_bdc ;};_dcb :=_aag .MakeName ("\u0048e\u006c\u0076\u0065\u0074\u0069\u0063a");
-_aggg :=12.0;if _dfba !=nil &&_dfba .FontName !=nil {_dcb ,_ =_aag .GetName (_dfba .FontName );};if _cgabb !=nil {_aggg =*_cgabb ;};_ecad :=_aa .NewContentCreator ();_ecad .Add_q ();_ecad .SetNonStrokingColor (_dfd .FillColor );_ecad .Add_re (0,0,_efg ,_acaa );
-_ecad .Add_f ();_ecad .Add_Q ();_ecad .Add_q ();_ecad .Add_BT ();_cgga :=0.0;for _ ,_bca :=range _cdd {_eced ,_ddda :=_gga .GetRuneMetrics (_bca );if !_ddda {_d .Log .Debug ("\u0046\u006f\u006e\u0074\u0020\u0064o\u0065\u0073\u0020\u006e\u006f\u0074\u0020\u0068\u0061\u0076\u0065\u0020\u0072\u0075\u006e\u0065\u0020\u006d\u0065\u0074r\u0069\u0063\u0073\u0020\u0066\u006f\u0072\u0020\u0025\u0076\u0020\u002d\u0020\u0073k\u0069p\u0070\u0069\u006e\u0067",_bca );
-continue ;};_cgga +=_eced .Wx ;};_cgga =_cgga /1000.0*_aggg ;var _adeb float64 ;if _dfba !=nil {_adeb ,_bdc =_dfba .GetCapHeight ();if _bdc !=nil {_d .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0055\u006e\u0061\u0062\u006c\u0065 \u0074\u006f\u0020\u0067\u0065\u0074 \u0066\u006f\u006e\u0074\u0020\u0043\u0061\u0070\u0048\u0065\u0069\u0067\u0068t\u003a\u0020\u0025\u0076",_bdc );
-};};if int (_adeb )<=0{_d .Log .Debug ("W\u0041\u0052\u004e\u003a\u0020\u0043\u0061\u0070\u0048e\u0069\u0067\u0068\u0074\u0020\u006e\u006ft \u0061\u0076\u0061\u0069l\u0061\u0062\u006c\u0065\u0020\u002d\u0020\u0073\u0065tt\u0069\u006eg\u0020\u0074\u006f\u0020\u0031\u0030\u0030\u0030");
-_adeb =1000;};_caf :=_adeb /1000.0*_aggg ;_ded :=(_acaa -_caf )/2.0;_deba :=(_efg -_cgga )/2.0;_ecad .Add_Tf (*_dcb ,_aggg );_ecad .SetNonStrokingColor (_cada );_ecad .Add_Td (_deba ,_ded );_ecad .Add_Tj (*_aag .MakeString (_cdd ));_ecad .Add_ET ();_ecad .Add_Q ();
-_gfc :=_fba .NewXObjectForm ();_gfc .SetContentStream (_ecad .Bytes (),_aag .NewRawEncoder ());_gfc .BBox =_aag .MakeArrayFromFloats ([]float64 {0,0,_efg ,_acaa });_gfc .Resources =_fba .NewPdfPageResources ();_gfc .Resources .SetFontByName (*_dcb ,_gga .ToPdfObject ());
-_gbda :=_aag .MakeDict ();_gbda .Set ("\u004e",_gfc .ToPdfObject ());_ecga :=_fba .NewPdfAnnotationWidget ();_ecga .Rect =_aag .MakeArrayFromFloats ([]float64 {_eea ,_bade ,_eea +_efg ,_bade +_acaa });_ecga .P =_gdcg .ToPdfObject ();_ecga .F =_aag .MakeInteger (4);
-_ecga .Parent =_cbeg .ToPdfObject ();_ecga .A =_cgdd ;_ecga .MK =_addc ;_ecga .AP =_gbda ;_cbeg .Annotations =append (_cbeg .Annotations ,_ecga );return _cbeg ,nil ;};
+LineWidth float64 ;};func _bd (_ca CircleAnnotationDef ,_dc string )([]byte ,*_ef .PdfRectangle ,*_ef .PdfRectangle ,error ){_ba :=_af .Circle {X :_ca .X ,Y :_ca .Y ,Width :_ca .Width ,Height :_ca .Height ,FillEnabled :_ca .FillEnabled ,FillColor :_ca .FillColor ,BorderEnabled :_ca .BorderEnabled ,BorderWidth :_ca .BorderWidth ,BorderColor :_ca .BorderColor ,Opacity :_ca .Opacity };
+_eb ,_gd ,_gaae :=_ba .Draw (_dc );if _gaae !=nil {return nil ,nil ,nil ,_gaae ;};_ec :=&_ef .PdfRectangle {};_ec .Llx =_ca .X +_gd .Llx ;_ec .Lly =_ca .Y +_gd .Lly ;_ec .Urx =_ca .X +_gd .Urx ;_ec .Ury =_ca .Y +_gd .Ury ;return _eb ,_gd ,_ec ,nil ;};
+
+// CreateLineAnnotation creates a line annotation object that can be added to page PDF annotations.
+func CreateLineAnnotation (lineDef LineAnnotationDef )(*_ef .PdfAnnotation ,error ){_bceda :=_ef .NewPdfAnnotationLine ();_bceda .L =_fc .MakeArrayFromFloats ([]float64 {lineDef .X1 ,lineDef .Y1 ,lineDef .X2 ,lineDef .Y2 });_beag :=_fc .MakeName ("\u004e\u006f\u006e\u0065");
+if lineDef .LineEndingStyle1 ==_af .LineEndingStyleArrow {_beag =_fc .MakeName ("C\u006c\u006f\u0073\u0065\u0064\u0041\u0072\u0072\u006f\u0077");};_caafg :=_fc .MakeName ("\u004e\u006f\u006e\u0065");if lineDef .LineEndingStyle2 ==_af .LineEndingStyleArrow {_caafg =_fc .MakeName ("C\u006c\u006f\u0073\u0065\u0064\u0041\u0072\u0072\u006f\u0077");
+};_bceda .LE =_fc .MakeArray (_beag ,_caafg );if lineDef .Opacity < 1.0{_bceda .CA =_fc .MakeFloat (lineDef .Opacity );};_bbgb ,_bfad ,_ddeg :=lineDef .LineColor .R (),lineDef .LineColor .G (),lineDef .LineColor .B ();_bceda .IC =_fc .MakeArrayFromFloats ([]float64 {_bbgb ,_bfad ,_ddeg });
+_bceda .C =_fc .MakeArrayFromFloats ([]float64 {_bbgb ,_bfad ,_ddeg });_fccdd :=_ef .NewBorderStyle ();_fccdd .SetBorderWidth (lineDef .LineWidth );_bceda .BS =_fccdd .ToPdfObject ();_gbffa ,_begb ,_ebd :=_ffcff (lineDef );if _ebd !=nil {return nil ,_ebd ;
+};_bceda .AP =_gbffa ;_bceda .Rect =_fc .MakeArrayFromFloats ([]float64 {_begb .Llx ,_begb .Lly ,_begb .Urx ,_begb .Ury });return _bceda .PdfAnnotation ,nil ;};
+
+// AppearanceStyle defines style parameters for appearance stream generation.
+type AppearanceStyle struct{
+
+// How much of Rect height to fill when autosizing text.
+AutoFontSizeFraction float64 ;
+
+// CheckmarkRune is a rune used for check mark in checkboxes (for ZapfDingbats font).
+CheckmarkRune rune ;BorderSize float64 ;BorderColor _ef .PdfColor ;FillColor _ef .PdfColor ;
+
+// ListBoxHighlightColor is the background color used to highlight the
+// selected option(s) of a list box choice field. If nil, a default
+// light blue is used.
+ListBoxHighlightColor _ef .PdfColor ;
+
+// Multiplier for lineheight for multi line text.
+MultilineLineHeight float64 ;MultilineVAlignMiddle bool ;
+
+// Visual guide checking alignment of field contents (debugging).
+DrawAlignmentReticle bool ;
+
+// Allow field MK appearance characteristics to override style settings.
+AllowMK bool ;
+
+// Fonts holds appearance styles for fonts.
+Fonts *AppearanceFontStyle ;
+
+// MarginLeft represents the amount of space to leave on the left side of
+// the form field bounding box when generating appearances (default: 2.0).
+MarginLeft *float64 ;TextColor _ef .PdfColor ;
+
+// FieldColors holds separate set of appearance styles for fields.
+FieldColors map[string ]_ef .PdfColor ;};func _dbbf (_gcf *_ef .PdfAnnotationWidget ,_ *_ef .PdfFieldButton ,_ *_ef .PdfPageResources ,_abcgc AppearanceStyle )(*_fc .PdfObjectDictionary ,error ){_fffg ,_feb :=_fc .GetArray (_gcf .Rect );if !_feb {return nil ,_da .New ("\u0069\u006e\u0076a\u006c\u0069\u0064\u0020\u0052\u0065\u0063\u0074");
+};_ageg ,_adaa :=_ef .NewPdfRectangle (*_fffg );if _adaa !=nil {return nil ,_adaa ;};_bae ,_ddff :=_ageg .Width (),_ageg .Height ();_fdff ,_cae :=_bae ,_ddff ;_f .Log .Debug ("\u0043\u0068\u0065\u0063kb\u006f\u0078\u002c\u0020\u0077\u0061\u0020\u0042\u0053\u003a\u0020\u0025\u0076",_gcf .BS );
+_cdef ,_adaa :=_ef .NewStandard14Font ("\u005a\u0061\u0070f\u0044\u0069\u006e\u0067\u0062\u0061\u0074\u0073");if _adaa !=nil {return nil ,_adaa ;};_geg ,_ege :=_fc .GetDict (_gcf .MK );if _ege {_agc ,_ :=_fc .GetDict (_gcf .BS );_gcdc :=_abcgc .applyAppearanceCharacteristics (_geg ,_agc ,_cdef );
+if _gcdc !=nil {return nil ,_gcdc ;};};_gda :=_ef .NewXObjectForm ();{_ded :=_c .NewContentCreator ();if _abcgc .BorderSize > 0{_ceab (_ded ,_abcgc ,_bae ,_ddff );};if _abcgc .DrawAlignmentReticle {_gfed :=_abcgc ;_gfed .BorderSize =0.2;_cce (_ded ,_gfed ,_bae ,_ddff );
+};_bae ,_ddff =_abcgc .applyRotation (_geg ,_bae ,_ddff ,_ded );_abgb :=_abcgc .AutoFontSizeFraction *_ddff ;_daedb ,_fbg :=_cdef .GetRuneMetrics (_abcgc .CheckmarkRune );if !_fbg {return nil ,_da .New ("\u0067l\u0079p\u0068\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064");
+};_ebb :=_cdef .Encoder ();_edf :=_ebb .Encode (string (_abcgc .CheckmarkRune ));_aegb :=_daedb .Wx *_abgb /1000.0;_bfgb :=705.0;_eag :=_bfgb /1000.0*_abgb ;_afac :=_bc ;if _abcgc .MarginLeft !=nil {_afac =*_abcgc .MarginLeft ;};_ggag :=1.0;if _aegb < _bae {_afac =(_bae -_aegb )/2.0;
+};if _eag < _ddff {_ggag =(_ddff -_eag )/2.0;};_ded .Add_q ().Add_g (0).Add_BT ().Add_Tf ("\u005a\u0061\u0044\u0062",_abgb ).Add_Td (_afac ,_ggag ).Add_Tj (*_fc .MakeStringFromBytes (_edf )).Add_ET ().Add_Q ();_gda .Resources =_ef .NewPdfPageResources ();
+_gda .Resources .SetFontByName ("\u005a\u0061\u0044\u0062",_cdef .ToPdfObject ());_gda .BBox =_fc .MakeArrayFromFloats ([]float64 {0,0,_fdff ,_cae });_gda .SetContentStream (_ded .Bytes (),_gbae ());};_aae :=_ef .NewXObjectForm ();{_cdga :=_c .NewContentCreator ();
+if _abcgc .BorderSize > 0{_ceab (_cdga ,_abcgc ,_bae ,_ddff );};_aae .BBox =_fc .MakeArrayFromFloats ([]float64 {0,0,_fdff ,_cae });_aae .SetContentStream (_cdga .Bytes (),_gbae ());};_egbe :=_fc .PdfObjectName ("\u0059\u0065\u0073");_gcae ,_ege :=_fc .GetDict (_gcf .AP );
+if _ege &&_gcae !=nil {_gde :=_fc .TraceToDirectObject (_gcae .Get ("\u004e"));switch _fbe :=_gde .(type ){case *_fc .PdfObjectDictionary :_bfdd :=_fbe .Keys ();for _ ,_baab :=range _bfdd {if _baab !="\u004f\u0066\u0066"{_egbe =_baab ;};};};};_fbd :=_fc .MakeDict ();
+_fbd .Set ("\u004f\u0066\u0066",_aae .ToPdfObject ());_fbd .Set (_egbe ,_gda .ToPdfObject ());_ecg :=_fc .MakeDict ();_ecg .Set ("\u004e",_fbd );return _ecg ,nil ;};
+
+// SignatureImagePosition specifies the image signature location relative to the text signature.
+// If text signature is not defined, this position will be ignored.
+type SignatureImagePosition int ;
+
+// NewImageField generates a new image field with partial name `name` at location `rect`
+// on specified `page` and with field specific options `opt`.
+func NewImageField (page *_ef .PdfPage ,name string ,rect []float64 ,opt ImageFieldOptions )(*_ef .PdfFieldButton ,error ){if page ==nil {return nil ,_da .New ("\u0070a\u0067e\u0020\u006e\u006f\u0074\u0020s\u0070\u0065c\u0069\u0066\u0069\u0065\u0064");
+};if len (name )<=0{return nil ,_da .New ("\u0072\u0065\u0071\u0075\u0069\u0072\u0065\u0064\u0020\u0061\u0074\u0074\u0072\u0069\u0062u\u0074e\u0020\u006e\u006f\u0074\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069\u0065\u0064");};if len (rect )!=4{return nil ,_da .New ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u0061\u006e\u0067\u0065");
+};_gdcbe :=_ef .NewPdfField ();_fcgad :=&_ef .PdfFieldButton {};_fcgad .PdfField =_gdcbe ;_gdcbe .SetContext (_fcgad );_fcgad .SetType (_ef .ButtonTypePush );_fcgad .T =_fc .MakeString (name );_befc :=_ef .NewPdfAnnotationWidget ();_befc .Rect =_fc .MakeArrayFromFloats (rect );
+_befc .P =page .ToPdfObject ();_befc .F =_fc .MakeInteger (4);_befc .Parent =_fcgad .ToPdfObject ();_ecbc :=rect [2]-rect [0];_dga :=rect [3]-rect [1];_gbfa :=opt ._febec ;_bedc :=_c .NewContentCreator ();if _gbfa .BorderSize > 0{_ceab (_bedc ,_gbfa ,_ecbc ,_dga );
+};if _gbfa .DrawAlignmentReticle {_bgdg :=_gbfa ;_bgdg .BorderSize =0.2;_cce (_bedc ,_bgdg ,_ecbc ,_dga );};_dcea ,_ddge :=_fdfd (_ecbc ,_dga ,opt .Image ,_gbfa );if _ddge !=nil {return nil ,_ddge ;};_beed ,_cega :=_fc .GetDict (_befc .MK );if _cega {_beed .Set ("\u006c",_dcea .ToPdfObject ());
+};_gffe :=_fc .MakeDict ();_gffe .Set ("\u0046\u0052\u004d",_dcea .ToPdfObject ());_aaeg :=_ef .NewPdfPageResources ();_aaeg .ProcSet =_fc .MakeArray (_fc .MakeName ("\u0050\u0044\u0046"));_aaeg .XObject =_gffe ;_badg :=_ecbc -2;_aff :=_dga -2;_bedc .Add_q ();
+_bedc .Add_re (1,1,_badg ,_aff );_bedc .Add_W ();_bedc .Add_n ();_badg -=2;_aff -=2;_bedc .Add_q ();_bedc .Add_re (2,2,_badg ,_aff );_bedc .Add_W ();_bedc .Add_n ();_bega :=_fd .Min (_badg /float64 (opt .Image .Width ),_aff /float64 (opt .Image .Height ));
+_bedc .Add_cm (_bega ,0,0,_bega ,(_ecbc /2)-(float64 (opt .Image .Width )*_bega /2)+2,2);_bedc .Add_Do ("\u0046\u0052\u004d");_bedc .Add_Q ();_bedc .Add_Q ();_ffad :=_ef .NewXObjectForm ();_ffad .FormType =_fc .MakeInteger (1);_ffad .Resources =_aaeg ;
+_ffad .BBox =_fc .MakeArrayFromFloats ([]float64 {0,0,_ecbc ,_dga });_ffad .Matrix =_fc .MakeArrayFromFloats ([]float64 {1.0,0.0,0.0,1.0,0.0,0.0});_ffad .SetContentStream (_bedc .Bytes (),_gbae ());_ggcfc :=_fc .MakeDict ();_ggcfc .Set ("\u004e",_ffad .ToPdfObject ());
+_befc .AP =_ggcfc ;_fcgad .Annotations =append (_fcgad .Annotations ,_befc );return _fcgad ,nil ;};
+
+// NewFormSubmitButtonField would create a submit button in specified page according to the parameter in `FormSubmitActionOptions`.
+func NewFormSubmitButtonField (page *_ef .PdfPage ,opt FormSubmitActionOptions )(*_ef .PdfFieldButton ,error ){_ffda :=int64 (_ddac );if opt .IsExclusionList {_ffda |=_gbdbd ;};if opt .IncludeEmptyFields {_ffda |=_dba ;};if opt .SubmitAsPDF {_ffda |=_aaf ;
+};_cfca :=_ef .NewPdfActionSubmitForm ();_cfca .Flags =_fc .MakeInteger (_ffda );_cfca .F =_ef .NewPdfFilespec ();if opt .Fields !=nil {_cfca .Fields =opt .Fields ;};_cfca .F .F =_fc .MakeString (opt .Url );_cfca .F .FS =_fc .MakeName ("\u0055\u0052\u004c");
+_agea ,_cfcg :=_befcd (page ,opt .Rectangle ,"\u0062t\u006e\u0053\u0075\u0062\u006d\u0069t",opt .Label ,opt .LabelColor ,opt .Font ,opt .FontSize ,_cfca .ToPdfObject ());if _cfcg !=nil {return nil ,_cfcg ;};return _agea ,nil ;};func _fbgd (_faea *InkAnnotationDef )([]byte ,*_ef .PdfRectangle ,error ){_fbeg :=[][]_af .CubicBezierCurve {};
+for _ ,_cffg :=range _faea .Paths {if _cffg .Length ()==0{continue ;};_fbcd :=_cffg .Points ;_abe ,_gace ,_fdde :=_bade (_fbcd );if _fdde !=nil {return nil ,nil ,_fdde ;};if len (_abe )!=len (_gace ){return nil ,nil ,_da .New ("\u0069\u006e\u0065\u0071\u0075\u0061\u006c\u0020\u006e\u0075\u006d\u0062\u0065\u0072\u0020\u006f\u0066\u0020\u0063\u0061l\u0063\u0075\u006c\u0061\u0074\u0065\u0064\u0020\u0066\u0069\u0072\u0073\u0074\u0020\u0061\u006e\u0064\u0020\u0073\u0065\u0063\u006f\u006e\u0064\u0020\u0063\u006f\u006e\u0074\u0072o\u006c\u0020\u0070\u006f\u0069n\u0074");
+};_edgc :=[]_af .CubicBezierCurve {};for _feeba :=0;_feeba < len (_abe );_feeba ++{_edgc =append (_edgc ,_af .CubicBezierCurve {P0 :_fbcd [_feeba ],P1 :_abe [_feeba ],P2 :_gace [_feeba ],P3 :_fbcd [_feeba +1]});};if len (_edgc )> 0{_fbeg =append (_fbeg ,_edgc );
+};};_fccd ,_dcgc ,_edae :=_caaf (_fbeg ,_faea .Color ,_faea .LineWidth );if _edae !=nil {return nil ,nil ,_edae ;};return _fccd ,_dcgc ,nil ;};func _dbd (_feebb *_ef .PdfFieldButton ,_aagd *_ef .PdfAnnotationWidget ,_afaeb AppearanceStyle )(*_fc .PdfObjectDictionary ,error ){_deeb ,_dffaeg :=_fc .GetArray (_aagd .Rect );
+if !_dffaeg {return nil ,_da .New ("\u0069\u006e\u0076a\u006c\u0069\u0064\u0020\u0052\u0065\u0063\u0074");};_ebef ,_cffe :=_ef .NewPdfRectangle (*_deeb );if _cffe !=nil {return nil ,_cffe ;};_dede ,_afee :=_ebef .Width (),_ebef .Height ();_bggc :=_c .NewContentCreator ();
+if _afaeb .BorderSize > 0{_ceab (_bggc ,_afaeb ,_dede ,_afee );};if _afaeb .DrawAlignmentReticle {_dabc :=_afaeb ;_dabc .BorderSize =0.2;_cce (_bggc ,_dabc ,_dede ,_afee );};_agd :=_feebb .GetFillImage ();_gfeee ,_cffe :=_fdfd (_dede ,_afee ,_agd ,_afaeb );
+if _cffe !=nil {return nil ,_cffe ;};_acbe ,_aacd :=_fc .GetDict (_aagd .MK );if _aacd {_acbe .Set ("\u006c",_gfeee .ToPdfObject ());};_ddcf :=_fc .MakeDict ();_ddcf .Set ("\u0046\u0052\u004d",_gfeee .ToPdfObject ());_badgf :=_ef .NewPdfPageResources ();
+_badgf .ProcSet =_fc .MakeArray (_fc .MakeName ("\u0050\u0044\u0046"));_badgf .XObject =_ddcf ;_fedg :=_dede -2;_adebc :=_afee -2;_bggc .Add_q ();_bggc .Add_re (1,1,_fedg ,_adebc );_bggc .Add_W ();_bggc .Add_n ();_fedg -=2;_adebc -=2;_bggc .Add_q ();_bggc .Add_re (2,2,_fedg ,_adebc );
+_bggc .Add_W ();_bggc .Add_n ();_cdf :=_fd .Min (_fedg /float64 (_agd .Width ),_adebc /float64 (_agd .Height ));_bggc .Add_cm (_cdf ,0,0,_cdf ,(_dede /2)-(float64 (_agd .Width )*_cdf /2)+2,2);_bggc .Add_Do ("\u0046\u0052\u004d");_bggc .Add_Q ();_bggc .Add_Q ();
+_cebe :=_ef .NewXObjectForm ();_cebe .FormType =_fc .MakeInteger (1);_cebe .Resources =_badgf ;_cebe .BBox =_fc .MakeArrayFromFloats ([]float64 {0,0,_dede ,_afee });_cebe .Matrix =_fc .MakeArrayFromFloats ([]float64 {1.0,0.0,0.0,1.0,0.0,0.0});_cebe .SetContentStream (_bggc .Bytes (),_gbae ());
+_dgf :=_fc .MakeDict ();_dgf .Set ("\u004e",_cebe .ToPdfObject ());return _dgf ,nil ;};
+
+// NewSignatureLine returns a new signature line displayed as a part of the
+// signature field appearance.
+func NewSignatureLine (desc ,text string )*SignatureLine {return &SignatureLine {Desc :desc ,Text :text };};
+
+// FormSubmitActionOptions holds options for creating a form submit button.
+type FormSubmitActionOptions struct{
+
+// Rectangle holds the button position, size, and color.
+Rectangle _af .Rectangle ;
+
+// Url specifies the URL where the fieds will be submitted.
+Url string ;
+
+// Label specifies the text that would be displayed on the button.
+Label string ;
+
+// LabelColor specifies the button label color.
+LabelColor _ef .PdfColor ;
+
+// Font specifies a font used for rendering the button label.
+// When omitted it will fallback to use a Helvetica font.
+Font *_ef .PdfFont ;
+
+// FontSize specifies the font size used in rendering the button label.
+// The default font size is 12pt.
+FontSize *float64 ;
+
+// Fields specifies list of fields that could be submitted.
+// This list may contain indirect object to fields or field names.
+Fields *_fc .PdfObjectArray ;
+
+// IsExclusionList specifies that the fields contain in `Fields` array would not be submitted.
+IsExclusionList bool ;
+
+// IncludeEmptyFields specifies if all fields would be submitted even though it's value is empty.
+IncludeEmptyFields bool ;
+
+// SubmitAsPDF specifies that the document shall be submitted as PDF.
+// If set then all the other flags shall be ignored.
+SubmitAsPDF bool ;};func _fdfd (_ ,_ float64 ,_addag *_ef .Image ,_ AppearanceStyle )(*_ef .XObjectForm ,error ){_edfc ,_fbdc :=_ef .NewXObjectImageFromImage (_addag ,nil ,_fc .NewFlateEncoder ());if _fbdc !=nil {return nil ,_fbdc ;};_edfc .Decode =_fc .MakeArrayFromFloats ([]float64 {0.0,1.0,0.0,1.0,0.0,1.0});
+_bada :=_ef .NewPdfPageResources ();_bada .ProcSet =_fc .MakeArray (_fc .MakeName ("\u0050\u0044\u0046"),_fc .MakeName ("\u0049\u006d\u0061\u0067\u0065\u0043"));_bada .SetXObjectImageByName (_fc .PdfObjectName ("\u0049\u006d\u0030"),_edfc );_cbfga :=_c .NewContentCreator ();
+_cbfga .Add_q ();_cbfga .Add_cm (float64 (_addag .Width ),0,0,float64 (_addag .Height ),0,0);_cbfga .Add_Do ("\u0049\u006d\u0030");_cbfga .Add_Q ();_cfa :=_ef .NewXObjectForm ();_cfa .FormType =_fc .MakeInteger (1);_cfa .BBox =_fc .MakeArrayFromFloats ([]float64 {0,0,float64 (_addag .Width ),float64 (_addag .Height )});
+_cfa .Resources =_bada ;_cfa .SetContentStream (_cbfga .Bytes (),_gbae ());return _cfa ,nil ;};func _aeeg (_bgb RectangleAnnotationDef )(*_fc .PdfObjectDictionary ,*_ef .PdfRectangle ,error ){_fffga :=_ef .NewXObjectForm ();_fffga .Resources =_ef .NewPdfPageResources ();
+_dca :="";if _bgb .Opacity < 1.0{_ddeb :=_fc .MakeDict ();_ddeb .Set ("\u0063\u0061",_fc .MakeFloat (_bgb .Opacity ));_ddeb .Set ("\u0043\u0041",_fc .MakeFloat (_bgb .Opacity ));_efa :=_fffga .Resources .AddExtGState ("\u0067\u0073\u0031",_ddeb );if _efa !=nil {_f .Log .Debug ("U\u006e\u0061\u0062\u006c\u0065\u0020t\u006f\u0020\u0061\u0064\u0064\u0020\u0065\u0078\u0074g\u0073\u0074\u0061t\u0065 \u0067\u0073\u0031");
+return nil ,nil ,_efa ;};_dca ="\u0067\u0073\u0031";};_feae ,_eba ,_egac ,_bccb :=_dceac (_bgb ,_dca );if _bccb !=nil {return nil ,nil ,_bccb ;};_bccb =_fffga .SetContentStream (_feae ,nil );if _bccb !=nil {return nil ,nil ,_bccb ;};_fffga .BBox =_eba .ToPdfObject ();
+_bded :=_fc .MakeDict ();_bded .Set ("\u004e",_fffga .ToPdfObject ());return _bded ,_egac ,nil ;};
 
 // SetStyle applies appearance `style` to `fa`.
-func (_fgb *FieldAppearance )SetStyle (style AppearanceStyle ){_fgb ._gaa =&style };func _cafb (_egbg LineAnnotationDef ,_eadd string )([]byte ,*_fba .PdfRectangle ,*_fba .PdfRectangle ,error ){_daadg :=_ef .Line {X1 :0,Y1 :0,X2 :_egbg .X2 -_egbg .X1 ,Y2 :_egbg .Y2 -_egbg .Y1 ,LineColor :_egbg .LineColor ,Opacity :_egbg .Opacity ,LineWidth :_egbg .LineWidth ,LineEndingStyle1 :_egbg .LineEndingStyle1 ,LineEndingStyle2 :_egbg .LineEndingStyle2 };
-_adg ,_dgb ,_bbb :=_daadg .Draw (_eadd );if _bbb !=nil {return nil ,nil ,nil ,_bbb ;};_ecdg :=&_fba .PdfRectangle {};_ecdg .Llx =_egbg .X1 +_dgb .Llx ;_ecdg .Lly =_egbg .Y1 +_dgb .Lly ;_ecdg .Urx =_egbg .X1 +_dgb .Urx ;_ecdg .Ury =_egbg .Y1 +_dgb .Ury ;
-return _adg ,_dgb ,_ecdg ,nil ;};func _fecb (_bggb RectangleAnnotationDef )(*_aag .PdfObjectDictionary ,*_fba .PdfRectangle ,error ){_ffeab :=_fba .NewXObjectForm ();_ffeab .Resources =_fba .NewPdfPageResources ();_bddg :="";if _bggb .Opacity < 1.0{_gbae :=_aag .MakeDict ();
-_gbae .Set ("\u0063\u0061",_aag .MakeFloat (_bggb .Opacity ));_gbae .Set ("\u0043\u0041",_aag .MakeFloat (_bggb .Opacity ));_debd :=_ffeab .Resources .AddExtGState ("\u0067\u0073\u0031",_gbae );if _debd !=nil {_d .Log .Debug ("U\u006e\u0061\u0062\u006c\u0065\u0020t\u006f\u0020\u0061\u0064\u0064\u0020\u0065\u0078\u0074g\u0073\u0074\u0061t\u0065 \u0067\u0073\u0031");
-return nil ,nil ,_debd ;};_bddg ="\u0067\u0073\u0031";};_ebbe ,_bbe ,_dagb ,_abcg :=_cebd (_bggb ,_bddg );if _abcg !=nil {return nil ,nil ,_abcg ;};_abcg =_ffeab .SetContentStream (_ebbe ,nil );if _abcg !=nil {return nil ,nil ,_abcg ;};_ffeab .BBox =_bbe .ToPdfObject ();
-_acag :=_aag .MakeDict ();_acag .Set ("\u004e",_ffeab .ToPdfObject ());return _acag ,_dagb ,nil ;};
-
-// CreateRectangleAnnotation creates a rectangle annotation object that can be added to page PDF annotations.
-func CreateRectangleAnnotation (rectDef RectangleAnnotationDef )(*_fba .PdfAnnotation ,error ){_gaec :=_fba .NewPdfAnnotationSquare ();if rectDef .BorderEnabled {_ggaf ,_dagg ,_eabe :=rectDef .BorderColor .R (),rectDef .BorderColor .G (),rectDef .BorderColor .B ();
-_gaec .C =_aag .MakeArrayFromFloats ([]float64 {_ggaf ,_dagg ,_eabe });_gbacd :=_fba .NewBorderStyle ();_gbacd .SetBorderWidth (rectDef .BorderWidth );_gaec .BS =_gbacd .ToPdfObject ();};if rectDef .FillEnabled {_cddb ,_fdde ,_ccgf :=rectDef .FillColor .R (),rectDef .FillColor .G (),rectDef .FillColor .B ();
-_gaec .IC =_aag .MakeArrayFromFloats ([]float64 {_cddb ,_fdde ,_ccgf });}else {_gaec .IC =_aag .MakeArrayFromIntegers ([]int {});};if rectDef .Opacity < 1.0{_gaec .CA =_aag .MakeFloat (rectDef .Opacity );};_bedf ,_bdecf ,_daeg :=_fecb (rectDef );if _daeg !=nil {return nil ,_daeg ;
-};_gaec .AP =_bedf ;_gaec .Rect =_aag .MakeArrayFromFloats ([]float64 {_bdecf .Llx ,_bdecf .Lly ,_bdecf .Urx ,_bdecf .Ury });return _gaec .PdfAnnotation ,nil ;};
-
-// NewSignatureField returns a new signature field with a visible appearance
-// containing the specified signature lines and styled according to the
-// specified options.
-func NewSignatureField (signature *_fba .PdfSignature ,lines []*SignatureLine ,opts *SignatureFieldOpts )(*_fba .PdfFieldSignature ,error ){if signature ==nil {return nil ,_fe .New ("\u0073\u0069\u0067na\u0074\u0075\u0072\u0065\u0020\u0063\u0061\u006e\u006e\u006f\u0074\u0020\u0062\u0065\u0020\u006e\u0069\u006c");
-};_eddd ,_ebdb :=_gbe (lines ,opts );if _ebdb !=nil {return nil ,_ebdb ;};_eacga :=_fba .NewPdfFieldSignature (signature );_eacga .Rect =_aag .MakeArrayFromFloats (opts .Rect );_eacga .AP =_eddd ;return _eacga ,nil ;};func _bdf (_cagc [][]_ef .CubicBezierCurve ,_bdb *_fba .PdfColorDeviceRGB ,_fgbg float64 )([]byte ,*_fba .PdfRectangle ,error ){_cggg :=_aa .NewContentCreator ();
-_cggg .Add_q ().SetStrokingColor (_bdb ).Add_w (_fgbg );_feba :=_ef .NewCubicBezierPath ();for _ ,_ggce :=range _cagc {_feba .Curves =append (_feba .Curves ,_ggce ...);for _gdfa ,_feec :=range _ggce {if _gdfa ==0{_cggg .Add_m (_feec .P0 .X ,_feec .P0 .Y );
-}else {_cggg .Add_l (_feec .P0 .X ,_feec .P0 .Y );};_cggg .Add_c (_feec .P1 .X ,_feec .P1 .Y ,_feec .P2 .X ,_feec .P2 .Y ,_feec .P3 .X ,_feec .P3 .Y );};};_cggg .Add_S ().Add_Q ();return _cggg .Bytes (),_feba .GetBoundingBox ().ToPdfRectangle (),nil ;};
-
+func (_gbce *ImageFieldAppearance )SetStyle (style AppearanceStyle ){_gbce ._dac =&style };func _befcd (_gfae *_ef .PdfPage ,_adda _af .Rectangle ,_cba string ,_faf string ,_babc _ef .PdfColor ,_bcbg *_ef .PdfFont ,_ccgg *float64 ,_abcbd _fc .PdfObject )(*_ef .PdfFieldButton ,error ){_fgc ,_cccb :=_adda .X ,_adda .Y ;
+_cgea :=_adda .Width ;_fefe :=_adda .Height ;if _adda .FillColor ==nil {_adda .FillColor =_ef .NewPdfColorDeviceGray (0.7);};if _babc ==nil {_babc =_ef .NewPdfColorDeviceGray (0);};if _bcbg ==nil {_gaab ,_abcc :=_ef .NewStandard14Font ("\u0048e\u006c\u0076\u0065\u0074\u0069\u0063a");
+if _abcc !=nil {return nil ,_abcc ;};_bcbg =_gaab ;};_eafa :=_ef .NewPdfField ();_dfaa :=&_ef .PdfFieldButton {};_eafa .SetContext (_dfaa );_dfaa .PdfField =_eafa ;_dfaa .T =_fc .MakeString (_cba );_dfaa .SetType (_ef .ButtonTypePush );_dfaa .V =_fc .MakeName ("\u004f\u0066\u0066");
+_dfaa .Ff =_fc .MakeInteger (4);_dded :=_fc .MakeDict ();_dded .Set (*_fc .MakeName ("\u0043\u0041"),_fc .MakeString (_faf ));_dbc ,_bfced :=_bcbg .GetFontDescriptor ();if _bfced !=nil {return nil ,_bfced ;};_ebea :=_fc .MakeName ("\u0048e\u006c\u0076\u0065\u0074\u0069\u0063a");
+_adgb :=12.0;if _dbc !=nil &&_dbc .FontName !=nil {_ebea ,_ =_fc .GetName (_dbc .FontName );};if _ccgg !=nil {_adgb =*_ccgg ;};_efc :=_c .NewContentCreator ();_efc .Add_q ();_efc .SetNonStrokingColor (_adda .FillColor );_efc .Add_re (0,0,_cgea ,_fefe );
+_efc .Add_f ();_efc .Add_Q ();_efc .Add_q ();_efc .Add_BT ();_gdgd :=0.0;for _ ,_gbbb :=range _faf {_bcde ,_bdge :=_bcbg .GetRuneMetrics (_gbbb );if !_bdge {_f .Log .Debug ("\u0046\u006f\u006e\u0074\u0020\u0064o\u0065\u0073\u0020\u006e\u006f\u0074\u0020\u0068\u0061\u0076\u0065\u0020\u0072\u0075\u006e\u0065\u0020\u006d\u0065\u0074r\u0069\u0063\u0073\u0020\u0066\u006f\u0072\u0020\u0025\u0076\u0020\u002d\u0020\u0073k\u0069p\u0070\u0069\u006e\u0067",_gbbb );
+continue ;};_gdgd +=_bcde .Wx ;};_gdgd =_gdgd /1000.0*_adgb ;var _cac float64 ;if _dbc !=nil {_cac ,_bfced =_dbc .GetCapHeight ();if _bfced !=nil {_f .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0055\u006e\u0061\u0062\u006c\u0065 \u0074\u006f\u0020\u0067\u0065\u0074 \u0066\u006f\u006e\u0074\u0020\u0043\u0061\u0070\u0048\u0065\u0069\u0067\u0068t\u003a\u0020\u0025\u0076",_bfced );
+};};if int (_cac )<=0{_f .Log .Debug ("W\u0041\u0052\u004e\u003a\u0020\u0043\u0061\u0070\u0048e\u0069\u0067\u0068\u0074\u0020\u006e\u006ft \u0061\u0076\u0061\u0069l\u0061\u0062\u006c\u0065\u0020\u002d\u0020\u0073\u0065tt\u0069\u006eg\u0020\u0074\u006f\u0020\u0031\u0030\u0030\u0030");
+_cac =1000;};_fcdb :=_cac /1000.0*_adgb ;_dgge :=(_fefe -_fcdb )/2.0;_ccab :=(_cgea -_gdgd )/2.0;_efc .Add_Tf (*_ebea ,_adgb );_efc .SetNonStrokingColor (_babc );_efc .Add_Td (_ccab ,_dgge );_efc .Add_Tj (*_fc .MakeString (_faf ));_efc .Add_ET ();_efc .Add_Q ();
+_fabb :=_ef .NewXObjectForm ();_fabb .SetContentStream (_efc .Bytes (),_fc .NewRawEncoder ());_fabb .BBox =_fc .MakeArrayFromFloats ([]float64 {0,0,_cgea ,_fefe });_fabb .Resources =_ef .NewPdfPageResources ();_fabb .Resources .SetFontByName (*_ebea ,_bcbg .ToPdfObject ());
+_bfab :=_fc .MakeDict ();_bfab .Set ("\u004e",_fabb .ToPdfObject ());_fcdc :=_ef .NewPdfAnnotationWidget ();_fcdc .Rect =_fc .MakeArrayFromFloats ([]float64 {_fgc ,_cccb ,_fgc +_cgea ,_cccb +_fefe });_fcdc .P =_gfae .ToPdfObject ();_fcdc .F =_fc .MakeInteger (4);
+_fcdc .Parent =_dfaa .ToPdfObject ();_fcdc .A =_abcbd ;_fcdc .MK =_dded ;_fcdc .AP =_bfab ;_dfaa .Annotations =append (_dfaa .Annotations ,_fcdc );return _dfaa ,nil ;};func _gbae ()_fc .StreamEncoder {return _fc .NewFlateEncoder ()};func _caaf (_gfga [][]_af .CubicBezierCurve ,_eagcg *_ef .PdfColorDeviceRGB ,_ace float64 )([]byte ,*_ef .PdfRectangle ,error ){_faag :=_c .NewContentCreator ();
+_faag .Add_q ().SetStrokingColor (_eagcg ).Add_w (_ace );_bdggd :=_af .NewCubicBezierPath ();for _ ,_gaea :=range _gfga {_bdggd .Curves =append (_bdggd .Curves ,_gaea ...);for _eaga ,_cabb :=range _gaea {if _eaga ==0{_faag .Add_m (_cabb .P0 .X ,_cabb .P0 .Y );
+}else {_faag .Add_l (_cabb .P0 .X ,_cabb .P0 .Y );};_faag .Add_c (_cabb .P1 .X ,_cabb .P1 .Y ,_cabb .P2 .X ,_cabb .P2 .Y ,_cabb .P3 .X ,_cabb .P3 .Y );};};_faag .Add_S ().Add_Q ();return _faag .Bytes (),_bdggd .GetBoundingBox ().ToPdfRectangle (),nil ;
+};
 
 // FileAnnotationDef holds base information for constructing an file attachment annotation.
 type FileAnnotationDef struct{
@@ -546,7 +426,7 @@ type FileAnnotationDef struct{
 X float64 ;Y float64 ;Width float64 ;Height float64 ;
 
 // EmbeddedFile is the file information to be attached.
-EmbeddedFile *_fba .EmbeddedFile ;
+EmbeddedFile *_ef .EmbeddedFile ;
 
 // Author is the author of the attachment file.
 Author string ;
@@ -569,64 +449,208 @@ Description string ;
 IconName string ;
 
 // Color is the color of the annotation.
-Color *_fba .PdfColorDeviceRGB ;
+Color *_ef .PdfColorDeviceRGB ;
 
 // CreationDate is the date and time when the file attachment was created.
 // If not set, the current time is used.
-CreationDate *_fb .Time ;};
+CreationDate *_a .Time ;};
 
-// NewCheckboxField generates a new checkbox field with partial name `name` at location `rect`
+// CheckboxFieldOptions defines optional parameters for a checkbox field a form.
+type CheckboxFieldOptions struct{Checked bool ;};const (_gdb quadding =0;_de quadding =1;_gcbc quadding =2;_bc float64 =2.0;);func _gdcd (_cced LineAnnotationDef ,_gcgdg string )([]byte ,*_ef .PdfRectangle ,*_ef .PdfRectangle ,error ){_eagad :=_af .Line {X1 :0,Y1 :0,X2 :_cced .X2 -_cced .X1 ,Y2 :_cced .Y2 -_cced .Y1 ,LineColor :_cced .LineColor ,Opacity :_cced .Opacity ,LineWidth :_cced .LineWidth ,LineEndingStyle1 :_cced .LineEndingStyle1 ,LineEndingStyle2 :_cced .LineEndingStyle2 };
+_caca ,_gefc ,_fbcg :=_eagad .Draw (_gcgdg );if _fbcg !=nil {return nil ,nil ,nil ,_fbcg ;};_begd :=&_ef .PdfRectangle {};_begd .Llx =_cced .X1 +_gefc .Llx ;_begd .Lly =_cced .Y1 +_gefc .Lly ;_begd .Urx =_cced .X1 +_gefc .Urx ;_begd .Ury =_cced .Y1 +_gefc .Ury ;
+return _caca ,_gefc ,_begd ,nil ;};func _fbge (_ebee *InkAnnotationDef )(*_fc .PdfObjectDictionary ,*_ef .PdfRectangle ,error ){_fcfg :=_ef .NewXObjectForm ();_dgcb ,_aebf ,_cgff :=_fbgd (_ebee );if _cgff !=nil {return nil ,nil ,_cgff ;};_cgff =_fcfg .SetContentStream (_dgcb ,nil );
+if _cgff !=nil {return nil ,nil ,_cgff ;};_fcfg .BBox =_aebf .ToPdfObject ();_fcfg .Resources =_ef .NewPdfPageResources ();_fcfg .Resources .ProcSet =_fc .MakeArray (_fc .MakeName ("\u0050\u0044\u0046"));_bdcc :=_fc .MakeDict ();_bdcc .Set ("\u004e",_fcfg .ToPdfObject ());
+return _bdcc ,_aebf ,nil ;};func _ffcff (_fdgc LineAnnotationDef )(*_fc .PdfObjectDictionary ,*_ef .PdfRectangle ,error ){_gfdd :=_ef .NewXObjectForm ();_gfdd .Resources =_ef .NewPdfPageResources ();_bbcg :="";if _fdgc .Opacity < 1.0{_dafa :=_fc .MakeDict ();
+_dafa .Set ("\u0063\u0061",_fc .MakeFloat (_fdgc .Opacity ));_gbcbb :=_gfdd .Resources .AddExtGState ("\u0067\u0073\u0031",_dafa );if _gbcbb !=nil {_f .Log .Debug ("U\u006e\u0061\u0062\u006c\u0065\u0020t\u006f\u0020\u0061\u0064\u0064\u0020\u0065\u0078\u0074g\u0073\u0074\u0061t\u0065 \u0067\u0073\u0031");
+return nil ,nil ,_gbcbb ;};_bbcg ="\u0067\u0073\u0031";};_faaaf ,_edece ,_fbaa ,_fffc :=_gdcd (_fdgc ,_bbcg );if _fffc !=nil {return nil ,nil ,_fffc ;};_fffc =_gfdd .SetContentStream (_faaaf ,nil );if _fffc !=nil {return nil ,nil ,_fffc ;};_gfdd .BBox =_edece .ToPdfObject ();
+_dfee :=_fc .MakeDict ();_dfee .Set ("\u004e",_gfdd .ToPdfObject ());return _dfee ,_fbaa ,nil ;};
+
+// GenerateAppearanceDict generates an appearance dictionary for widget annotation `wa` for the `field` in `form`.
+// Implements interface model.FieldAppearanceGenerator.
+func (_efff ImageFieldAppearance )GenerateAppearanceDict (form *_ef .PdfAcroForm ,field *_ef .PdfField ,wa *_ef .PdfAnnotationWidget )(*_fc .PdfObjectDictionary ,error ){_ ,_bgcg :=field .GetContext ().(*_ef .PdfFieldButton );if !_bgcg {if _f .Log .IsLogLevel (_f .LogLevelTrace ){_f .Log .Trace ("C\u006f\u0075\u006c\u0064\u0020\u006fn\u006c\u0079\u0020\u0068\u0061\u006ed\u006c\u0065\u0020\u0062\u0075\u0074\u0074o\u006e\u0020\u002d\u0020\u0069\u0067\u006e\u006f\u0072\u0069n\u0067");
+};return nil ,nil ;};_bafa ,_gfdbg :=_fc .GetDict (wa .AP );if _gfdbg &&_efff .OnlyIfMissing {if _f .Log .IsLogLevel (_f .LogLevelTrace ){_f .Log .Trace ("\u0041\u006c\u0072\u0065a\u0064\u0079\u0020\u0070\u006f\u0070\u0075\u006c\u0061\u0074e\u0064 \u002d\u0020\u0069\u0067\u006e\u006f\u0072i\u006e\u0067");
+};return _bafa ,nil ;};if form .DR ==nil {form .DR =_ef .NewPdfPageResources ();};switch _cec :=field .GetContext ().(type ){case *_ef .PdfFieldButton :if _cec .IsPush (){_bbdd ,_gdgb :=_dbd (_cec ,wa ,_efff .Style ());if _gdgb !=nil {return nil ,_gdgb ;
+};return _bbdd ,nil ;};};return nil ,nil ;};
+
+// LineAnnotationDef defines a line between point 1 (X1,Y1) and point 2 (X2,Y2).  The line ending styles can be none
+// (regular line), or arrows at either end.  The line also has a specified width, color and opacity.
+type LineAnnotationDef struct{X1 float64 ;Y1 float64 ;X2 float64 ;Y2 float64 ;LineColor *_ef .PdfColorDeviceRGB ;Opacity float64 ;LineWidth float64 ;LineEndingStyle1 _af .LineEndingStyle ;LineEndingStyle2 _af .LineEndingStyle ;};
+
+// CreateFileAttachmentAnnotation creates a file attachment annotation object that can be added to the annotation list of a PDF page.
+func CreateFileAttachmentAnnotation (fileDef FileAnnotationDef )(*_ef .PdfAnnotation ,error ){_gac :=_ef .NewPdfFileSpecFromEmbeddedFile (fileDef .EmbeddedFile );if fileDef .Color ==nil {fileDef .Color =_ef .NewPdfColorDeviceRGB (0.0,0.0,0.0);};if fileDef .Description ==""{fileDef .Description =fileDef .EmbeddedFile .Name ;
+};if fileDef .CreationDate ==nil {_gebb :=_a .Now ();fileDef .CreationDate =&_gebb ;};if fileDef .IconName ==""{fileDef .IconName ="\u0050u\u0073\u0068\u0050\u0069\u006e";};_ffga ,_bdaf :=_ef .NewPdfDateFromTime (*fileDef .CreationDate );if _bdaf !=nil {return nil ,_bdaf ;
+};_egfa :=_ef .NewPdfAnnotationFileAttachment ();_egfa .FS =_gac .ToPdfObject ();_egfa .C =_fc .MakeArrayFromFloats ([]float64 {fileDef .Color .R (),fileDef .Color .G (),fileDef .Color .B ()});_egfa .Contents =_fc .MakeString (fileDef .Description );_egfa .CreationDate =_ffga .ToPdfObject ();
+_egfa .M =_ffga .ToPdfObject ();_egfa .Name =_fc .MakeName (fileDef .IconName );_egfa .Rect =_fc .MakeArrayFromFloats ([]float64 {fileDef .X ,fileDef .Y ,fileDef .X +fileDef .Width ,fileDef .Y +fileDef .Height });_egfa .T =_fc .MakeString (fileDef .Author );
+_egfa .Subj =_fc .MakeString (fileDef .Subject );return _egfa .PdfAnnotation ,nil ;};
+
+// ComboboxFieldOptions defines optional parameters for a combobox form field.
+type ComboboxFieldOptions struct{
+
+// Choices is the list of string values that can be selected.
+Choices []string ;};
+
+// GenerateAppearanceDict generates an appearance dictionary for widget annotation `wa` for the `field` in `form`.
+// Implements interface model.FieldAppearanceGenerator.
+func (_dee FieldAppearance )GenerateAppearanceDict (form *_ef .PdfAcroForm ,field *_ef .PdfField ,wa *_ef .PdfAnnotationWidget )(*_fc .PdfObjectDictionary ,error ){if _f .Log .IsLogLevel (_f .LogLevelTrace ){_f .Log .Trace ("\u0047\u0065n\u0065\u0072\u0061\u0074e\u0041\u0070p\u0065\u0061\u0072\u0061\u006e\u0063\u0065\u0044i\u0063\u0074\u0020\u0066\u006f\u0072\u0020\u0025\u0076\u0020\u0020\u0056:\u0020\u0025\u002b\u0076",field .PartialName (),field .V );
+};_ ,_gg :=field .GetContext ().(*_ef .PdfFieldText );_efe ,_dff :=_fc .GetDict (wa .AP );if _dff &&_dee .OnlyIfMissing &&(!_gg ||!_dee .RegenerateTextFields ){if _f .Log .IsLogLevel (_f .LogLevelTrace ){_f .Log .Trace ("\u0041\u006c\u0072\u0065a\u0064\u0079\u0020\u0070\u006f\u0070\u0075\u006c\u0061\u0074e\u0064 \u002d\u0020\u0069\u0067\u006e\u006f\u0072i\u006e\u0067");
+};return _efe ,nil ;};if form .DR ==nil {form .DR =_ef .NewPdfPageResources ();};switch _bde :=field .GetContext ().(type ){case *_ef .PdfFieldText :_abc :=_bde ;if _dg :=_bad (_abc .PdfField );_dg ==""{_abc .DA =form .DA ;};if _dee ._fdf !=nil {if _dee ._fdf .FieldColors !=nil &&_dee ._fdf .FieldColors [field .PartialName ()]!=nil {_fe :=_dee ._fdf .FieldColors [field .PartialName ()];
+_geef ,_bf :=_fga (_abc ,_fe );if _bf !=nil {return nil ,_bf ;};_abc .DA =_geef ;}else if _dee ._fdf .TextColor !=nil {_bag ,_dae :=_fga (_abc ,_dee ._fdf .TextColor );if _dae !=nil {return nil ,_dae ;};_abc .DA =_bag ;};};switch {case _abc .Flags ().Has (_ef .FieldFlagPassword ):return nil ,nil ;
+case _abc .Flags ().Has (_ef .FieldFlagFileSelect ):return nil ,nil ;case _abc .Flags ().Has (_ef .FieldFlagComb ):if _abc .MaxLen !=nil {_gf ,_ade :=_cbgd (wa ,_abc ,form .DR ,_dee .Style ());if _ade !=nil {return nil ,_ade ;};return _gf ,nil ;};};_baa ,_baga :=_ag (wa ,_abc ,form .DR ,_dee .Style ());
+if _baga !=nil {return nil ,_baga ;};return _baa ,nil ;case *_ef .PdfFieldButton :_ebc :=_bde ;if _ebc .IsCheckbox (){_be ,_dbb :=_dbbf (wa ,_ebc ,form .DR ,_dee .Style ());if _dbb !=nil {return nil ,_dbb ;};return _be ,nil ;};_f .Log .Debug ("\u0054\u004f\u0044\u004f\u003a\u0020\u0055\u004e\u0048\u0041\u004e\u0044\u004c\u0045\u0044 \u0062u\u0074\u0074\u006f\u006e\u0020\u0074\u0079\u0070\u0065\u003a\u0020\u0025\u002b\u0076",_ebc .GetType ());
+case *_ef .PdfFieldChoice :_aeg :=_bde ;switch {case _aeg .Flags ().Has (_ef .FieldFlagCombo ):_bcf ,_bba :=_edfg (form ,wa ,_aeg ,_dee .Style ());if _bba !=nil {return nil ,_bba ;};return _bcf ,nil ;default:_ed ,_gfe :=_bbg (form ,wa ,_aeg ,_dee .Style ());
+if _gfe !=nil {return nil ,_gfe ;};return _ed ,nil ;};default:_f .Log .Debug ("\u0054\u004f\u0044\u004f\u003a\u0020\u0055\u004e\u0048\u0041N\u0044\u004c\u0045\u0044\u0020\u0066\u0069e\u006c\u0064\u0020\u0074\u0079\u0070\u0065\u003a\u0020\u0025\u0054",_bde );
+};return nil ,nil ;};func _bad (_ega *_ef .PdfField )string {if _ega ==nil {return "";};_adbg ,_gbbdb :=_ega .GetContext ().(*_ef .PdfFieldText );if !_gbbdb {return _bad (_ega .Parent );};if _adbg .DA !=nil {return _adbg .DA .Str ();};return _bad (_adbg .Parent );
+};func _cdec (_gfb []*SignatureLine ,_bga *SignatureFieldOpts )(*_fc .PdfObjectDictionary ,error ){if _bga ==nil {_bga =NewSignatureFieldOpts ();};var _dcbaf error ;var _ddg *_fc .PdfObjectName ;_deecfc :=_bga .Font ;if _deecfc !=nil {_bcdg ,_ :=_deecfc .GetFontDescriptor ();
+if _bcdg !=nil {if _bfgg ,_degf :=_bcdg .FontName .(*_fc .PdfObjectName );_degf {_ddg =_bfgg ;};};if _ddg ==nil {_ddg =_fc .MakeName ("\u0046\u006f\u006et\u0031");};}else {if _deecfc ,_dcbaf =_ef .NewStandard14Font ("\u0048e\u006c\u0076\u0065\u0074\u0069\u0063a");
+_dcbaf !=nil {return nil ,_dcbaf ;};_ddg =_fc .MakeName ("\u0048\u0065\u006c\u0076");};_fdcc :=_bga .FontSize ;if _fdcc <=0{_fdcc =10;};if _bga .LineHeight <=0{_bga .LineHeight =1;};_fad :=_bga .LineHeight *_fdcc ;_ceee ,_bdae :=_deecfc .GetRuneMetrics (' ');
+if !_bdae {return nil ,_da .New ("\u0074\u0068e \u0066\u006f\u006et\u0020\u0064\u006f\u0065s n\u006ft \u0068\u0061\u0076\u0065\u0020\u0061\u0020sp\u0061\u0063\u0065\u0020\u0067\u006c\u0079p\u0068");};_fcef :=_ceee .Wx ;var _abcf float64 ;var _aegge []string ;
+for _ ,_acbf :=range _gfb {if _acbf .Text ==""{continue ;};_ffb :=_acbf .Text ;if _acbf .Desc !=""{_ffb =_acbf .Desc +"\u003a\u0020"+_ffb ;};_aegge =append (_aegge ,_ffb );var _egf float64 ;for _ ,_cfbf :=range _ffb {_fcbab ,_dfd :=_deecfc .GetRuneMetrics (_cfbf );
+if !_dfd {continue ;};_egf +=_fcbab .Wx ;};if _egf > _abcf {_abcf =_egf ;};};_abcf =_abcf *_fdcc /1000.0;_eeb :=float64 (len (_aegge ))*_fad ;_badc :=_bga .Image !=nil ;_cagc :=_bga .Rect ;if _cagc ==nil {_cagc =[]float64 {0,0,_abcf ,_eeb };if _badc {_cagc [2]=_abcf *2;
+_cagc [3]=_eeb *2;};_bga .Rect =_cagc ;};_cbca :=_cagc [2]-_cagc [0];_degfb :=_cagc [3]-_cagc [1];_cbce ,_bcba :=_cagc ,_cagc ;var _bege ,_adf float64 ;if _badc &&len (_aegge )> 0{if _bga .ImagePosition <=SignatureImageRight {_dfa :=[]float64 {_cagc [0],_cagc [1],_cagc [0]+(_cbca /2),_cagc [3]};
+_bfce :=[]float64 {_cagc [0]+(_cbca /2),_cagc [1],_cagc [2],_cagc [3]};if _bga .ImagePosition ==SignatureImageLeft {_cbce ,_bcba =_dfa ,_bfce ;}else {_cbce ,_bcba =_bfce ,_dfa ;};}else {_eaa :=[]float64 {_cagc [0],_cagc [1],_cagc [2],_cagc [1]+(_degfb /2)};
+_cebf :=[]float64 {_cagc [0],_cagc [1]+(_degfb /2),_cagc [2],_cagc [3]};if _bga .ImagePosition ==SignatureImageTop {_cbce ,_bcba =_cebf ,_eaa ;}else {_cbce ,_bcba =_eaa ,_cebf ;};};};_bege =_bcba [2]-_bcba [0];_adf =_bcba [3]-_bcba [1];var _eed float64 ;
+if _bga .AutoSize {if _abcf > _bege ||_eeb > _adf {_aga :=_fd .Min (_bege /_abcf ,_adf /_eeb );_fdcc *=_aga ;};_fad =_bga .LineHeight *_fdcc ;_eed +=(_adf -float64 (len (_aegge ))*_fad )/2;};_egg :=_c .NewContentCreator ();_ddfa :=_ef .NewPdfPageResources ();
+_ddfa .SetFontByName (*_ddg ,_deecfc .ToPdfObject ());if _bga .BorderSize <=0{_bga .BorderSize =0;_bga .BorderColor =_ef .NewPdfColorDeviceGray (1);};_egg .Add_q ();if _bga .FillColor !=nil {_egg .SetNonStrokingColor (_bga .FillColor );};if _bga .BorderColor !=nil {_egg .SetStrokingColor (_bga .BorderColor );
+};_fcc :="";if _bga .FillOpacity < 1.0{_bfcg :=0;_fcc =_bb .Sprintf ("\u0047\u0053\u0025\u0064",_bfcg );for {_ ,_ccb :=_ddfa .GetExtGState (_fc .PdfObjectName (_fcc ));if !_ccb {break ;};_bfcg ++;_fcc =_bb .Sprintf ("\u0047\u0053\u0025\u0064",_bfcg );};
+_gefa :=_fc .MakeDict ();_gefa .Set ("\u0063\u0061",_fc .MakeFloat (_bga .FillOpacity ));_fcgc :=_ddfa .AddExtGState (_fc .PdfObjectName (_fcc ),_fc .MakeIndirectObject (_gefa ));if _fcgc !=nil {_f .Log .Debug (_fcgc .Error ());}else {_egg .Add_gs (_fc .PdfObjectName (_fcc ));
+};};_egg .Add_w (_bga .BorderSize ).Add_re (_cagc [0],_cagc [1],_cbca ,_degfb );if _bga .FillColor !=nil &&_bga .BorderColor !=nil {_egg .Add_B ();}else if _bga .FillColor !=nil {_egg .Add_f ();}else if _bga .BorderColor !=nil {_egg .Add_S ();};_egg .Add_Q ();
+if _bga .WatermarkImage !=nil {_bff :=[]float64 {_cagc [0],_cagc [1],_cagc [2],_cagc [3]};_bbdeg ,_fcda ,_adgfd :=_cabc (_bga .WatermarkImage ,"\u0049\u006d\u0061\u0067\u0065\u0057\u0061\u0074\u0065r\u006d\u0061\u0072\u006b",_bga ,_bff ,_egg );if _adgfd !=nil {return nil ,_adgfd ;
+};_ddfa .SetXObjectImageByName (*_bbdeg ,_fcda );};_egg .Add_q ();_egg .Translate (_bcba [0],_bcba [3]-_fad -_eed );_egg .Add_BT ();_eagf :=_deecfc .Encoder ();for _ ,_dfdd :=range _aegge {var _bdgg []byte ;for _ ,_cbfg :=range _dfdd {if _cf .IsSpace (_cbfg ){if len (_bdgg )> 0{_egg .SetNonStrokingColor (_bga .TextColor ).Add_Tf (*_ddg ,_fdcc ).Add_TL (_fad ).Add_TJ ([]_fc .PdfObject {_fc .MakeStringFromBytes (_bdgg )}...);
+_bdgg =nil ;};_egg .Add_Tf (*_ddg ,_fdcc ).Add_TL (_fad ).Add_TJ ([]_fc .PdfObject {_fc .MakeFloat (-_fcef )}...);}else {_bdgg =append (_bdgg ,_eagf .Encode (string (_cbfg ))...);};};if len (_bdgg )> 0{_egg .SetNonStrokingColor (_bga .TextColor ).Add_Tf (*_ddg ,_fdcc ).Add_TL (_fad ).Add_TJ ([]_fc .PdfObject {_fc .MakeStringFromBytes (_bdgg )}...);
+};_egg .Add_Td (0,-_fad );};_egg .Add_ET ();_egg .Add_Q ();if _badc {_efd ,_abd ,_becf :=_cabc (_bga .Image ,"\u0049\u006d\u0061\u0067\u0065\u0053\u0069\u0067\u006ea\u0074\u0075\u0072\u0065",_bga ,_cbce ,_egg );if _becf !=nil {return nil ,_becf ;};_ddfa .SetXObjectImageByName (*_efd ,_abd );
+};_afgae :=_ef .NewXObjectForm ();_afgae .Resources =_ddfa ;_afgae .BBox =_fc .MakeArrayFromFloats (_cagc );_afgae .SetContentStream (_egg .Bytes (),_gbae ());_acad :=_fc .MakeDict ();_acad .Set ("\u004e",_afgae .ToPdfObject ());return _acad ,nil ;};
+
+// NewComboboxField generates a new combobox form field with partial name `name` at location `rect`
 // on specified `page` and with field specific options `opt`.
-func NewCheckboxField (page *_fba .PdfPage ,name string ,rect []float64 ,opt CheckboxFieldOptions )(*_fba .PdfFieldButton ,error ){if page ==nil {return nil ,_fe .New ("\u0070a\u0067e\u0020\u006e\u006f\u0074\u0020s\u0070\u0065c\u0069\u0066\u0069\u0065\u0064");
-};if len (name )<=0{return nil ,_fe .New ("\u0072\u0065\u0071\u0075\u0069\u0072\u0065\u0064\u0020\u0061\u0074\u0074\u0072\u0069\u0062u\u0074e\u0020\u006e\u006f\u0074\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069\u0065\u0064");};if len (rect )!=4{return nil ,_fe .New ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u0061\u006e\u0067\u0065");
-};_bff ,_agb :=_fba .NewStandard14Font (_fba .ZapfDingbatsName );if _agb !=nil {return nil ,_agb ;};_cca :=_fba .NewPdfField ();_fge :=&_fba .PdfFieldButton {};_cca .SetContext (_fge );_fge .PdfField =_cca ;_fge .T =_aag .MakeString (name );_fge .SetType (_fba .ButtonTypeCheckbox );
-_dafc :="\u004f\u0066\u0066";if opt .Checked {_dafc ="\u0059\u0065\u0073";};_fge .V =_aag .MakeName (_dafc );_fgde :=_fba .NewPdfAnnotationWidget ();_fgde .Rect =_aag .MakeArrayFromFloats (rect );_fgde .P =page .ToPdfObject ();_fgde .F =_aag .MakeInteger (4);
-_fgde .Parent =_fge .ToPdfObject ();_bde :=rect [2]-rect [0];_acf :=rect [3]-rect [1];var _eaeb _f .Buffer ;_eaeb .WriteString ("\u0071\u000a");_eaeb .WriteString ("\u0030 \u0030\u0020\u0031\u0020\u0072\u0067\n");_eaeb .WriteString ("\u0042\u0054\u000a");
-_eaeb .WriteString ("\u002f\u005a\u0061D\u0062\u0020\u0031\u0032\u0020\u0054\u0066\u000a");_eaeb .WriteString ("\u0045\u0054\u000a");_eaeb .WriteString ("\u0051\u000a");_egad :=_aa .NewContentCreator ();_egad .Add_q ();_egad .Add_rg (0,0,1);_egad .Add_BT ();
-_egad .Add_Tf (*_aag .MakeName ("\u005a\u0061\u0044\u0062"),12);_egad .Add_Td (0,0);_egad .Add_ET ();_egad .Add_Q ();_bcd :=_fba .NewXObjectForm ();_bcd .SetContentStream (_egad .Bytes (),_aag .NewRawEncoder ());_bcd .BBox =_aag .MakeArrayFromFloats ([]float64 {0,0,_bde ,_acf });
-_bcd .Resources =_fba .NewPdfPageResources ();_bcd .Resources .SetFontByName ("\u005a\u0061\u0044\u0062",_bff .ToPdfObject ());_egad =_aa .NewContentCreator ();_egad .Add_q ();_egad .Add_re (0,0,_bde ,_acf );_egad .Add_W ().Add_n ();_egad .Add_rg (0,0,1);
-_egad .Translate (0,3.0);_egad .Add_BT ();_egad .Add_Tf (*_aag .MakeName ("\u005a\u0061\u0044\u0062"),12);_egad .Add_Td (0,0);_egad .Add_Tj (*_aag .MakeString ("\u0034"));_egad .Add_ET ();_egad .Add_Q ();_aaag :=_fba .NewXObjectForm ();_aaag .SetContentStream (_egad .Bytes (),_aag .NewRawEncoder ());
-_aaag .BBox =_aag .MakeArrayFromFloats ([]float64 {0,0,_bde ,_acf });_aaag .Resources =_fba .NewPdfPageResources ();_aaag .Resources .SetFontByName ("\u005a\u0061\u0044\u0062",_bff .ToPdfObject ());_fef :=_aag .MakeDict ();_fef .Set ("\u004f\u0066\u0066",_bcd .ToPdfObject ());
-_fef .Set ("\u0059\u0065\u0073",_aaag .ToPdfObject ());_bebd :=_aag .MakeDict ();_bebd .Set ("\u004e",_fef );_fgde .AP =_bebd ;_fgde .AS =_aag .MakeName (_dafc );_fge .Annotations =append (_fge .Annotations ,_fgde );return _fge ,nil ;};
+func NewComboboxField (page *_ef .PdfPage ,name string ,rect []float64 ,opt ComboboxFieldOptions )(*_ef .PdfFieldChoice ,error ){if page ==nil {return nil ,_da .New ("\u0070a\u0067e\u0020\u006e\u006f\u0074\u0020s\u0070\u0065c\u0069\u0066\u0069\u0065\u0064");
+};if len (name )<=0{return nil ,_da .New ("\u0072\u0065\u0071\u0075\u0069\u0072\u0065\u0064\u0020\u0061\u0074\u0074\u0072\u0069\u0062u\u0074e\u0020\u006e\u006f\u0074\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069\u0065\u0064");};if len (rect )!=4{return nil ,_da .New ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u0061\u006e\u0067\u0065");
+};_dgb :=_ef .NewPdfField ();_bffa :=&_ef .PdfFieldChoice {};_dgb .SetContext (_bffa );_bffa .PdfField =_dgb ;_bffa .T =_fc .MakeString (name );_bffa .Opt =_fc .MakeArray ();for _ ,_gbe :=range opt .Choices {_bffa .Opt .Append (_fc .MakeString (_gbe ));
+};_bffa .SetFlag (_ef .FieldFlagCombo );_caa :=_ef .NewPdfAnnotationWidget ();_caa .Rect =_fc .MakeArrayFromFloats (rect );_caa .P =page .ToPdfObject ();_caa .F =_fc .MakeInteger (4);_caa .Parent =_bffa .ToPdfObject ();_bffa .Annotations =append (_bffa .Annotations ,_caa );
+return _bffa ,nil ;};
+
+// Style returns the appearance style of `fa`. If not specified, returns default style.
+func (_cgc ImageFieldAppearance )Style ()AppearanceStyle {if _cgc ._dac !=nil {return *_cgc ._dac ;};return AppearanceStyle {BorderSize :0.0,BorderColor :_ef .NewPdfColorDeviceGray (0),FillColor :_ef .NewPdfColorDeviceGray (1),DrawAlignmentReticle :false };
+};
 
 // WrapContentStream ensures that the entire content stream for a `page` is wrapped within q ... Q operands.
 // Ensures that following operands that are added are not affected by additional operands that are added.
 // Implements interface model.ContentStreamWrapper.
-func (_aef FieldAppearance )WrapContentStream (page *_fba .PdfPage )error {_ddgff ,_gfdf :=page .GetAllContentStreams ();if _gfdf !=nil {return _gfdf ;};_feeb :=_aa .NewContentStreamParser (_ddgff );_accf ,_gfdf :=_feeb .Parse ();if _gfdf !=nil {return _gfdf ;
-};_accf .WrapIfNeeded ();_cfdb :=[]string {_accf .String ()};return page .SetContentStreams (_cfdb ,_fff ());};func (_eab *AppearanceStyle )applyAppearanceCharacteristics (_dadb *_aag .PdfObjectDictionary ,_aeae *_aag .PdfObjectDictionary ,_deg *_fba .PdfFont )error {if !_eab .AllowMK {return nil ;
-};if CA ,_gff :=_aag .GetString (_dadb .Get ("\u0043\u0041"));_gff &&_deg !=nil {_cdef :=CA .Bytes ();if len (_cdef )!=0{_fgdf :=[]rune (_deg .Encoder ().Decode (_cdef ));if len (_fgdf )==1{_eab .CheckmarkRune =_fgdf [0];};};};if BC ,_cfd :=_aag .GetArray (_dadb .Get ("\u0042\u0043"));
-_cfd {_edb ,_ccfg :=BC .ToFloat64Array ();if _ccfg !=nil {return _ccfg ;};switch len (_edb ){case 1:_eab .BorderColor =_fba .NewPdfColorDeviceGray (_edb [0]);case 3:_eab .BorderColor =_fba .NewPdfColorDeviceRGB (_edb [0],_edb [1],_edb [2]);case 4:_eab .BorderColor =_fba .NewPdfColorDeviceCMYK (_edb [0],_edb [1],_edb [2],_edb [3]);
-default:_d .Log .Debug ("\u0045\u0052\u0052\u004f\u0052:\u0020\u0042\u0043\u0020\u002d\u0020\u0049\u006e\u0076\u0061\u006c\u0069\u0064 \u006e\u0075\u006d\u0062\u0065\u0072\u0020\u006f\u0066\u0020\u0063\u006f\u006c\u006f\u0072\u0020\u0063\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u0073\u0020\u0028\u0025\u0064)",len (_edb ));
-};if _aeae !=nil {if _ecd ,_dde :=_aag .GetNumberAsFloat (_aeae .Get ("\u0057"));_dde ==nil {_eab .BorderSize =_ecd ;};};};if BG ,_aaca :=_aag .GetArray (_dadb .Get ("\u0042\u0047"));_aaca {_fbfg ,_dcgc :=BG .ToFloat64Array ();if _dcgc !=nil {return _dcgc ;
-};switch len (_fbfg ){case 1:_eab .FillColor =_fba .NewPdfColorDeviceGray (_fbfg [0]);case 3:_eab .FillColor =_fba .NewPdfColorDeviceRGB (_fbfg [0],_fbfg [1],_fbfg [2]);case 4:_eab .FillColor =_fba .NewPdfColorDeviceCMYK (_fbfg [0],_fbfg [1],_fbfg [2],_fbfg [3]);
-default:_d .Log .Debug ("\u0045\u0052\u0052\u004f\u0052:\u0020\u0042\u0047\u0020\u002d\u0020\u0049\u006e\u0076\u0061\u006c\u0069\u0064 \u006e\u0075\u006d\u0062\u0065\u0072\u0020\u006f\u0066\u0020\u0063\u006f\u006c\u006f\u0072\u0020\u0063\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u0073\u0020\u0028\u0025\u0064)",len (_fbfg ));
-};};return nil ;};
+func (_beee ImageFieldAppearance )WrapContentStream (page *_ef .PdfPage )error {_egfb ,_fggeg :=page .GetAllContentStreams ();if _fggeg !=nil {return _fggeg ;};_bdgf :=_c .NewContentStreamParser (_egfb );_fea ,_fggeg :=_bdgf .Parse ();if _fggeg !=nil {return _fggeg ;
+};_fea .WrapIfNeeded ();_aedeb :=[]string {_fea .String ()};return page .SetContentStreams (_aedeb ,_gbae ());};func _feff (_bdea *_ef .PdfField ,_daa ,_bcfb float64 ,_egege string ,_fbec AppearanceStyle ,_cdc *_c .ContentStreamOperations ,_febc *_ef .PdfPageResources ,_bfcb *_fc .PdfObjectDictionary )(*_ef .XObjectForm ,error ){_bdeae :=_ef .NewPdfPageResources ();
+_dbe ,_bcac :=_daa ,_bcfb ;_ggc :=_c .NewContentCreator ();if _fbec .BorderSize > 0{_ceab (_ggc ,_fbec ,_daa ,_bcfb );};if _fbec .DrawAlignmentReticle {_bfde :=_fbec ;_bfde .BorderSize =0.2;_cce (_ggc ,_bfde ,_daa ,_bcfb );};_ggc .Add_BMC ("\u0054\u0078");
+_ggc .Add_q ();_ggc .Add_BT ();_daa ,_bcfb =_fbec .applyRotation (_bfcb ,_daa ,_bcfb ,_ggc );_adgc ,_bfda ,_ebbd :=_fbec .processDA (_bdea ,_cdc ,_febc ,_bdeae ,_ggc );if _ebbd !=nil {return nil ,_ebbd ;};_afcf :=_adgc .Font ;_facf :=_adgc .Size ;_aec :=_fc .MakeName (_adgc .Name );
+_dfg :=_facf ==0;if _dfg &&_bfda {_facf =_bcfb *_fbec .AutoFontSizeFraction ;};_acb :=_afcf .Encoder ();if _acb ==nil {_f .Log .Debug ("\u0057\u0041RN\u003a\u0020\u0066\u006f\u006e\u0074\u0020\u0065\u006e\u0063\u006f\u0064\u0065\u0072\u0020\u0069\u0073\u0020\u006e\u0069l\u002e\u0020\u0041\u0073s\u0075\u006d\u0069\u006eg \u0069\u0064e\u006et\u0069\u0074\u0079\u0020\u0065\u006ec\u006f\u0064\u0065r\u002e\u0020O\u0075\u0074\u0070\u0075\u0074\u0020\u006d\u0061\u0079\u0020\u0062\u0065\u0020\u0069n\u0063\u006f\u0072\u0072\u0065\u0063\u0074\u002e");
+_acb =_d .NewIdentityTextEncoder ("\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079\u002d\u0048");};if len (_egege )==0{return nil ,nil ;};_fecf :=_bc ;if _fbec .MarginLeft !=nil {_fecf =*_fbec .MarginLeft ;};_gec :=0.0;if _acb !=nil {for _ ,_gafd :=range _egege {_edg ,_egecb :=_afcf .GetRuneMetrics (_gafd );
+if !_egecb {_f .Log .Debug ("\u0046\u006f\u006e\u0074\u0020\u0064o\u0065\u0073\u0020\u006e\u006f\u0074\u0020\u0068\u0061\u0076\u0065\u0020\u0072\u0075\u006e\u0065\u0020\u006d\u0065\u0074r\u0069\u0063\u0073\u0020\u0066\u006f\u0072\u0020\u0025\u0076\u0020\u002d\u0020\u0073k\u0069p\u0070\u0069\u006e\u0067",_gafd );
+continue ;};_gec +=_edg .Wx ;};_egege =string (_acb .Encode (_egege ));};if _facf ==0||_dfg &&_gec > 0&&_fecf +_gec *_facf /1000.0> _daa {_facf =0.95*1000.0*(_daa -_fecf )/_gec ;};_egcg :=1.0*_facf ;_ggcf :=2.0;{_ebcg :=_egcg ;if _dfg &&_ggcf +_ebcg > _bcfb {_facf =0.95*(_bcfb -_ggcf );
+_egcg =1.0*_facf ;_ebcg =_egcg ;};if _bcfb > _ebcg {_ggcf =(_bcfb -_ebcg )/2.0;_ggcf +=1.50;};};_ggc .Add_Tf (*_aec ,_facf );_ggc .Add_Td (_fecf ,_ggcf );_ggc .Add_Tj (*_fc .MakeString (_egege ));_ggc .Add_ET ();_ggc .Add_Q ();_ggc .Add_EMC ();_ebcb :=_ef .NewXObjectForm ();
+_ebcb .Resources =_bdeae ;_ebcb .BBox =_fc .MakeArrayFromFloats ([]float64 {0,0,_dbe ,_bcac });_ebcb .SetContentStream (_ggc .Bytes (),_gbae ());return _ebcb ,nil ;};
 
-// TextFieldOptions defines optional parameter for a text field in a form.
-type TextFieldOptions struct{MaxLen int ;Value string ;
+// CreateCircleAnnotation creates a circle/ellipse annotation object with appearance stream that can be added to
+// page PDF annotations.
+func CreateCircleAnnotation (circDef CircleAnnotationDef )(*_ef .PdfAnnotation ,error ){_ea :=_ef .NewPdfAnnotationCircle ();if circDef .BorderEnabled {_afc ,_ga ,_df :=circDef .BorderColor .R (),circDef .BorderColor .G (),circDef .BorderColor .B ();_ea .C =_fc .MakeArrayFromFloats ([]float64 {_afc ,_ga ,_df });
+_ge :=_ef .NewBorderStyle ();_ge .SetBorderWidth (circDef .BorderWidth );_ea .BS =_ge .ToPdfObject ();};if circDef .FillEnabled {_fg ,_ab ,_db :=circDef .FillColor .R (),circDef .FillColor .G (),circDef .FillColor .B ();_ea .IC =_fc .MakeArrayFromFloats ([]float64 {_fg ,_ab ,_db });
+}else {_ea .IC =_fc .MakeArrayFromIntegers ([]int {});};if circDef .Opacity < 1.0{_ea .CA =_fc .MakeFloat (circDef .Opacity );};_gb ,_acd ,_gbd :=_gaa (circDef );if _gbd !=nil {return nil ,_gbd ;};_ea .AP =_gb ;_ea .Rect =_fc .MakeArrayFromFloats ([]float64 {_acd .Llx ,_acd .Lly ,_acd .Urx ,_acd .Ury });
+return _ea .PdfAnnotation ,nil ;};const (SignatureImageLeft SignatureImagePosition =iota ;SignatureImageRight ;SignatureImageTop ;SignatureImageBottom ;);
 
-// TextColor defines the color of the text in hex format. e.g #43fd23.
-// If it has an invalid value a #000000 (black) color is taken as default
-TextColor string ;
+// NewSignatureFieldOpts returns a new initialized instance of options
+// used to generate a signature appearance.
+func NewSignatureFieldOpts ()*SignatureFieldOpts {return &SignatureFieldOpts {Font :_ef .DefaultFont (),FontSize :10,LineHeight :1,AutoSize :true ,TextColor :_ef .NewPdfColorDeviceGray (0),BorderColor :_ef .NewPdfColorDeviceGray (0),FillColor :_ef .NewPdfColorDeviceGray (1),FillOpacity :1.0,Encoder :_fc .NewFlateEncoder (),ImagePosition :SignatureImageLeft };
+};func (_aece *AppearanceStyle )applyRotation (_aeba *_fc .PdfObjectDictionary ,_ebfc ,_bced float64 ,_bec *_c .ContentCreator )(float64 ,float64 ){if !_aece .AllowMK {return _ebfc ,_bced ;};if _aeba ==nil {return _ebfc ,_bced ;};_gef ,_ :=_fc .GetNumberAsFloat (_aeba .Get ("\u0052"));
+if _gef ==0{return _ebfc ,_bced ;};_cbe :=-_gef ;_gedd :=_af .Path {Points :[]_af .Point {_af .NewPoint (0,0).Rotate (_cbe ),_af .NewPoint (_ebfc ,0).Rotate (_cbe ),_af .NewPoint (0,_bced ).Rotate (_cbe ),_af .NewPoint (_ebfc ,_bced ).Rotate (_cbe )}}.GetBoundingBox ();
+_bec .RotateDeg (_gef );_bec .Translate (_gedd .X ,_gedd .Y );return _gedd .Width ,_gedd .Height ;};
 
-// FontName defines the font of the text. Helvetica font is the default one.
-// It is recommended to use one of 14 standard PDF fonts.
-FontName string ;
+// CreateInkAnnotation creates an ink annotation object that can be added to the annotation list of a PDF page.
+func CreateInkAnnotation (inkDef InkAnnotationDef )(*_ef .PdfAnnotation ,error ){_abgg :=_ef .NewPdfAnnotationInk ();_aagf :=_fc .MakeArray ();for _ ,_eafd :=range inkDef .Paths {if _eafd .Length ()==0{continue ;};_bbe :=[]float64 {};for _ ,_babb :=range _eafd .Points {_eagcb :=_ac .RoundDefault (_babb .X );
+_dfae :=_ac .RoundDefault (_babb .Y );_bbe =append (_bbe ,_eagcb ,_dfae );};_aagf .Append (_fc .MakeArrayFromFloats (_bbe ));};_abgg .InkList =_aagf ;if inkDef .Color ==nil {inkDef .Color =_ef .NewPdfColorDeviceRGB (0.0,0.0,0.0);};_abgg .C =_fc .MakeArrayFromFloats ([]float64 {inkDef .Color .R (),inkDef .Color .G (),inkDef .Color .B ()});
+_faaa ,_edgb ,_gdab :=_fbge (&inkDef );if _gdab !=nil {return nil ,_gdab ;};_abgg .AP =_faaa ;_abgg .Rect =_fc .MakeArrayFromFloats ([]float64 {_edgb .Llx ,_edgb .Lly ,_edgb .Urx ,_edgb .Ury });return _abgg .PdfAnnotation ,nil ;};
 
-// FontSize defines the font size of the text, 12 is used by default.
-FontSize int ;};
+// NewFormResetButtonField would create a reset button in specified page according to the parameter in `FormResetActionOptions`.
+func NewFormResetButtonField (page *_ef .PdfPage ,opt FormResetActionOptions )(*_ef .PdfFieldButton ,error ){_abfe :=_ef .NewPdfActionResetForm ();_abfe .Fields =opt .Fields ;_abfe .Flags =_fc .MakeInteger (0);if opt .IsExclusionList {_abfe .Flags =_fc .MakeInteger (1);
+};_gbba ,_agg :=_befcd (page ,opt .Rectangle ,"\u0062\u0074\u006e\u0052\u0065\u0073\u0065\u0074",opt .Label ,opt .LabelColor ,opt .Font ,opt .FontSize ,_abfe .ToPdfObject ());if _agg !=nil {return nil ,_agg ;};return _gbba ,nil ;};func _cbgd (_cgg *_ef .PdfAnnotationWidget ,_gfcd *_ef .PdfFieldText ,_dgg *_ef .PdfPageResources ,_edc AppearanceStyle )(*_fc .PdfObjectDictionary ,error ){_bdcd :=_ef .NewPdfPageResources ();
+_ced ,_debe :=_fc .GetArray (_cgg .Rect );if !_debe {return nil ,_da .New ("\u0069\u006e\u0076a\u006c\u0069\u0064\u0020\u0052\u0065\u0063\u0074");};_gcbb ,_fda :=_ef .NewPdfRectangle (*_ced );if _fda !=nil {return nil ,_fda ;};_acce ,_dbgc :=_gcbb .Width (),_gcbb .Height ();
+_acdb ,_dfbb :=_acce ,_dbgc ;_ged ,_eaf :=_fc .GetDict (_cgg .MK );if _eaf {_gaba ,_ :=_fc .GetDict (_cgg .BS );_gaac :=_edc .applyAppearanceCharacteristics (_ged ,_gaba ,nil );if _gaac !=nil {return nil ,_gaac ;};};_fgab ,_eaf :=_fc .GetIntVal (_gfcd .MaxLen );
+if !_eaf {return nil ,_da .New ("\u006d\u0061\u0078\u006c\u0065\u006e\u0020\u006e\u006ft\u0020\u0073\u0065\u0074");};if _fgab <=0{return nil ,_da .New ("\u006d\u0061\u0078\u004c\u0065\u006e\u0020\u0069\u006ev\u0061\u006c\u0069\u0064");};_deecf :=_acce /float64 (_fgab );
+_gdbc ,_fda :=_c .NewContentStreamParser (_bad (_gfcd .PdfField )).Parse ();if _fda !=nil {return nil ,_fda ;};_daed :=_c .NewContentCreator ();if _edc .BorderSize > 0{_ceab (_daed ,_edc ,_acce ,_dbgc );};if _edc .DrawAlignmentReticle {_accec :=_edc ;_accec .BorderSize =0.2;
+_cce (_daed ,_accec ,_acce ,_dbgc );};_daed .Add_BMC ("\u0054\u0078");_daed .Add_q ();_ ,_dbgc =_edc .applyRotation (_ged ,_acce ,_dbgc ,_daed );_daed .Add_BT ();_afga ,_bgc ,_fda :=_edc .processDA (_gfcd .PdfField ,_gdbc ,_dgg ,_bdcd ,_daed );if _fda !=nil {return nil ,_fda ;
+};_gfd :=_afga .Font ;_bfe :=_fc .MakeName (_afga .Name );_fff :=_afga .Size ;_aac :=_fff ==0;if _aac &&_bgc {_fff =_dbgc *_edc .AutoFontSizeFraction ;};_bcb :=_gfd .Encoder ();if _bcb ==nil {_f .Log .Debug ("\u0057\u0041RN\u003a\u0020\u0066\u006f\u006e\u0074\u0020\u0065\u006e\u0063\u006f\u0064\u0065\u0072\u0020\u0069\u0073\u0020\u006e\u0069l\u002e\u0020\u0041\u0073s\u0075\u006d\u0069\u006eg \u0069\u0064e\u006et\u0069\u0074\u0079\u0020\u0065\u006ec\u006f\u0064\u0065r\u002e\u0020O\u0075\u0074\u0070\u0075\u0074\u0020\u006d\u0061\u0079\u0020\u0062\u0065\u0020\u0069n\u0063\u006f\u0072\u0072\u0065\u0063\u0074\u002e");
+_bcb =_d .NewIdentityTextEncoder ("\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079\u002d\u0048");};var _efea string ;if _ggd ,_fac :=_fc .GetString (_gfcd .V );_fac {_efea =_ggd .Decoded ();};_efea =_gbcf (_efea );_daed .Add_Tf (*_bfe ,_fff );var _dfe float64 ;
+for _ ,_faa :=range _efea {_egb ,_bbff :=_gfd .GetRuneMetrics (_faa );if !_bbff {_f .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0052\u0075\u006e\u0065\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064\u0020\u0069\u006e\u0020\u0066\u006fn\u0074\u003a\u0020\u0025\u0076\u0020\u002d\u0020\u0073\u006b\u0069\u0070\u0070\u0069n\u0067 \u006f\u0076\u0065\u0072",_faa );
+continue ;};_bdd :=_egb .Wy ;if int (_bdd )<=0{_bdd =_egb .Wx ;};if _bdd > _dfe {_dfe =_bdd ;};};if int (_dfe )==0{_f .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0055\u006e\u0061\u0062\u006c\u0065\u0020\u0074o\u0020\u0064\u0065\u0074\u0065\u0072\u006d\u0069\u006e\u0065\u0020\u006d\u0061x\u0020\u0067\u006c\u0079\u0070\u0068\u0020\u0073\u0069\u007a\u0065\u0020- \u0075\u0073\u0069\u006e\u0067\u0020\u0031\u0030\u0030\u0030");
+_dfe =1000;};_beaf ,_fda :=_gfd .GetFontDescriptor ();if _fda !=nil {_f .Log .Debug ("\u0045\u0072ro\u0072\u003a\u0020U\u006e\u0061\u0062\u006ce t\u006f g\u0065\u0074\u0020\u0066\u006f\u006e\u0074 d\u0065\u0073\u0063\u0072\u0069\u0070\u0074o\u0072");};
+var _fcf float64 ;if _beaf !=nil {_fcf ,_fda =_beaf .GetCapHeight ();if _fda !=nil {_f .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0055\u006e\u0061\u0062\u006c\u0065 \u0074\u006f\u0020\u0067\u0065\u0074 \u0066\u006f\u006e\u0074\u0020\u0043\u0061\u0070\u0048\u0065\u0069\u0067\u0068t\u003a\u0020\u0025\u0076",_fda );
+};};if int (_fcf )<=0{_f .Log .Debug ("W\u0041\u0052\u004e\u003a\u0020\u0043\u0061\u0070\u0048e\u0069\u0067\u0068\u0074\u0020\u006e\u006ft \u0061\u0076\u0061\u0069l\u0061\u0062\u006c\u0065\u0020\u002d\u0020\u0073\u0065tt\u0069\u006eg\u0020\u0074\u006f\u0020\u0031\u0030\u0030\u0030");
+_fcf =1000.0;};_dgdd :=_fcf /1000.0*_fff ;_fce :=0.0;_fcb :=1.0*_fff *(_dfe /1000.0);{_ebg :=_fcb ;if _aac &&_fce +_ebg > _dbgc {_fff =0.95*(_dbgc -_fce );_dgdd =_fcf /1000.0*_fff ;};if _dbgc > _dgdd {_fce =(_dbgc -_dgdd )/2.0;};};_daed .Add_Td (0,_fce );
+if _gga ,_age :=_fc .GetIntVal (_gfcd .Q );_age {switch _gga {case 2:if len (_efea )< _fgab {_cfbe :=float64 (_fgab -len (_efea ))*_deecf ;_daed .Add_Td (_cfbe ,0);};};};for _dffa ,_fef :=range _efea {_geefd :=_bc ;if _edc .MarginLeft !=nil {_geefd =*_edc .MarginLeft ;
+};_cfd :=string (_fef );if _bcb !=nil {_cggg ,_fegc :=_gfd .GetRuneMetrics (_fef );if !_fegc {_f .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0052\u0075\u006e\u0065\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064\u0020\u0069\u006e\u0020\u0066\u006fn\u0074\u003a\u0020\u0025\u0076\u0020\u002d\u0020\u0073\u006b\u0069\u0070\u0070\u0069n\u0067 \u006f\u0076\u0065\u0072",_fef );
+continue ;};_cfd =string (_bcb .Encode (_cfd ));_bcfg :=_fff *_cggg .Wx /1000.0;_cbd :=(_deecf -_bcfg )/2;_geefd =_cbd ;};_daed .Add_Td (_geefd ,0);_daed .Add_Tj (*_fc .MakeString (_cfd ));if _dffa !=len (_efea )-1{_daed .Add_Td (_deecf -_geefd ,0);};};
+_daed .Add_ET ();_daed .Add_Q ();_daed .Add_EMC ();_acda :=_ef .NewXObjectForm ();_acda .Resources =_bdcd ;_acda .BBox =_fc .MakeArrayFromFloats ([]float64 {0,0,_acdb ,_dfbb });_acda .SetContentStream (_daed .Bytes (),_gbae ());_adg :=_fc .MakeDict ();
+_adg .Set ("\u004e",_acda .ToPdfObject ());return _adg ,nil ;};func _gbcf (_adcf string )string {if len (_adcf )==0{return _adcf ;};_aedg :=_fc .IsTextWriteDirectionLTR (_adcf );if !_aedg {_cged ,_gdcf :=_bg .ArabicShape (_adcf );if _gdcf !=nil {_f .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0061\u0070\u0070\u006c\u0079\u0069\u006e\u0067\u0020\u0041\u0072\u0061\u0062\u0069\u0063\u0020\u0074\u0065x\u0074\u0020\u0073\u0068\u0061p\u0069\u006eg\u003a\u0020\u0025\u0076",_gdcf .Error ());
+return _adcf ;};return _fc .FormatWriteDirectionLTR (_cged ,false );};return _adcf ;};
 
-// CreateLineAnnotation creates a line annotation object that can be added to page PDF annotations.
-func CreateLineAnnotation (lineDef LineAnnotationDef )(*_fba .PdfAnnotation ,error ){_bfab :=_fba .NewPdfAnnotationLine ();_bfab .L =_aag .MakeArrayFromFloats ([]float64 {lineDef .X1 ,lineDef .Y1 ,lineDef .X2 ,lineDef .Y2 });_abab :=_aag .MakeName ("\u004e\u006f\u006e\u0065");
-if lineDef .LineEndingStyle1 ==_ef .LineEndingStyleArrow {_abab =_aag .MakeName ("C\u006c\u006f\u0073\u0065\u0064\u0041\u0072\u0072\u006f\u0077");};_dcba :=_aag .MakeName ("\u004e\u006f\u006e\u0065");if lineDef .LineEndingStyle2 ==_ef .LineEndingStyleArrow {_dcba =_aag .MakeName ("C\u006c\u006f\u0073\u0065\u0064\u0041\u0072\u0072\u006f\u0077");
-};_bfab .LE =_aag .MakeArray (_abab ,_dcba );if lineDef .Opacity < 1.0{_bfab .CA =_aag .MakeFloat (lineDef .Opacity );};_ccd ,_cabb ,_eadb :=lineDef .LineColor .R (),lineDef .LineColor .G (),lineDef .LineColor .B ();_bfab .IC =_aag .MakeArrayFromFloats ([]float64 {_ccd ,_cabb ,_eadb });
-_bfab .C =_aag .MakeArrayFromFloats ([]float64 {_ccd ,_cabb ,_eadb });_fgf :=_fba .NewBorderStyle ();_fgf .SetBorderWidth (lineDef .LineWidth );_bfab .BS =_fgf .ToPdfObject ();_abedf ,_ebea ,_cfee :=_bada (lineDef );if _cfee !=nil {return nil ,_cfee ;};
-_bfab .AP =_abedf ;_bfab .Rect =_aag .MakeArrayFromFloats ([]float64 {_ebea .Llx ,_ebea .Lly ,_ebea .Urx ,_ebea .Ury });return _bfab .PdfAnnotation ,nil ;};func _fff ()_aag .StreamEncoder {return _aag .NewFlateEncoder ()};func _fcca (_fcef *_fba .PdfField ,_bbf ,_egc float64 ,_bbfd string ,_gaabc AppearanceStyle ,_gfde *_aa .ContentStreamOperations ,_ddcg *_fba .PdfPageResources ,_dbd *_aag .PdfObjectDictionary )(*_fba .XObjectForm ,error ){_gdcd :=_fba .NewPdfPageResources ();
-_baef ,_ebc :=_bbf ,_egc ;_ddce :=_aa .NewContentCreator ();if _gaabc .BorderSize > 0{_ggeff (_ddce ,_gaabc ,_bbf ,_egc );};if _gaabc .DrawAlignmentReticle {_efde :=_gaabc ;_efde .BorderSize =0.2;_ccfa (_ddce ,_efde ,_bbf ,_egc );};_ddce .Add_BMC ("\u0054\u0078");
-_ddce .Add_q ();_ddce .Add_BT ();_bbf ,_egc =_gaabc .applyRotation (_dbd ,_bbf ,_egc ,_ddce );_fdbc ,_ged ,_dfaa :=_gaabc .processDA (_fcef ,_gfde ,_ddcg ,_gdcd ,_ddce );if _dfaa !=nil {return nil ,_dfaa ;};_caec :=_fdbc .Font ;_cfg :=_fdbc .Size ;_ggccd :=_aag .MakeName (_fdbc .Name );
-_cdfd :=_cfg ==0;if _cdfd &&_ged {_cfg =_egc *_gaabc .AutoFontSizeFraction ;};_cfe :=_caec .Encoder ();if _cfe ==nil {_d .Log .Debug ("\u0057\u0041RN\u003a\u0020\u0066\u006f\u006e\u0074\u0020\u0065\u006e\u0063\u006f\u0064\u0065\u0072\u0020\u0069\u0073\u0020\u006e\u0069l\u002e\u0020\u0041\u0073s\u0075\u006d\u0069\u006eg \u0069\u0064e\u006et\u0069\u0074\u0079\u0020\u0065\u006ec\u006f\u0064\u0065r\u002e\u0020O\u0075\u0074\u0070\u0075\u0074\u0020\u006d\u0061\u0079\u0020\u0062\u0065\u0020\u0069n\u0063\u006f\u0072\u0072\u0065\u0063\u0074\u002e");
-_cfe =_dga .NewIdentityTextEncoder ("\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079\u002d\u0048");};if len (_bbfd )==0{return nil ,nil ;};_beba :=_fg ;if _gaabc .MarginLeft !=nil {_beba =*_gaabc .MarginLeft ;};_egd :=0.0;if _cfe !=nil {for _ ,_bface :=range _bbfd {_fabb ,_ggef :=_caec .GetRuneMetrics (_bface );
-if !_ggef {_d .Log .Debug ("\u0046\u006f\u006e\u0074\u0020\u0064o\u0065\u0073\u0020\u006e\u006f\u0074\u0020\u0068\u0061\u0076\u0065\u0020\u0072\u0075\u006e\u0065\u0020\u006d\u0065\u0074r\u0069\u0063\u0073\u0020\u0066\u006f\u0072\u0020\u0025\u0076\u0020\u002d\u0020\u0073k\u0069p\u0070\u0069\u006e\u0067",_bface );
-continue ;};_egd +=_fabb .Wx ;};_bbfd =string (_cfe .Encode (_bbfd ));};if _cfg ==0||_cdfd &&_egd > 0&&_beba +_egd *_cfg /1000.0> _bbf {_cfg =0.95*1000.0*(_bbf -_beba )/_egd ;};_dgab :=1.0*_cfg ;_ebcd :=2.0;{_ddd :=_dgab ;if _cdfd &&_ebcd +_ddd > _egc {_cfg =0.95*(_egc -_ebcd );
-_dgab =1.0*_cfg ;_ddd =_dgab ;};if _egc > _ddd {_ebcd =(_egc -_ddd )/2.0;_ebcd +=1.50;};};_ddce .Add_Tf (*_ggccd ,_cfg );_ddce .Add_Td (_beba ,_ebcd );_ddce .Add_Tj (*_aag .MakeString (_bbfd ));_ddce .Add_ET ();_ddce .Add_Q ();_ddce .Add_EMC ();_fcgf :=_fba .NewXObjectForm ();
-_fcgf .Resources =_gdcd ;_fcgf .BBox =_aag .MakeArrayFromFloats ([]float64 {0,0,_baef ,_ebc });_fcgf .SetContentStream (_ddce .Bytes (),_fff ());return _fcgf ,nil ;};const (_gc quadding =0;_bg quadding =1;_fcc quadding =2;_fg float64 =2.0;);
+// RectangleAnnotationDef is a rectangle defined with a specified Width and Height and a lower left corner at (X,Y).
+// The rectangle can optionally have a border and a filling color.
+// The Width/Height includes the border (if any specified).
+type RectangleAnnotationDef struct{X float64 ;Y float64 ;Width float64 ;Height float64 ;FillEnabled bool ;FillColor *_ef .PdfColorDeviceRGB ;BorderEnabled bool ;BorderWidth float64 ;BorderColor *_ef .PdfColorDeviceRGB ;Opacity float64 ;};type listboxOption struct{_gdeb string ;
+_bfc string ;};
+
+// SignatureFieldOpts represents a set of options used to configure
+// an appearance widget dictionary.
+type SignatureFieldOpts struct{
+
+// Rect represents the area the signature annotation is displayed on.
+Rect []float64 ;
+
+// AutoSize specifies if the content of the appearance should be
+// scaled to fit in the annotation rectangle.
+AutoSize bool ;
+
+// Font specifies the font of the text content.
+Font *_ef .PdfFont ;
+
+// FontSize specifies the size of the text content.
+FontSize float64 ;
+
+// LineHeight specifies the height of a line of text in the appearance annotation.
+LineHeight float64 ;
+
+// TextColor represents the color of the text content displayed.
+TextColor _ef .PdfColor ;
+
+// FillColor represents the background color of the appearance annotation area.
+FillColor _ef .PdfColor ;
+
+// FillOpacity sets the opacity of the background of the appearance annotation area.
+// Range is 0.0 - 1.0. Default is 1.0, opaque.
+FillOpacity float64 ;
+
+// BorderSize represents border size of the appearance annotation area.
+BorderSize float64 ;
+
+// BorderColor represents the border color of the appearance annotation area.
+BorderColor _ef .PdfColor ;
+
+// WatermarkImage specifies the image used as a watermark that will be rendered
+// behind the signature.
+WatermarkImage _gc .Image ;
+
+// Image represents the image used for the signature appearance.
+Image _gc .Image ;
+
+// Encoder specifies the image encoder used for image signature. Defaults to flate encoder.
+Encoder _fc .StreamEncoder ;
+
+// ImagePosition specifies the image location relative to the text signature.
+ImagePosition SignatureImagePosition ;};func _cabc (_bgg _gc .Image ,_fddd string ,_bgd *SignatureFieldOpts ,_eec []float64 ,_edec *_c .ContentCreator )(*_fc .PdfObjectName ,*_ef .XObjectImage ,error ){_ffdg ,_bdf :=_ef .DefaultImageHandler {}.NewImageFromGoImage (_bgg );
+if _bdf !=nil {return nil ,nil ,_bdf ;};_degd ,_bdf :=_ef .NewXObjectImageFromImage (_ffdg ,nil ,_bgd .Encoder );if _bdf !=nil {return nil ,nil ,_bdf ;};_gbff ,_ggdd :=float64 (*_degd .Width ),float64 (*_degd .Height );_dccc :=_eec [2]-_eec [0];_dfbd :=_eec [3]-_eec [1];
+if _bgd .AutoSize {_fdcd :=_fd .Min (_dccc /_gbff ,_dfbd /_ggdd );_gbff *=_fdcd ;_ggdd *=_fdcd ;_eec [0]=_eec [0]+(_dccc /2)-(_gbff /2);_eec [1]=_eec [1]+(_dfbd /2)-(_ggdd /2);};var _bfdb *_fc .PdfObjectName ;if _bbc ,_afcd :=_fc .GetName (_degd .Name );
+_afcd {_bfdb =_bbc ;}else {_bfdb =_fc .MakeName (_fddd );};if _edec !=nil {_edec .Add_q ().Translate (_eec [0],_eec [1]).Scale (_gbff ,_ggdd ).Add_Do (*_bfdb ).Add_Q ();}else {return nil ,nil ,_da .New ("\u0043\u006f\u006e\u0074en\u0074\u0043\u0072\u0065\u0061\u0074\u006f\u0072\u0020\u0069\u0073\u0020\u006e\u0075l\u006c");
+};return _bfdb ,_degd ,nil ;};func _adce (_bfge *_ef .PdfFieldChoice ,_dcc []listboxOption )map[int ]bool {_aad :=map[int ]bool {};if _bfge .I !=nil {for _ ,_eagc :=range _bfge .I .Elements (){if _gdg ,_fbce :=_fc .GetIntVal (_eagc );_fbce &&_gdg >=0&&_gdg < len (_dcc ){_aad [_gdg ]=true ;
+};};return _aad ;};var _ffe []string ;switch _ecgg :=_fc .TraceToDirectObject (_bfge .V ).(type ){case *_fc .PdfObjectString :_ffe =append (_ffe ,_ecgg .Decoded ());case *_fc .PdfObjectArray :for _ ,_ebga :=range _ecgg .Elements (){if _cadc ,_efgc :=_fc .GetString (_ebga );
+_efgc {_ffe =append (_ffe ,_cadc .Decoded ());};};};for _ ,_gfa :=range _ffe {_fffd :=false ;for _feca ,_cedf :=range _dcc {if _cedf ._gdeb ==_gfa {_aad [_feca ]=true ;_fffd =true ;};};if _fffd {continue ;};for _bgce ,_ecbf :=range _dcc {if _ecbf ._bfc ==_gfa {_aad [_bgce ]=true ;
+};};};return _aad ;};func _bade (_abab []_af .Point )(_cgcf []_af .Point ,_bcgf []_af .Point ,_gbdbe error ){_dfde :=len (_abab )-1;if len (_abab )< 1{return nil ,nil ,_da .New ("\u0061\u0074\u0020\u006c\u0065\u0061\u0073\u0074\u0020\u0074\u0077\u006f\u0020\u0070\u006f\u0069\u006e\u0074s \u0072e\u0071\u0075\u0069\u0072\u0065\u0064\u0020\u0074\u006f\u0020\u0063\u0061l\u0063\u0075\u006c\u0061\u0074\u0065\u0020\u0063\u0075\u0072\u0076\u0065\u0020\u0063\u006f\u006e\u0074r\u006f\u006c\u0020\u0070\u006f\u0069\u006e\u0074\u0073");
+};if _dfde ==1{_bgdgc :=_af .Point {X :(2*_abab [0].X +_abab [1].X )/3,Y :(2*_abab [0].Y +_abab [1].Y )/3};_cgcf =append (_cgcf ,_bgdgc );_bcgf =append (_bcgf ,_af .Point {X :2*_bgdgc .X -_abab [0].X ,Y :2*_bgdgc .Y -_abab [0].Y });return _cgcf ,_bcgf ,nil ;
+};_bfbe :=make ([]float64 ,_dfde );for _eeee :=1;_eeee < _dfde -1;_eeee ++{_bfbe [_eeee ]=4*_abab [_eeee ].X +2*_abab [_eeee +1].X ;};_bfbe [0]=_abab [0].X +2*_abab [1].X ;_bfbe [_dfde -1]=(8*_abab [_dfde -1].X +_abab [_dfde ].X )/2.0;_cbgeg :=_gfad (_bfbe );
+for _abgfa :=1;_abgfa < _dfde -1;_abgfa ++{_bfbe [_abgfa ]=4*_abab [_abgfa ].Y +2*_abab [_abgfa +1].Y ;};_bfbe [0]=_abab [0].Y +2*_abab [1].Y ;_bfbe [_dfde -1]=(8*_abab [_dfde -1].Y +_abab [_dfde ].Y )/2.0;_ccecd :=_gfad (_bfbe );_cgcf =make ([]_af .Point ,_dfde );
+_bcgf =make ([]_af .Point ,_dfde );for _fdfdb :=0;_fdfdb < _dfde ;_fdfdb ++{_cgcf [_fdfdb ]=_af .Point {X :_ac .RoundDefault (_cbgeg [_fdfdb ]),Y :_ac .RoundDefault (_ccecd [_fdfdb ])};if _fdfdb < _dfde -1{_bcgf [_fdfdb ]=_af .Point {X :_ac .RoundDefault (2*_abab [_fdfdb +1].X -_cbgeg [_fdfdb +1]),Y :_ac .RoundDefault (2*_abab [_fdfdb +1].Y -_ccecd [_fdfdb +1])};
+}else {_bcgf [_fdfdb ]=_af .Point {X :_ac .RoundDefault ((_abab [_dfde ].X +_cbgeg [_dfde -1])/2),Y :_ac .RoundDefault ((_abab [_dfde ].Y +_ccecd [_dfde -1])/2)};};};return _cgcf ,_bcgf ,nil ;};
