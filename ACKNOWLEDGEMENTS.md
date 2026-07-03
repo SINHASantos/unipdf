@@ -236,6 +236,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     
 * [i18n/linebreak](https://github.com/gorilla/i18n), BSD-3 license:
   - Used for word line break.
+  - The upstream repository is archived; a copy of the `linebreak` package is vendored into `internal/linebreak` under the original BSD-3 license below.
   
 ```
 Copyright (c) 2013, Gorilla web toolkit

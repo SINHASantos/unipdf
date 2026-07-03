@@ -14,160 +14,90 @@
 //
 // Package ps implements various functionalities needed for handling Postscript for PDF uses, in particular
 // for PDF function type 4.
-package ps ;import (_b "bufio";_c "bytes";_g "errors";_e "fmt";_af "github.com/unidoc/unipdf/v4/common";_bg "github.com/unidoc/unipdf/v4/core";_a "io";_df "math";);func (_gae *PSOperand )ifelse (_afc *PSStack )error {_cfba ,_cba :=_afc .Pop ();if _cba !=nil {return _cba ;
-};_deg ,_cba :=_afc .Pop ();if _cba !=nil {return _cba ;};_ccd ,_cba :=_afc .Pop ();if _cba !=nil {return _cba ;};_gga ,_gff :=_cfba .(*PSProgram );if !_gff {return ErrTypeCheck ;};_feda ,_gff :=_deg .(*PSProgram );if !_gff {return ErrTypeCheck ;};_efe ,_gff :=_ccd .(*PSBoolean );
-if !_gff {return ErrTypeCheck ;};if _efe .Val {_baf :=_feda .Exec (_afc );return _baf ;};_cba =_gga .Exec (_afc );return _cba ;};func (_ccg *PSOperand )bitshift (_ddg *PSStack )error {_egb ,_gge :=_ddg .PopInteger ();if _gge !=nil {return _gge ;};_aaec ,_gge :=_ddg .PopInteger ();
-if _gge !=nil {return _gge ;};var _ad int ;if _egb >=0{_ad =_aaec <<uint (_egb );}else {_ad =_aaec >>uint (-_egb );};_gge =_ddg .Push (MakeInteger (_ad ));return _gge ;};func (_eeg *PSOperand )sqrt (_eegg *PSStack )error {_fda ,_fbbf :=_eegg .PopNumberAsFloat64 ();
-if _fbbf !=nil {return _fbbf ;};if _fda < 0{return ErrRangeCheck ;};_afaa :=_df .Sqrt (_fda );_fbbf =_eegg .Push (MakeReal (_afaa ));return _fbbf ;};func (_ccf *PSOperand )log (_egcf *PSStack )error {_gbg ,_gafc :=_egcf .PopNumberAsFloat64 ();if _gafc !=nil {return _gafc ;
-};_egbe :=_df .Log10 (_gbg );_gafc =_egcf .Push (MakeReal (_egbe ));return _gafc ;};
+package ps ;import (_cg "bufio";_af "bytes";_c "errors";_g "fmt";_fe "github.com/unidoc/unipdf/v4/common";_ff "github.com/unidoc/unipdf/v4/core";_f "io";_ca "math";);func (_fg *PSBoolean )Duplicate ()PSObject {_bc :=PSBoolean {};_bc .Val =_fg .Val ;return &_bc };
 
-// String returns a string representation of the stack.
-func (_bgbba *PSStack )String ()string {_gca :="\u005b\u0020";for _ ,_dedb :=range *_bgbba {_gca +=_dedb .String ();_gca +="\u0020";};_gca +="\u005d";return _gca ;};func (_cgfg *PSOperand )cos (_cag *PSStack )error {_gee ,_cfb :=_cag .PopNumberAsFloat64 ();
-if _cfb !=nil {return _cfb ;};_fbf :=_df .Cos (_gee *_df .Pi /180.0);_cfb =_cag .Push (MakeReal (_fbf ));return _cfb ;};var ErrStackUnderflow =_g .New ("\u0073t\u0061c\u006b\u0020\u0075\u006e\u0064\u0065\u0072\u0066\u006c\u006f\u0077");func (_bafe *PSParser )parseNumber ()(PSObject ,error ){_aab ,_acf :=_bg .ParseNumber (_bafe ._fga );
-if _acf !=nil {return nil ,_acf ;};switch _edgg :=_aab .(type ){case *_bg .PdfObjectFloat :return MakeReal (float64 (*_edgg )),nil ;case *_bg .PdfObjectInteger :return MakeInteger (int (*_edgg )),nil ;};return nil ,_e .Errorf ("\u0075n\u0068\u0061\u006e\u0064\u006c\u0065\u0064\u0020\u006e\u0075\u006db\u0065\u0072\u0020\u0074\u0079\u0070\u0065\u0020\u0025\u0054",_aab );
-};
-
-// PSParser is a basic Postscript parser.
-type PSParser struct{_fga *_b .Reader };func (_gce *PSOperand )eq (_eag *PSStack )error {_adb ,_bdg :=_eag .Pop ();if _bdg !=nil {return _bdg ;};_caea ,_bdg :=_eag .Pop ();if _bdg !=nil {return _bdg ;};_bge ,_dgd :=_adb .(*PSBoolean );_bbdd ,_bed :=_caea .(*PSBoolean );
-if _dgd ||_bed {var _faa error ;if _dgd &&_bed {_faa =_eag .Push (MakeBool (_bge .Val ==_bbdd .Val ));}else {_faa =_eag .Push (MakeBool (false ));};return _faa ;};var _adg float64 ;var _ecd float64 ;if _gaff ,_gddg :=_adb .(*PSInteger );_gddg {_adg =float64 (_gaff .Val );
-}else if _bbc ,_dec :=_adb .(*PSReal );_dec {_adg =_bbc .Val ;}else {return ErrTypeCheck ;};if _adc ,_bgec :=_caea .(*PSInteger );_bgec {_ecd =float64 (_adc .Val );}else if _fce ,_bedf :=_caea .(*PSReal );_bedf {_ecd =_fce .Val ;}else {return ErrTypeCheck ;
-};if _df .Abs (_ecd -_adg )< _ce {_bdg =_eag .Push (MakeBool (true ));}else {_bdg =_eag .Push (MakeBool (false ));};return _bdg ;};func (_cfd *PSOperand )atan (_dfd *PSStack )error {_bcb ,_aae :=_dfd .PopNumberAsFloat64 ();if _aae !=nil {return _aae ;};
-_acb ,_aae :=_dfd .PopNumberAsFloat64 ();if _aae !=nil {return _aae ;};if _bcb ==0{var _ecb error ;if _acb < 0{_ecb =_dfd .Push (MakeReal (270));}else {_ecb =_dfd .Push (MakeReal (90));};return _ecb ;};_ffg :=_acb /_bcb ;_dbad :=_df .Atan (_ffg )*180/_df .Pi ;
-_aae =_dfd .Push (MakeReal (_dbad ));return _aae ;};func (_agcb *PSOperand )xor (_fbga *PSStack )error {_ecbd ,_edfe :=_fbga .Pop ();if _edfe !=nil {return _edfe ;};_dfga ,_edfe :=_fbga .Pop ();if _edfe !=nil {return _edfe ;};if _agca ,_fgc :=_ecbd .(*PSBoolean );
-_fgc {_cgcb ,_adfg :=_dfga .(*PSBoolean );if !_adfg {return ErrTypeCheck ;};_edfe =_fbga .Push (MakeBool (_agca .Val !=_cgcb .Val ));return _edfe ;};if _afd ,_acg :=_ecbd .(*PSInteger );_acg {_dgaa ,_daaf :=_dfga .(*PSInteger );if !_daaf {return ErrTypeCheck ;
-};_edfe =_fbga .Push (MakeInteger (_afd .Val ^_dgaa .Val ));return _edfe ;};return ErrTypeCheck ;};func (_afe *PSReal )String ()string {return _e .Sprintf ("\u0025\u002e\u0035\u0066",_afe .Val )};func (_ecg *PSOperand )abs (_bbd *PSStack )error {_ba ,_beg :=_bbd .Pop ();
-if _beg !=nil {return _beg ;};if _gbf ,_edg :=_ba .(*PSReal );_edg {_ee :=_gbf .Val ;if _ee < 0{_beg =_bbd .Push (MakeReal (-_ee ));}else {_beg =_bbd .Push (MakeReal (_ee ));};}else if _eed ,_db :=_ba .(*PSInteger );_db {_fed :=_eed .Val ;if _fed < 0{_beg =_bbd .Push (MakeInteger (-_fed ));
-}else {_beg =_bbd .Push (MakeInteger (_fed ));};}else {return ErrTypeCheck ;};return _beg ;};
-
-// NewPSProgram returns an empty, initialized PSProgram.
-func NewPSProgram ()*PSProgram {return &PSProgram {}};
-
-// MakeBool returns a new PSBoolean object initialized with `val`.
-func MakeBool (val bool )*PSBoolean {_gbfc :=PSBoolean {};_gbfc .Val =val ;return &_gbfc };func (_fe *PSProgram )DebugString ()string {_afg :="\u007b\u0020";for _ ,_ceb :=range *_fe {_afg +=_ceb .DebugString ();_afg +="\u0020";};_afg +="\u007d";return _afg ;
-};func (_dc *PSOperand )String ()string {return string (*_dc )};var ErrUndefinedResult =_g .New ("\u0075\u006e\u0064\u0065fi\u006e\u0065\u0064\u0020\u0072\u0065\u0073\u0075\u006c\u0074\u0020\u0065\u0072\u0072o\u0072");func (_bgc *PSBoolean )DebugString ()string {return _e .Sprintf ("\u0062o\u006f\u006c\u003a\u0025\u0076",_bgc .Val );
-};func (_fg *PSReal )Duplicate ()PSObject {_ga :=PSReal {};_ga .Val =_fg .Val ;return &_ga };var ErrRangeCheck =_g .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");
 
 // PopInteger specificially pops an integer from the top of the stack, returning the value as an int.
-func (_afb *PSStack )PopInteger ()(int ,error ){_cfe ,_ecbf :=_afb .Pop ();if _ecbf !=nil {return 0,_ecbf ;};if _fddfd ,_agb :=_cfe .(*PSInteger );_agb {return _fddfd .Val ,nil ;};return 0,ErrTypeCheck ;};func (_ffbc *PSOperand )or (_cbb *PSStack )error {_dbdge ,_ecdf :=_cbb .Pop ();
-if _ecdf !=nil {return _ecdf ;};_cad ,_ecdf :=_cbb .Pop ();if _ecdf !=nil {return _ecdf ;};if _eeea ,_gffg :=_dbdge .(*PSBoolean );_gffg {_aed ,_caba :=_cad .(*PSBoolean );if !_caba {return ErrTypeCheck ;};_ecdf =_cbb .Push (MakeBool (_eeea .Val ||_aed .Val ));
-return _ecdf ;};if _bae ,_dgga :=_dbdge .(*PSInteger );_dgga {_fcb ,_dgf :=_cad .(*PSInteger );if !_dgf {return ErrTypeCheck ;};_ecdf =_cbb .Push (MakeInteger (_bae .Val |_fcb .Val ));return _ecdf ;};return ErrTypeCheck ;};
-
-// PSObjectArrayToFloat64Array converts []PSObject into a []float64 array. Each PSObject must represent a number,
-// otherwise a ErrTypeCheck error occurs.
-func PSObjectArrayToFloat64Array (objects []PSObject )([]float64 ,error ){var _cd []float64 ;for _ ,_ae :=range objects {if _ab ,_ac :=_ae .(*PSInteger );_ac {_cd =append (_cd ,float64 (_ab .Val ));}else if _gd ,_f :=_ae .(*PSReal );_f {_cd =append (_cd ,_gd .Val );
-}else {return nil ,ErrTypeCheck ;};};return _cd ,nil ;};func (_gab *PSOperand )cvr (_edc *PSStack )error {_eca ,_ecbc :=_edc .Pop ();if _ecbc !=nil {return _ecbc ;};if _dbga ,_ega :=_eca .(*PSReal );_ega {_ecbc =_edc .Push (MakeReal (_dbga .Val ));}else if _ebg ,_dee :=_eca .(*PSInteger );
-_dee {_ecbc =_edc .Push (MakeReal (float64 (_ebg .Val )));}else {return ErrTypeCheck ;};return _ecbc ;};
-
-// PSBoolean represents a boolean value.
-type PSBoolean struct{Val bool ;};
-
-// MakeOperand returns a new PSOperand object based on string `val`.
-func MakeOperand (val string )*PSOperand {_dffe :=PSOperand (val );return &_dffe };func (_dgde *PSOperand )sub (_abaa *PSStack )error {_ccc ,_egec :=_abaa .Pop ();if _egec !=nil {return _egec ;};_gggdf ,_egec :=_abaa .Pop ();if _egec !=nil {return _egec ;
-};_fffg ,_dfec :=_ccc .(*PSReal );_ged ,_afcb :=_ccc .(*PSInteger );if !_dfec &&!_afcb {return ErrTypeCheck ;};_gea ,_ffe :=_gggdf .(*PSReal );_cdf ,_adge :=_gggdf .(*PSInteger );if !_ffe &&!_adge {return ErrTypeCheck ;};if _afcb &&_adge {_acbc :=_cdf .Val -_ged .Val ;
-_geeda :=_abaa .Push (MakeInteger (_acbc ));return _geeda ;};var _cgdg float64 =0;if _ffe {_cgdg =_gea .Val ;}else {_cgdg =float64 (_cdf .Val );};if _dfec {_cgdg -=_fffg .Val ;}else {_cgdg -=float64 (_ged .Val );};_egec =_abaa .Push (MakeReal (_cgdg ));
-return _egec ;};func (_adf *PSOperand )ne (_dgg *PSStack )error {_dfde :=_adf .eq (_dgg );if _dfde !=nil {return _dfde ;};_dfde =_adf .not (_dgg );return _dfde ;};func (_gfed *PSOperand )sin (_egbd *PSStack )error {_gddf ,_acc :=_egbd .PopNumberAsFloat64 ();
-if _acc !=nil {return _acc ;};_accf :=_df .Sin (_gddf *_df .Pi /180.0);_acc =_egbd .Push (MakeReal (_accf ));return _acc ;};func (_cdg *PSOperand )DebugString ()string {return _e .Sprintf ("\u006fp\u003a\u0027\u0025\u0073\u0027",*_cdg );};func (_gggb *PSOperand )ln (_cbc *PSStack )error {_ffa ,_cdb :=_cbc .PopNumberAsFloat64 ();
-if _cdb !=nil {return _cdb ;};_ffge :=_df .Log (_ffa );_cdb =_cbc .Push (MakeReal (_ffge ));return _cdb ;};func (_effd *PSParser )parseFunction ()(*PSProgram ,error ){_dcg ,_ :=_effd ._fga .ReadByte ();if _dcg !='{'{return nil ,_g .New ("\u0069\u006ev\u0061\u006c\u0069d\u0020\u0066\u0075\u006e\u0063\u0074\u0069\u006f\u006e");
-};_cega :=NewPSProgram ();for {_effd .skipSpaces ();_effd .skipComments ();_fagg ,_eba :=_effd ._fga .Peek (2);if _eba !=nil {if _eba ==_a .EOF {break ;};return nil ,_eba ;};if _af .Log .IsLogLevel (_af .LogLevelTrace ){_af .Log .Trace ("\u0050e\u0065k\u0020\u0073\u0074\u0072\u0069\u006e\u0067\u003a\u0020\u0025\u0073",string (_fagg ));
-};if _fagg [0]=='}'{if _af .Log .IsLogLevel (_af .LogLevelTrace ){_af .Log .Trace ("\u0045\u004f\u0046 \u0066\u0075\u006e\u0063\u0074\u0069\u006f\u006e");};_effd ._fga .ReadByte ();break ;}else if _fagg [0]=='{'{if _af .Log .IsLogLevel (_af .LogLevelTrace ){_af .Log .Trace ("\u0046u\u006e\u0063\u0074\u0069\u006f\u006e!");
-};_bbdb ,_ada :=_effd .parseFunction ();if _ada !=nil {return nil ,_ada ;};_cega .Append (_bbdb );}else if _bg .IsDecimalDigit (_fagg [0])||(_fagg [0]=='-'&&_bg .IsDecimalDigit (_fagg [1])){if _af .Log .IsLogLevel (_af .LogLevelTrace ){_af .Log .Trace ("\u002d>\u004e\u0075\u006d\u0062\u0065\u0072!");
-};_fcbb ,_cdca :=_effd .parseNumber ();if _cdca !=nil {return nil ,_cdca ;};_cega .Append (_fcbb );}else {if _af .Log .IsLogLevel (_af .LogLevelTrace ){_af .Log .Trace ("\u002d>\u004fp\u0065\u0072\u0061\u006e\u0064 \u006f\u0072 \u0062\u006f\u006f\u006c\u003f");
-};_fagg ,_ =_effd ._fga .Peek (5);_age :=string (_fagg );if _af .Log .IsLogLevel (_af .LogLevelTrace ){_af .Log .Trace ("\u0050\u0065\u0065k\u0020\u0073\u0074\u0072\u003a\u0020\u0025\u0073",_age );};if (len (_age )> 4)&&(_age [:5]=="\u0066\u0061\u006cs\u0065"){_ffba ,_cbce :=_effd .parseBool ();
-if _cbce !=nil {return nil ,_cbce ;};_cega .Append (_ffba );}else if (len (_age )> 3)&&(_age [:4]=="\u0074\u0072\u0075\u0065"){_dfbe ,_bce :=_effd .parseBool ();if _bce !=nil {return nil ,_bce ;};_cega .Append (_dfbe );}else {_dcb ,_bgd :=_effd .parseOperand ();
-if _bgd !=nil {return nil ,_bgd ;};_cega .Append (_dcb );};};};return _cega ,nil ;};
-
-// Append appends an object to the PSProgram.
-func (_cgf *PSProgram )Append (obj PSObject ){*_cgf =append (*_cgf ,obj )};func (_ag *PSReal )DebugString ()string {return _e .Sprintf ("\u0072e\u0061\u006c\u003a\u0025\u002e\u0035f",_ag .Val );};func (_fb *PSProgram )Duplicate ()PSObject {_gb :=&PSProgram {};
-for _ ,_bd :=range *_fb {_gb .Append (_bd .Duplicate ());};return _gb ;};
-
-// PSStack defines a stack of PSObjects. PSObjects can be pushed on or pull from the stack.
-type PSStack []PSObject ;
-
-// PSInteger represents an integer.
-type PSInteger struct{Val int ;};func (_fec *PSOperand )Duplicate ()PSObject {_ed :=*_fec ;return &_ed };func _afgd (_baefd int )int {if _baefd < 0{return -_baefd ;};return _baefd ;};func (_eddd *PSOperand )lt (_edf *PSStack )error {_cgb ,_bfec :=_edf .PopNumberAsFloat64 ();
-if _bfec !=nil {return _bfec ;};_def ,_bfec :=_edf .PopNumberAsFloat64 ();if _bfec !=nil {return _bfec ;};if _df .Abs (_def -_cgb )< _ce {_dffc :=_edf .Push (MakeBool (false ));return _dffc ;}else if _def < _cgb {_cbe :=_edf .Push (MakeBool (true ));return _cbe ;
-}else {_agcd :=_edf .Push (MakeBool (false ));return _agcd ;};};func (_gad *PSBoolean )Duplicate ()PSObject {_dg :=PSBoolean {};_dg .Val =_gad .Val ;return &_dg };func (_cef *PSOperand )mul (_bdfd *PSStack )error {_fdb ,_ffad :=_bdfd .Pop ();if _ffad !=nil {return _ffad ;
-};_agfc ,_ffad :=_bdfd .Pop ();if _ffad !=nil {return _ffad ;};_cafc ,_aefgg :=_fdb .(*PSReal );_agg ,_eec :=_fdb .(*PSInteger );if !_aefgg &&!_eec {return ErrTypeCheck ;};_cea ,_gfe :=_agfc .(*PSReal );_cgab ,_baa :=_agfc .(*PSInteger );if !_gfe &&!_baa {return ErrTypeCheck ;
-};if _eec &&_baa {_bgcfe :=_agg .Val *_cgab .Val ;_gcff :=_bdfd .Push (MakeInteger (_bgcfe ));return _gcff ;};var _eggdg float64 ;if _aefgg {_eggdg =_cafc .Val ;}else {_eggdg =float64 (_agg .Val );};if _gfe {_eggdg *=_cea .Val ;}else {_eggdg *=float64 (_cgab .Val );
-};_ffad =_bdfd .Push (MakeReal (_eggdg ));return _ffad ;};func (_daf *PSOperand )ifCondition (_cfg *PSStack )error {_adgd ,_aeb :=_cfg .Pop ();if _aeb !=nil {return _aeb ;};_dea ,_aeb :=_cfg .Pop ();if _aeb !=nil {return _aeb ;};_cab ,_bab :=_adgd .(*PSProgram );
-if !_bab {return ErrTypeCheck ;};_cgc ,_bab :=_dea .(*PSBoolean );if !_bab {return ErrTypeCheck ;};if _cgc .Val {_cgd :=_cab .Exec (_cfg );return _cgd ;};return nil ;};
-
-// MakeInteger returns a new PSInteger object initialized with `val`.
-func MakeInteger (val int )*PSInteger {_efdg :=PSInteger {};_efdg .Val =val ;return &_efdg };func (_dfb *PSOperand )floor (_befd *PSStack )error {_eee ,_cee :=_befd .Pop ();if _cee !=nil {return _cee ;};if _ecgc ,_caf :=_eee .(*PSReal );_caf {_cee =_befd .Push (MakeReal (_df .Floor (_ecgc .Val )));
-}else if _fdcf ,_eaf :=_eee .(*PSInteger );_eaf {_cee =_befd .Push (MakeInteger (_fdcf .Val ));}else {return ErrTypeCheck ;};return _cee ;};func (_fddf *PSOperand )round (_bgf *PSStack )error {_aedb ,_afa :=_bgf .Pop ();if _afa !=nil {return _afa ;};if _dedc ,_ccdc :=_aedb .(*PSReal );
-_ccdc {_afa =_bgf .Push (MakeReal (_df .Floor (_dedc .Val +0.5)));}else if _cec ,_bea :=_aedb .(*PSInteger );_bea {_afa =_bgf .Push (MakeInteger (_cec .Val ));}else {return ErrTypeCheck ;};return _afa ;};func (_dbd *PSOperand )ge (_feca *PSStack )error {_eagf ,_daa :=_feca .PopNumberAsFloat64 ();
-if _daa !=nil {return _daa ;};_beb ,_daa :=_feca .PopNumberAsFloat64 ();if _daa !=nil {return _daa ;};if _df .Abs (_beb -_eagf )< _ce {_ceg :=_feca .Push (MakeBool (true ));return _ceg ;}else if _beb > _eagf {_agff :=_feca .Push (MakeBool (true ));return _agff ;
-}else {_dga :=_feca .Push (MakeBool (false ));return _dga ;};};
-
-// NewPSExecutor returns an initialized PSExecutor for an input `program`.
-func NewPSExecutor (program *PSProgram )*PSExecutor {_bf :=&PSExecutor {};_bf .Stack =NewPSStack ();_bf ._de =program ;return _bf ;};
-
-// NewPSParser returns a new instance of the PDF Postscript parser from input data.
-func NewPSParser (content []byte )*PSParser {_cbag :=PSParser {};_eagge :=_c .NewBuffer (content );_cbag ._fga =_b .NewReader (_eagge );return &_cbag ;};func (_ebgc *PSOperand )truncate (_dbdd *PSStack )error {_fgeg ,_fbcd :=_dbdd .Pop ();if _fbcd !=nil {return _fbcd ;
-};if _gfeb ,_edceg :=_fgeg .(*PSReal );_edceg {_dbb :=int (_gfeb .Val );_fbcd =_dbdd .Push (MakeReal (float64 (_dbb )));}else if _fgg ,_gbe :=_fgeg .(*PSInteger );_gbe {_fbcd =_dbdd .Push (MakeInteger (_fgg .Val ));}else {return ErrTypeCheck ;};return _fbcd ;
-};func (_abe *PSOperand )idiv (_fffe *PSStack )error {_agc ,_edce :=_fffe .Pop ();if _edce !=nil {return _edce ;};_cdc ,_edce :=_fffe .Pop ();if _edce !=nil {return _edce ;};_cgff ,_fbg :=_agc .(*PSInteger );if !_fbg {return ErrTypeCheck ;};if _cgff .Val ==0{return ErrUndefinedResult ;
-};_fcee ,_fbg :=_cdc .(*PSInteger );if !_fbg {return ErrTypeCheck ;};_dfa :=_fcee .Val /_cgff .Val ;_edce =_fffe .Push (MakeInteger (_dfa ));return _edce ;};func (_ggaa *PSParser )parseOperand ()(*PSOperand ,error ){var _decd []byte ;for {_efda ,_eabd :=_ggaa ._fga .Peek (1);
-if _eabd !=nil {if _eabd ==_a .EOF {break ;};return nil ,_eabd ;};if _bg .IsDelimiter (_efda [0]){break ;};if _bg .IsWhiteSpace (_efda [0]){break ;};_dedd ,_ :=_ggaa ._fga .ReadByte ();_decd =append (_decd ,_dedd );};if len (_decd )==0{return nil ,_g .New ("\u0069\u006e\u0076al\u0069\u0064\u0020\u006f\u0070\u0065\u0072\u0061\u006e\u0064\u0020\u0028\u0065\u006d\u0070\u0074\u0079\u0029");
-};return MakeOperand (string (_decd )),nil ;};func (_bbb *PSOperand )index (_cbd *PSStack )error {_cegd ,_gcc :=_cbd .Pop ();if _gcc !=nil {return _gcc ;};_egc ,_gag :=_cegd .(*PSInteger );if !_gag {return ErrTypeCheck ;};if _egc .Val < 0{return ErrRangeCheck ;
-};if _egc .Val > len (*_cbd )-1{return ErrStackUnderflow ;};_fbfa :=(*_cbd )[len (*_cbd )-1-_egc .Val ];_gcc =_cbd .Push (_fbfa .Duplicate ());return _gcc ;};func (_aeg *PSOperand )pop (_ddgc *PSStack )error {_ ,_geed :=_ddgc .Pop ();if _geed !=nil {return _geed ;
-};return nil ;};
-
-// MakeReal returns a new PSReal object initialized with `val`.
-func MakeReal (val float64 )*PSReal {_deb :=PSReal {};_deb .Val =val ;return &_deb };
-
-// Execute executes the program for an input parameters `objects` and returns a slice of output objects.
-func (_gf *PSExecutor )Execute (objects []PSObject )([]PSObject ,error ){for _ ,_gg :=range objects {_da :=_gf .Stack .Push (_gg );if _da !=nil {return nil ,_da ;};};_fd :=_gf ._de .Exec (_gf .Stack );if _fd !=nil {_af .Log .Debug ("\u0045x\u0065c\u0020\u0066\u0061\u0069\u006c\u0065\u0064\u003a\u0020\u0025\u0076",_fd );
-return nil ,_fd ;};_bb :=[]PSObject (*_gf .Stack );_gf .Stack .Empty ();return _bb ,nil ;};
-
-// PSOperand represents a Postscript operand (text string).
-type PSOperand string ;func (_efb *PSParser )skipSpaces ()(int ,error ){_cgef :=0;for {_aggd ,_aga :=_efb ._fga .Peek (1);if _aga !=nil {return 0,_aga ;};if _bg .IsWhiteSpace (_aggd [0]){_efb ._fga .ReadByte ();_cgef ++;}else {break ;};};return _cgef ,nil ;
-};
-
-// Pop pops an object from the top of the stack.
-func (_dca *PSStack )Pop ()(PSObject ,error ){if len (*_dca )< 1{return nil ,ErrStackUnderflow ;};_ebb :=(*_dca )[len (*_dca )-1];*_dca =(*_dca )[0:len (*_dca )-1];return _ebb ,nil ;};func (_efg *PSOperand )mod (_gcg *PSStack )error {_fcd ,_fcfd :=_gcg .Pop ();
-if _fcfd !=nil {return _fcfd ;};_bag ,_fcfd :=_gcg .Pop ();if _fcfd !=nil {return _fcfd ;};_gggd ,_eagg :=_fcd .(*PSInteger );if !_eagg {return ErrTypeCheck ;};if _gggd .Val ==0{return ErrUndefinedResult ;};_ccbf ,_eagg :=_bag .(*PSInteger );if !_eagg {return ErrTypeCheck ;
-};_ecad :=_ccbf .Val %_gggd .Val ;_fcfd =_gcg .Push (MakeInteger (_ecad ));return _fcfd ;};func (_eaa *PSOperand )not (_gdda *PSStack )error {_gaec ,_cbaa :=_gdda .Pop ();if _cbaa !=nil {return _cbaa ;};if _ggaf ,_fbbb :=_gaec .(*PSBoolean );_fbbb {_cbaa =_gdda .Push (MakeBool (!_ggaf .Val ));
-return _cbaa ;}else if _cbda ,_bac :=_gaec .(*PSInteger );_bac {_cbaa =_gdda .Push (MakeInteger (^_cbda .Val ));return _cbaa ;}else {return ErrTypeCheck ;};};func (_gaab *PSParser )skipComments ()error {if _ ,_abd :=_gaab .skipSpaces ();_abd !=nil {return _abd ;
-};_fedf :=true ;for {_bfg ,_cged :=_gaab ._fga .Peek (1);if _cged !=nil {_af .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u0020\u0025\u0073",_cged .Error ());return _cged ;};if _fedf &&_bfg [0]!='%'{return nil ;};_fedf =false ;if (_bfg [0]!='\r')&&(_bfg [0]!='\n'){_gaab ._fga .ReadByte ();
-}else {break ;};};return _gaab .skipComments ();};func (_egge *PSOperand )copy (_caef *PSStack )error {_eff ,_dac :=_caef .PopInteger ();if _dac !=nil {return _dac ;};if _eff < 0{return ErrRangeCheck ;};if _eff > len (*_caef ){return ErrRangeCheck ;};*_caef =append (*_caef ,(*_caef )[len (*_caef )-_eff :]...);
-return nil ;};func (_fac *PSOperand )exp (_dda *PSStack )error {_ggg ,_fcf :=_dda .PopNumberAsFloat64 ();if _fcf !=nil {return _fcf ;};_dbgd ,_fcf :=_dda .PopNumberAsFloat64 ();if _fcf !=nil {return _fcf ;};if _df .Abs (_ggg )< 1&&_dbgd < 0{return ErrUndefinedResult ;
-};_cdde :=_df .Pow (_dbgd ,_ggg );_fcf =_dda .Push (MakeReal (_cdde ));return _fcf ;};func (_abag *PSOperand )neg (_feg *PSStack )error {_gec ,_degf :=_feg .Pop ();if _degf !=nil {return _degf ;};if _beda ,_ddd :=_gec .(*PSReal );_ddd {_degf =_feg .Push (MakeReal (-_beda .Val ));
-return _degf ;}else if _degg ,_fcfde :=_gec .(*PSInteger );_fcfde {_degf =_feg .Push (MakeInteger (-_degg .Val ));return _degf ;}else {return ErrTypeCheck ;};};func (_baef *PSOperand )roll (_fad *PSStack )error {_adgdb ,_dcdc :=_fad .Pop ();if _dcdc !=nil {return _dcdc ;
-};_gadf ,_dcdc :=_fad .Pop ();if _dcdc !=nil {return _dcdc ;};_fabc ,_ffbe :=_adgdb .(*PSInteger );if !_ffbe {return ErrTypeCheck ;};_ebc ,_ffbe :=_gadf .(*PSInteger );if !_ffbe {return ErrTypeCheck ;};if _ebc .Val < 0{return ErrRangeCheck ;};if _ebc .Val ==0||_ebc .Val ==1{return nil ;
-};if _ebc .Val > len (*_fad ){return ErrStackUnderflow ;};for _ccge :=0;_ccge < _afgd (_fabc .Val );_ccge ++{var _aee []PSObject ;_aee =(*_fad )[len (*_fad )-(_ebc .Val ):len (*_fad )];if _fabc .Val > 0{_eac :=_aee [len (_aee )-1];_aee =append ([]PSObject {_eac },_aee [0:len (_aee )-1]...);
-}else {_bbf :=_aee [len (_aee )-_ebc .Val ];_aee =append (_aee [1:],_bbf );};_cage :=append ((*_fad )[0:len (*_fad )-_ebc .Val ],_aee ...);_fad =&_cage ;};return nil ;};
-
-// NewPSStack returns an initialized PSStack.
-func NewPSStack ()*PSStack {return &PSStack {}};const _ce =0.000001;func (_ccb *PSOperand )div (_cge *PSStack )error {_bgcf ,_dce :=_cge .Pop ();if _dce !=nil {return _dce ;};_bgb ,_dce :=_cge .Pop ();if _dce !=nil {return _dce ;};_ece ,_gdc :=_bgcf .(*PSReal );
-_dfe ,_ege :=_bgcf .(*PSInteger );if !_gdc &&!_ege {return ErrTypeCheck ;};if _gdc &&_ece .Val ==0{return ErrUndefinedResult ;};if _ege &&_dfe .Val ==0{return ErrUndefinedResult ;};_abgb ,_ea :=_bgb .(*PSReal );_fc ,_bgaf :=_bgb .(*PSInteger );if !_ea &&!_bgaf {return ErrTypeCheck ;
-};var _fdc float64 ;if _ea {_fdc =_abgb .Val ;}else {_fdc =float64 (_fc .Val );};if _gdc {_fdc /=_ece .Val ;}else {_fdc /=float64 (_dfe .Val );};_dce =_cge .Push (MakeReal (_fdc ));return _dce ;};func (_edfc *PSParser )parseBool ()(*PSBoolean ,error ){_bgbb ,_bcd :=_edfc ._fga .Peek (4);
-if _bcd !=nil {return MakeBool (false ),_bcd ;};if (len (_bgbb )>=4)&&(string (_bgbb [:4])=="\u0074\u0072\u0075\u0065"){_edfc ._fga .Discard (4);return MakeBool (true ),nil ;};_bgbb ,_bcd =_edfc ._fga .Peek (5);if _bcd !=nil {return MakeBool (false ),_bcd ;
-};if (len (_bgbb )>=5)&&(string (_bgbb [:5])=="\u0066\u0061\u006cs\u0065"){_edfc ._fga .Discard (5);return MakeBool (false ),nil ;};return MakeBool (false ),_g .New ("\u0075n\u0065\u0078\u0070\u0065c\u0074\u0065\u0064\u0020\u0062o\u006fl\u0065a\u006e\u0020\u0073\u0074\u0072\u0069\u006eg");
-};
-
-// PopNumberAsFloat64 pops and return the numeric value of the top of the stack as a float64.
-// Real or integer only.
-func (_bcc *PSStack )PopNumberAsFloat64 ()(float64 ,error ){_cabac ,_acfa :=_bcc .Pop ();if _acfa !=nil {return 0,_acfa ;};if _dggd ,_cbbe :=_cabac .(*PSReal );_cbbe {return _dggd .Val ,nil ;}else if _eedf ,_gcfe :=_cabac .(*PSInteger );_gcfe {return float64 (_eedf .Val ),nil ;
-}else {return 0,ErrTypeCheck ;};};
-
-// PSExecutor has its own execution stack and is used to executre a PS routine (program).
-type PSExecutor struct{Stack *PSStack ;_de *PSProgram ;};var ErrTypeCheck =_g .New ("\u0074\u0079p\u0065\u0020\u0063h\u0065\u0063\u006b\u0020\u0065\u0072\u0072\u006f\u0072");
+func (_fgaf *PSStack )PopInteger ()(int ,error ){_fgea ,_eaec :=_fgaf .Pop ();if _eaec !=nil {return 0,_eaec ;};if _daea ,_cbe :=_fgea .(*PSInteger );_cbe {return _daea .Val ,nil ;};return 0,ErrTypeCheck ;};func (_gdg *PSOperand )atan (_agg *PSStack )error {_ecg ,_fcc :=_agg .PopNumberAsFloat64 ();
+if _fcc !=nil {return _fcc ;};_dge ,_fcc :=_agg .PopNumberAsFloat64 ();if _fcc !=nil {return _fcc ;};if _ecg ==0{var _bcg error ;if _dge < 0{_bcg =_agg .Push (MakeReal (270));}else {_bcg =_agg .Push (MakeReal (90));};return _bcg ;};_bfb :=_dge /_ecg ;_gea :=_ca .Atan (_bfb )*180/_ca .Pi ;
+_fcc =_agg .Push (MakeReal (_gea ));return _fcc ;};func (_eccb *PSOperand )or (_fba *PSStack )error {_cdff ,_bfc :=_fba .Pop ();if _bfc !=nil {return _bfc ;};_fdga ,_bfc :=_fba .Pop ();if _bfc !=nil {return _bfc ;};if _dab ,_aefa :=_cdff .(*PSBoolean );
+_aefa {_feg ,_ecgc :=_fdga .(*PSBoolean );if !_ecgc {return ErrTypeCheck ;};_bfc =_fba .Push (MakeBool (_dab .Val ||_feg .Val ));return _bfc ;};if _egf ,_caf :=_cdff .(*PSInteger );_caf {_cfad ,_cdd :=_fdga .(*PSInteger );if !_cdd {return ErrTypeCheck ;
+};_bfc =_fba .Push (MakeInteger (_egf .Val |_cfad .Val ));return _bfc ;};return ErrTypeCheck ;};func (_bddf *PSParser )parseNumber ()(PSObject ,error ){_ffa ,_cdcd :=_ff .ParseNumber (_bddf ._abaf );if _cdcd !=nil {return nil ,_cdcd ;};switch _gbdc :=_ffa .(type ){case *_ff .PdfObjectFloat :return MakeReal (float64 (*_gbdc )),nil ;
+case *_ff .PdfObjectInteger :return MakeInteger (int (*_gbdc )),nil ;};return nil ,_g .Errorf ("\u0075n\u0068\u0061\u006e\u0064\u006c\u0065\u0064\u0020\u006e\u0075\u006db\u0065\u0072\u0020\u0074\u0079\u0070\u0065\u0020\u0025\u0054",_ffa );};func (_ebg *PSOperand )ne (_edeaa *PSStack )error {_cgef :=_ebg .eq (_edeaa );
+if _cgef !=nil {return _cgef ;};_cgef =_ebg .not (_edeaa );return _cgef ;};func (_cab *PSInteger )DebugString ()string {return _g .Sprintf ("\u0069\u006e\u0074\u003a\u0025\u0064",_cab .Val );};func (_bbcf *PSOperand )mod (_cce *PSStack )error {_edd ,_eca :=_cce .Pop ();
+if _eca !=nil {return _eca ;};_faeb ,_eca :=_cce .Pop ();if _eca !=nil {return _eca ;};_eab ,_cdc :=_edd .(*PSInteger );if !_cdc {return ErrTypeCheck ;};if _eab .Val ==0{return ErrUndefinedResult ;};_beg ,_cdc :=_faeb .(*PSInteger );if !_cdc {return ErrTypeCheck ;
+};_efd :=_beg .Val %_eab .Val ;_eca =_cce .Push (MakeInteger (_efd ));return _eca ;};
 
 // DebugString returns a descriptive string representation of the stack - intended for debugging.
-func (_bdfc *PSStack )DebugString ()string {_dad :="\u005b\u0020";for _ ,_agbd :=range *_bdfc {_dad +=_agbd .DebugString ();_dad +="\u0020";};_dad +="\u005d";return _dad ;};
+func (_fac *PSStack )DebugString ()string {_bee :="\u005b\u0020";for _ ,_ggab :=range *_fac {_bee +=_ggab .DebugString ();_bee +="\u0020";};_bee +="\u005d";return _bee ;};func (_gff *PSOperand )floor (_bde *PSStack )error {_bcc ,_cfg :=_bde .Pop ();if _cfg !=nil {return _cfg ;
+};if _adba ,_beb :=_bcc .(*PSReal );_beb {_cfg =_bde .Push (MakeReal (_ca .Floor (_adba .Val )));}else if _eeba ,_afff :=_bcc .(*PSInteger );_afff {_cfg =_bde .Push (MakeInteger (_eeba .Val ));}else {return ErrTypeCheck ;};return _cfg ;};
+
+// PSReal represents a real number.
+type PSReal struct{Val float64 ;};func (_bcgf *PSOperand )ceiling (_gaa *PSStack )error {_ede ,_ada :=_gaa .Pop ();if _ada !=nil {return _ada ;};if _fgaga ,_eag :=_ede .(*PSReal );_eag {_ada =_gaa .Push (MakeReal (_ca .Ceil (_fgaga .Val )));}else if _ac ,_cge :=_ede .(*PSInteger );
+_cge {_ada =_gaa .Push (MakeInteger (_ac .Val ));}else {_ada =ErrTypeCheck ;};return _ada ;};func (_gfef *PSOperand )ge (_aadb *PSStack )error {_adee ,_dgc :=_aadb .PopNumberAsFloat64 ();if _dgc !=nil {return _dgc ;};_fce ,_dgc :=_aadb .PopNumberAsFloat64 ();
+if _dgc !=nil {return _dgc ;};if _ca .Abs (_fce -_adee )< _cc {_dbc :=_aadb .Push (MakeBool (true ));return _dbc ;}else if _fce > _adee {_eage :=_aadb .Push (MakeBool (true ));return _eage ;}else {_cff :=_aadb .Push (MakeBool (false ));return _cff ;};};
+func (_age *PSOperand )log (_ddgf *PSStack )error {_bbf ,_dbgf :=_ddgf .PopNumberAsFloat64 ();if _dbgf !=nil {return _dbgf ;};_cbab :=_ca .Log10 (_bbf );_dbgf =_ddgf .Push (MakeReal (_cbab ));return _dbgf ;};
+
+// PSBoolean represents a boolean value.
+type PSBoolean struct{Val bool ;};func (_eb *PSProgram )Duplicate ()PSObject {_fc :=&PSProgram {};for _ ,_fge :=range *_eb {_fc .Append (_fge .Duplicate ());};return _fc ;};func (_fbbc *PSParser )parseFunction ()(*PSProgram ,error ){_agag ,_ :=_fbbc ._abaf .ReadByte ();
+if _agag !='{'{return nil ,_c .New ("\u0069\u006ev\u0061\u006c\u0069d\u0020\u0066\u0075\u006e\u0063\u0074\u0069\u006f\u006e");};_cac :=NewPSProgram ();for {_fbbc .skipSpaces ();_fbbc .skipComments ();_bcdb ,_acdb :=_fbbc ._abaf .Peek (2);if _acdb !=nil {if _acdb ==_f .EOF {break ;
+};return nil ,_acdb ;};if _fe .Log .IsLogLevel (_fe .LogLevelTrace ){_fe .Log .Trace ("\u0050e\u0065k\u0020\u0073\u0074\u0072\u0069\u006e\u0067\u003a\u0020\u0025\u0073",string (_bcdb ));};if _bcdb [0]=='}'{if _fe .Log .IsLogLevel (_fe .LogLevelTrace ){_fe .Log .Trace ("\u0045\u004f\u0046 \u0066\u0075\u006e\u0063\u0074\u0069\u006f\u006e");
+};_fbbc ._abaf .ReadByte ();break ;}else if _bcdb [0]=='{'{if _fe .Log .IsLogLevel (_fe .LogLevelTrace ){_fe .Log .Trace ("\u0046u\u006e\u0063\u0074\u0069\u006f\u006e!");};_bdg ,_feee :=_fbbc .parseFunction ();if _feee !=nil {return nil ,_feee ;};_cac .Append (_bdg );
+}else if _ff .IsDecimalDigit (_bcdb [0])||(_bcdb [0]=='-'&&_ff .IsDecimalDigit (_bcdb [1])){if _fe .Log .IsLogLevel (_fe .LogLevelTrace ){_fe .Log .Trace ("\u002d>\u004e\u0075\u006d\u0062\u0065\u0072!");};_bbfd ,_eeae :=_fbbc .parseNumber ();if _eeae !=nil {return nil ,_eeae ;
+};_cac .Append (_bbfd );}else {if _fe .Log .IsLogLevel (_fe .LogLevelTrace ){_fe .Log .Trace ("\u002d>\u004fp\u0065\u0072\u0061\u006e\u0064 \u006f\u0072 \u0062\u006f\u006f\u006c\u003f");};_bcdb ,_ =_fbbc ._abaf .Peek (5);_dbbd :=string (_bcdb );if _fe .Log .IsLogLevel (_fe .LogLevelTrace ){_fe .Log .Trace ("\u0050\u0065\u0065k\u0020\u0073\u0074\u0072\u003a\u0020\u0025\u0073",_dbbd );
+};if (len (_dbbd )> 4)&&(_dbbd [:5]=="\u0066\u0061\u006cs\u0065"){_bbfdb ,_cbc :=_fbbc .parseBool ();if _cbc !=nil {return nil ,_cbc ;};_cac .Append (_bbfdb );}else if (len (_dbbd )> 3)&&(_dbbd [:4]=="\u0074\u0072\u0075\u0065"){_gee ,_gcdb :=_fbbc .parseBool ();
+if _gcdb !=nil {return nil ,_gcdb ;};_cac .Append (_gee );}else {_bfbg ,_bdad :=_fbbc .parseOperand ();if _bdad !=nil {return nil ,_bdad ;};_cac .Append (_bfbg );};};};return _cac ,nil ;};var ErrStackOverflow =_c .New ("\u0073\u0074\u0061\u0063\u006b\u0020\u006f\u0076\u0065r\u0066\u006c\u006f\u0077");
+func (_fgag *PSOperand )and (_agf *PSStack )error {_gfg ,_eda :=_agf .Pop ();if _eda !=nil {return _eda ;};_dgdg ,_eda :=_agf .Pop ();if _eda !=nil {return _eda ;};if _fbf ,_dd :=_gfg .(*PSBoolean );_dd {_fdg ,_ddc :=_dgdg .(*PSBoolean );if !_ddc {return ErrTypeCheck ;
+};_eda =_agf .Push (MakeBool (_fbf .Val &&_fdg .Val ));return _eda ;};if _cccg ,_ad :=_gfg .(*PSInteger );_ad {_ga ,_eaacb :=_dgdg .(*PSInteger );if !_eaacb {return ErrTypeCheck ;};_eda =_agf .Push (MakeInteger (_cccg .Val &_ga .Val ));return _eda ;};return ErrTypeCheck ;
+};func (_agff *PSOperand )index (_cda *PSStack )error {_fbg ,_cec :=_cda .Pop ();if _cec !=nil {return _cec ;};_afb ,_def :=_fbg .(*PSInteger );if !_def {return ErrTypeCheck ;};if _afb .Val < 0{return ErrRangeCheck ;};if _afb .Val > len (*_cda )-1{return ErrStackUnderflow ;
+};_adec :=(*_cda )[len (*_cda )-1-_afb .Val ];_cec =_cda .Push (_adec .Duplicate ());return _cec ;};func (_bba *PSOperand )sqrt (_decg *PSStack )error {_beff ,_ggg :=_decg .PopNumberAsFloat64 ();if _ggg !=nil {return _ggg ;};if _beff < 0{return ErrRangeCheck ;
+};_aaed :=_ca .Sqrt (_beff );_ggg =_decg .Push (MakeReal (_aaed ));return _ggg ;};func (_fad *PSOperand )eq (_gce *PSStack )error {_gfe ,_bab :=_gce .Pop ();if _bab !=nil {return _bab ;};_eec ,_bab :=_gce .Pop ();if _bab !=nil {return _bab ;};_ade ,_fefc :=_gfe .(*PSBoolean );
+_fgd ,_bcfa :=_eec .(*PSBoolean );if _fefc ||_bcfa {var _bef error ;if _fefc &&_bcfa {_bef =_gce .Push (MakeBool (_ade .Val ==_fgd .Val ));}else {_bef =_gce .Push (MakeBool (false ));};return _bef ;};var _gcaf float64 ;var _eeb float64 ;if _geg ,_gfga :=_gfe .(*PSInteger );
+_gfga {_gcaf =float64 (_geg .Val );}else if _ceg ,_dbg :=_gfe .(*PSReal );_dbg {_gcaf =_ceg .Val ;}else {return ErrTypeCheck ;};if _abe ,_aad :=_eec .(*PSInteger );_aad {_eeb =float64 (_abe .Val );}else if _bgf ,_acf :=_eec .(*PSReal );_acf {_eeb =_bgf .Val ;
+}else {return ErrTypeCheck ;};if _ca .Abs (_eeb -_gcaf )< _cc {_bab =_gce .Push (MakeBool (true ));}else {_bab =_gce .Push (MakeBool (false ));};return _bab ;};func (_dba *PSOperand )add (_dgd *PSStack )error {_daa ,_ebc :=_dgd .Pop ();if _ebc !=nil {return _ebc ;
+};_gcc ,_ebc :=_dgd .Pop ();if _ebc !=nil {return _ebc ;};_gf ,_dbf :=_daa .(*PSReal );_fgf ,_fed :=_daa .(*PSInteger );if !_dbf &&!_fed {return ErrTypeCheck ;};_ccb ,_afd :=_gcc .(*PSReal );_eef ,_ab :=_gcc .(*PSInteger );if !_afd &&!_ab {return ErrTypeCheck ;
+};if _fed &&_ab {_gbc :=_fgf .Val +_eef .Val ;_fae :=_dgd .Push (MakeInteger (_gbc ));return _fae ;};var _dac float64 ;if _dbf {_dac =_gf .Val ;}else {_dac =float64 (_fgf .Val );};if _afd {_dac +=_ccb .Val ;}else {_dac +=float64 (_eef .Val );};_ebc =_dgd .Push (MakeReal (_dac ));
+return _ebc ;};func (_gec *PSOperand )ifCondition (_daga *PSStack )error {_aeg ,_ded :=_daga .Pop ();if _ded !=nil {return _ded ;};_fedg ,_ded :=_daga .Pop ();if _ded !=nil {return _ded ;};_edff ,_aed :=_aeg .(*PSProgram );if !_aed {return ErrTypeCheck ;
+};_dbcb ,_aed :=_fedg .(*PSBoolean );if !_aed {return ErrTypeCheck ;};if _dbcb .Val {_fcb :=_edff .Exec (_daga );return _fcb ;};return nil ;};func (_dce *PSOperand )dup (_ddg *PSStack )error {_egg ,_dfg :=_ddg .Pop ();if _dfg !=nil {return _dfg ;};_dfg =_ddg .Push (_egg );
+if _dfg !=nil {return _dfg ;};_dfg =_ddg .Push (_egg .Duplicate ());return _dfg ;};
+
+// MakeInteger returns a new PSInteger object initialized with `val`.
+func MakeInteger (val int )*PSInteger {_gde :=PSInteger {};_gde .Val =val ;return &_gde };func (_dgg *PSOperand )idiv (_abd *PSStack )error {_bdf ,_gcef :=_abd .Pop ();if _gcef !=nil {return _gcef ;};_dbb ,_gcef :=_abd .Pop ();if _gcef !=nil {return _gcef ;
+};_fgdc ,_dae :=_bdf .(*PSInteger );if !_dae {return ErrTypeCheck ;};if _fgdc .Val ==0{return ErrUndefinedResult ;};_gg ,_dae :=_dbb .(*PSInteger );if !_dae {return ErrTypeCheck ;};_baac :=_gg .Val /_fgdc .Val ;_gcef =_abd .Push (MakeInteger (_baac ));
+return _gcef ;};func (_ba *PSInteger )String ()string {return _g .Sprintf ("\u0025\u0064",_ba .Val )};
+
+// Push pushes an object on top of the stack.
+func (_dadf *PSStack )Push (obj PSObject )error {if len (*_dadf )> 100{return ErrStackOverflow ;};*_dadf =append (*_dadf ,obj );return nil ;};func (_abg *PSOperand )sin (_gcd *PSStack )error {_fdbd ,_ccg :=_gcd .PopNumberAsFloat64 ();if _ccg !=nil {return _ccg ;
+};_dgf :=_ca .Sin (_fdbd *_ca .Pi /180.0);_ccg =_gcd .Push (MakeReal (_dgf ));return _ccg ;};func (_ecfc *PSParser )parseBool ()(*PSBoolean ,error ){_egff ,_gbbg :=_ecfc ._abaf .Peek (4);if _gbbg !=nil {return MakeBool (false ),_gbbg ;};if (len (_egff )>=4)&&(string (_egff [:4])=="\u0074\u0072\u0075\u0065"){_ecfc ._abaf .Discard (4);
+return MakeBool (true ),nil ;};_egff ,_gbbg =_ecfc ._abaf .Peek (5);if _gbbg !=nil {return MakeBool (false ),_gbbg ;};if (len (_egff )>=5)&&(string (_egff [:5])=="\u0066\u0061\u006cs\u0065"){_ecfc ._abaf .Discard (5);return MakeBool (false ),nil ;};return MakeBool (false ),_c .New ("\u0075n\u0065\u0078\u0070\u0065c\u0074\u0065\u0064\u0020\u0062o\u006fl\u0065a\u006e\u0020\u0073\u0074\u0072\u0069\u006eg");
+};func (_ee *PSProgram )DebugString ()string {_bac :="\u007b\u0020";for _ ,_ccc :=range *_ee {_bac +=_ccc .DebugString ();_bac +="\u0020";};_bac +="\u007d";return _bac ;};
+
+// PSExecutor has its own execution stack and is used to executre a PS routine (program).
+type PSExecutor struct{Stack *PSStack ;_gb *PSProgram ;};func _bbda (_cgffd int )int {if _cgffd < 0{return -_cgffd ;};return _cgffd ;};func (_abb *PSOperand )cvi (_ebf *PSStack )error {_fcf ,_cbd :=_ebf .Pop ();if _cbd !=nil {return _cbd ;};if _agfb ,_dda :=_fcf .(*PSReal );
+_dda {_cad :=int (_agfb .Val );_cbd =_ebf .Push (MakeInteger (_cad ));}else if _ecb ,_cgd :=_fcf .(*PSInteger );_cgd {_cabf :=_ecb .Val ;_cbd =_ebf .Push (MakeInteger (_cabf ));}else {return ErrTypeCheck ;};return _cbd ;};const _cc =0.000001;func (_eg *PSReal )Duplicate ()PSObject {_aa :=PSReal {};
+_aa .Val =_eg .Val ;return &_aa };
 
 // PSProgram defines a Postscript program which is a series of PS objects (arguments, commands, programs etc).
-type PSProgram []PSObject ;func (_cg *PSInteger )Duplicate ()PSObject {_bba :=PSInteger {};_bba .Val =_cg .Val ;return &_bba };
+type PSProgram []PSObject ;func (_efec *PSOperand )truncate (_egda *PSStack )error {_dbd ,_acc :=_egda .Pop ();if _acc !=nil {return _acc ;};if _feab ,_dceeg :=_dbd .(*PSReal );_dceeg {_egbf :=int (_feab .Val );_acc =_egda .Push (MakeReal (float64 (_egbf )));
+}else if _ddd ,_dcbe :=_dbd .(*PSInteger );_dcbe {_acc =_egda .Push (MakeInteger (_ddd .Val ));}else {return ErrTypeCheck ;};return _acc ;};func (_gbb *PSOperand )cvr (_caee *PSStack )error {_agd ,_cgeb :=_caee .Pop ();if _cgeb !=nil {return _cgeb ;};if _bbc ,_agb :=_agd .(*PSReal );
+_agb {_cgeb =_caee .Push (MakeReal (_bbc .Val ));}else if _abf ,_bbd :=_agd .(*PSInteger );_bbd {_cgeb =_caee .Push (MakeReal (float64 (_abf .Val )));}else {return ErrTypeCheck ;};return _cgeb ;};func (_cagc *PSOperand )lt (_fbd *PSStack )error {_ggf ,_efgg :=_fbd .PopNumberAsFloat64 ();
+if _efgg !=nil {return _efgg ;};_faec ,_efgg :=_fbd .PopNumberAsFloat64 ();if _efgg !=nil {return _efgg ;};if _ca .Abs (_faec -_ggf )< _cc {_gbca :=_fbd .Push (MakeBool (false ));return _gbca ;}else if _faec < _ggf {_dcaa :=_fbd .Push (MakeBool (true ));
+return _dcaa ;}else {_fbfb :=_fbd .Push (MakeBool (false ));return _fbfb ;};};
 
-// Empty empties the stack.
-func (_bcf *PSStack )Empty (){*_bcf =[]PSObject {}};func (_cgfgg *PSOperand )exch (_ddb *PSStack )error {_agfd ,_fdd :=_ddb .Pop ();if _fdd !=nil {return _fdd ;};_afgg ,_fdd :=_ddb .Pop ();if _fdd !=nil {return _fdd ;};_fdd =_ddb .Push (_agfd );if _fdd !=nil {return _fdd ;
-};_fdd =_ddb .Push (_afgg );return _fdd ;};func (_bec *PSOperand )ceiling (_fbab *PSStack )error {_aag ,_aaed :=_fbab .Pop ();if _aaed !=nil {return _aaed ;};if _efc ,_efd :=_aag .(*PSReal );_efd {_aaed =_fbab .Push (MakeReal (_df .Ceil (_efc .Val )));
-}else if _dfg ,_feb :=_aag .(*PSInteger );_feb {_aaed =_fbab .Push (MakeInteger (_dfg .Val ));}else {_aaed =ErrTypeCheck ;};return _aaed ;};func (_fa *PSBoolean )String ()string {return _e .Sprintf ("\u0025\u0076",_fa .Val )};
+// Pop pops an object from the top of the stack.
+func (_bgb *PSStack )Pop ()(PSObject ,error ){if len (*_bgb )< 1{return nil ,ErrStackUnderflow ;};_gfc :=(*_bgb )[len (*_bgb )-1];*_bgb =(*_bgb )[0:len (*_bgb )-1];return _gfc ,nil ;};func (_bdd *PSOperand )exch (_bcb *PSStack )error {_egd ,_bfe :=_bcb .Pop ();
+if _bfe !=nil {return _bfe ;};_edea ,_bfe :=_bcb .Pop ();if _bfe !=nil {return _bfe ;};_bfe =_bcb .Push (_egd );if _bfe !=nil {return _bfe ;};_bfe =_bcb .Push (_edea );return _bfe ;};func (_ffbg *PSOperand )cos (_gba *PSStack )error {_cgf ,_gae :=_gba .PopNumberAsFloat64 ();
+if _gae !=nil {return _gae ;};_bg :=_ca .Cos (_cgf *_ca .Pi /180.0);_gae =_gba .Push (MakeReal (_bg ));return _gae ;};
 
-// Parse parses the postscript and store as a program that can be executed.
-func (_dfedb *PSParser )Parse ()(*PSProgram ,error ){_dfedb .skipSpaces ();_fef ,_gecf :=_dfedb ._fga .Peek (2);if _gecf !=nil {return nil ,_gecf ;};if _fef [0]!='{'{return nil ,_g .New ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0050\u0053\u0020\u0050\u0072\u006f\u0067\u0072\u0061\u006d\u0020\u006e\u006f\u0074\u0020\u0073t\u0061\u0072\u0074\u0069\u006eg\u0020\u0077i\u0074\u0068\u0020\u007b");
-};_gdg ,_gecf :=_dfedb .parseFunction ();if _gecf !=nil &&_gecf !=_a .EOF {return nil ,_gecf ;};return _gdg ,_gecf ;};func (_fbd *PSOperand )cvi (_abad *PSStack )error {_gbfd ,_fdf :=_abad .Pop ();if _fdf !=nil {return _fdf ;};if _dbg ,_eggd :=_gbfd .(*PSReal );
-_eggd {_eda :=int (_dbg .Val );_fdf =_abad .Push (MakeInteger (_eda ));}else if _cdd ,_cfdb :=_gbfd .(*PSInteger );_cfdb {_bdc :=_cdd .Val ;_fdf =_abad .Push (MakeInteger (_bdc ));}else {return ErrTypeCheck ;};return _fdf ;};
+// Exec executes the program, typically leaving output values on the stack.
+func (_bda *PSProgram )Exec (stack *PSStack )error {for _ ,_eaac :=range *_bda {var _fd error ;switch _bag :=_eaac .(type ){case *PSInteger :_fa :=_bag ;_fd =stack .Push (_fa );case *PSReal :_ag :=_bag ;_fd =stack .Push (_ag );case *PSBoolean :_cgb :=_bag ;
+_fd =stack .Push (_cgb );case *PSProgram :_ecf :=_bag ;_fd =stack .Push (_ecf );case *PSOperand :_fga :=_bag ;_fd =_fga .Exec (stack );default:return ErrTypeCheck ;};if _fd !=nil {return _fd ;};};return nil ;};
+
+// NewPSStack returns an initialized PSStack.
+func NewPSStack ()*PSStack {return &PSStack {}};func (_cfc *PSOperand )round (_bfab *PSStack )error {_fbc ,_cgee :=_bfab .Pop ();if _cgee !=nil {return _cgee ;};if _fda ,_fea :=_fbc .(*PSReal );_fea {_cgee =_bfab .Push (MakeReal (_ca .Floor (_fda .Val +0.5)));
+}else if _gaf ,_eadce :=_fbc .(*PSInteger );_eadce {_cgee =_bfab .Push (MakeInteger (_gaf .Val ));}else {return ErrTypeCheck ;};return _cgee ;};func (_bacf *PSOperand )le (_dcee *PSStack )error {_ced ,_ged :=_dcee .PopNumberAsFloat64 ();if _ged !=nil {return _ged ;
+};_eadf ,_ged :=_dcee .PopNumberAsFloat64 ();if _ged !=nil {return _ged ;};if _ca .Abs (_eadf -_ced )< _cc {_aga :=_dcee .Push (MakeBool (true ));return _aga ;}else if _eadf < _ced {_fgg :=_dcee .Push (MakeBool (true ));return _fgg ;}else {_bgcc :=_dcee .Push (MakeBool (false ));
+return _bgcc ;};};
 
 // PSObject represents a postscript object.
 type PSObject interface{
@@ -182,34 +112,102 @@ DebugString ()string ;
 // String returns a string representation of the PSObject.
 String ()string ;};
 
-// Exec executes the program, typically leaving output values on the stack.
-func (_ggd *PSProgram )Exec (stack *PSStack )error {for _ ,_cff :=range *_ggd {var _bfb error ;switch _abf :=_cff .(type ){case *PSInteger :_fab :=_abf ;_bfb =stack .Push (_fab );case *PSReal :_dfc :=_abf ;_bfb =stack .Push (_dfc );case *PSBoolean :_ge :=_abf ;
-_bfb =stack .Push (_ge );case *PSProgram :_fbc :=_abf ;_bfb =stack .Push (_fbc );case *PSOperand :_ffc :=_abf ;_bfb =_ffc .Exec (stack );default:return ErrTypeCheck ;};if _bfb !=nil {return _bfb ;};};return nil ;};func (_fba *PSOperand )and (_abg *PSStack )error {_cae ,_cffa :=_abg .Pop ();
-if _cffa !=nil {return _cffa ;};_eedg ,_cffa :=_abg .Pop ();if _cffa !=nil {return _cffa ;};if _bdf ,_fff :=_cae .(*PSBoolean );_fff {_cb ,_fee :=_eedg .(*PSBoolean );if !_fee {return ErrTypeCheck ;};_cffa =_abg .Push (MakeBool (_bdf .Val &&_cb .Val ));
-return _cffa ;};if _fbb ,_egg :=_cae .(*PSInteger );_egg {_gdd ,_ef :=_eedg .(*PSInteger );if !_ef {return ErrTypeCheck ;};_cffa =_abg .Push (MakeInteger (_fbb .Val &_gdd .Val ));return _cffa ;};return ErrTypeCheck ;};func (_ec *PSInteger )String ()string {return _e .Sprintf ("\u0025\u0064",_ec .Val )};
-
-
-// Exec executes the operand `op` in the state specified by `stack`.
-func (_ca *PSOperand )Exec (stack *PSStack )error {_aa :=ErrUnsupportedOperand ;switch *_ca {case "\u0061\u0062\u0073":_aa =_ca .abs (stack );case "\u0061\u0064\u0064":_aa =_ca .add (stack );case "\u0061\u006e\u0064":_aa =_ca .and (stack );case "\u0061\u0074\u0061\u006e":_aa =_ca .atan (stack );
-case "\u0062\u0069\u0074\u0073\u0068\u0069\u0066\u0074":_aa =_ca .bitshift (stack );case "\u0063e\u0069\u006c\u0069\u006e\u0067":_aa =_ca .ceiling (stack );case "\u0063\u006f\u0070\u0079":_aa =_ca .copy (stack );case "\u0063\u006f\u0073":_aa =_ca .cos (stack );
-case "\u0063\u0076\u0069":_aa =_ca .cvi (stack );case "\u0063\u0076\u0072":_aa =_ca .cvr (stack );case "\u0064\u0069\u0076":_aa =_ca .div (stack );case "\u0064\u0075\u0070":_aa =_ca .dup (stack );case "\u0065\u0071":_aa =_ca .eq (stack );case "\u0065\u0078\u0063\u0068":_aa =_ca .exch (stack );
-case "\u0065\u0078\u0070":_aa =_ca .exp (stack );case "\u0066\u006c\u006fo\u0072":_aa =_ca .floor (stack );case "\u0067\u0065":_aa =_ca .ge (stack );case "\u0067\u0074":_aa =_ca .gt (stack );case "\u0069\u0064\u0069\u0076":_aa =_ca .idiv (stack );case "\u0069\u0066":_aa =_ca .ifCondition (stack );
-case "\u0069\u0066\u0065\u006c\u0073\u0065":_aa =_ca .ifelse (stack );case "\u0069\u006e\u0064e\u0078":_aa =_ca .index (stack );case "\u006c\u0065":_aa =_ca .le (stack );case "\u006c\u006f\u0067":_aa =_ca .log (stack );case "\u006c\u006e":_aa =_ca .ln (stack );
-case "\u006c\u0074":_aa =_ca .lt (stack );case "\u006d\u006f\u0064":_aa =_ca .mod (stack );case "\u006d\u0075\u006c":_aa =_ca .mul (stack );case "\u006e\u0065":_aa =_ca .ne (stack );case "\u006e\u0065\u0067":_aa =_ca .neg (stack );case "\u006e\u006f\u0074":_aa =_ca .not (stack );
-case "\u006f\u0072":_aa =_ca .or (stack );case "\u0070\u006f\u0070":_aa =_ca .pop (stack );case "\u0072\u006f\u0075n\u0064":_aa =_ca .round (stack );case "\u0072\u006f\u006c\u006c":_aa =_ca .roll (stack );case "\u0073\u0069\u006e":_aa =_ca .sin (stack );
-case "\u0073\u0071\u0072\u0074":_aa =_ca .sqrt (stack );case "\u0073\u0075\u0062":_aa =_ca .sub (stack );case "\u0074\u0072\u0075\u006e\u0063\u0061\u0074\u0065":_aa =_ca .truncate (stack );case "\u0078\u006f\u0072":_aa =_ca .xor (stack );};return _aa ;
+// MakeOperand returns a new PSOperand object based on string `val`.
+func MakeOperand (val string )*PSOperand {_gcea :=PSOperand (val );return &_gcea };func (_adbb *PSOperand )mul (_gdc *PSStack )error {_efge ,_cdbd :=_gdc .Pop ();if _cdbd !=nil {return _cdbd ;};_cfe ,_cdbd :=_gdc .Pop ();if _cdbd !=nil {return _cdbd ;};
+_fcae ,_ddf :=_efge .(*PSReal );_ece ,_bec :=_efge .(*PSInteger );if !_ddf &&!_bec {return ErrTypeCheck ;};_gbe ,_adg :=_cfe .(*PSReal );_cgdf ,_eae :=_cfe .(*PSInteger );if !_adg &&!_eae {return ErrTypeCheck ;};if _bec &&_eae {_gffa :=_ece .Val *_cgdf .Val ;
+_agfbg :=_gdc .Push (MakeInteger (_gffa ));return _agfbg ;};var _acd float64 ;if _ddf {_acd =_fcae .Val ;}else {_acd =float64 (_ece .Val );};if _adg {_acd *=_gbe .Val ;}else {_acd *=float64 (_cgdf .Val );};_cdbd =_gdc .Push (MakeReal (_acd ));return _cdbd ;
 };
 
-// PSReal represents a real number.
-type PSReal struct{Val float64 ;};func (_dfed *PSOperand )gt (_dff *PSStack )error {_aaf ,_dbdg :=_dff .PopNumberAsFloat64 ();if _dbdg !=nil {return _dbdg ;};_cfa ,_dbdg :=_dff .PopNumberAsFloat64 ();if _dbdg !=nil {return _dbdg ;};if _df .Abs (_cfa -_aaf )< _ce {_ade :=_dff .Push (MakeBool (false ));
-return _ade ;}else if _cfa > _aaf {_fbdc :=_dff .Push (MakeBool (true ));return _fbdc ;}else {_bfe :=_dff .Push (MakeBool (false ));return _bfe ;};};
+// PSStack defines a stack of PSObjects. PSObjects can be pushed on or pull from the stack.
+type PSStack []PSObject ;func (_cba *PSOperand )exp (_eba *PSStack )error {_dfgg ,_afdb :=_eba .PopNumberAsFloat64 ();if _afdb !=nil {return _afdb ;};_fca ,_afdb :=_eba .PopNumberAsFloat64 ();if _afdb !=nil {return _afdb ;};if _ca .Abs (_dfgg )< 1&&_fca < 0{return ErrUndefinedResult ;
+};_bgc :=_ca .Pow (_fca ,_dfgg );_afdb =_eba .Push (MakeReal (_bgc ));return _afdb ;};
 
-// Push pushes an object on top of the stack.
-func (_aac *PSStack )Push (obj PSObject )error {if len (*_aac )> 100{return ErrStackOverflow ;};*_aac =append (*_aac ,obj );return nil ;};func (_cf *PSInteger )DebugString ()string {return _e .Sprintf ("\u0069\u006e\u0074\u003a\u0025\u0064",_cf .Val );
-};var ErrStackOverflow =_g .New ("\u0073\u0074\u0061\u0063\u006b\u0020\u006f\u0076\u0065r\u0066\u006c\u006f\u0077");func (_adef *PSOperand )le (_eab *PSStack )error {_gcf ,_gaa :=_eab .PopNumberAsFloat64 ();if _gaa !=nil {return _gaa ;};_aef ,_gaa :=_eab .PopNumberAsFloat64 ();
-if _gaa !=nil {return _gaa ;};if _df .Abs (_aef -_gcf )< _ce {_aefg :=_eab .Push (MakeBool (true ));return _aefg ;}else if _aef < _gcf {_fea :=_eab .Push (MakeBool (true ));return _fea ;}else {_bbbb :=_eab .Push (MakeBool (false ));return _bbbb ;};};func (_gc *PSOperand )add (_bef *PSStack )error {_edd ,_bga :=_bef .Pop ();
-if _bga !=nil {return _bga ;};_bbde ,_bga :=_bef .Pop ();if _bga !=nil {return _bga ;};_dd ,_eb :=_edd .(*PSReal );_aba ,_cga :=_edd .(*PSInteger );if !_eb &&!_cga {return ErrTypeCheck ;};_bc ,_dba :=_bbde .(*PSReal );_dcd ,_bege :=_bbde .(*PSInteger );
-if !_dba &&!_bege {return ErrTypeCheck ;};if _cga &&_bege {_cc :=_aba .Val +_dcd .Val ;_bgg :=_bef .Push (MakeInteger (_cc ));return _bgg ;};var _dfcf float64 ;if _eb {_dfcf =_dd .Val ;}else {_dfcf =float64 (_aba .Val );};if _dba {_dfcf +=_bc .Val ;}else {_dfcf +=float64 (_dcd .Val );
-};_bga =_bef .Push (MakeReal (_dfcf ));return _bga ;};func (_dab *PSOperand )dup (_ead *PSStack )error {_ffb ,_bdfb :=_ead .Pop ();if _bdfb !=nil {return _bdfb ;};_bdfb =_ead .Push (_ffb );if _bdfb !=nil {return _bdfb ;};_bdfb =_ead .Push (_ffb .Duplicate ());
-return _bdfb ;};var ErrUnsupportedOperand =_g .New ("\u0075\u006e\u0073\u0075pp\u006f\u0072\u0074\u0065\u0064\u0020\u006f\u0070\u0065\u0072\u0061\u006e\u0064");func (_eg *PSProgram )String ()string {_gfd :="\u007b\u0020";for _ ,_fge :=range *_eg {_gfd +=_fge .String ();
-_gfd +="\u0020";};_gfd +="\u007d";return _gfd ;};
+// NewPSParser returns a new instance of the PDF Postscript parser from input data.
+func NewPSParser (content []byte )*PSParser {_gadg :=PSParser {};_fbce :=_af .NewBuffer (content );_gadg ._abaf =_cg .NewReader (_fbce );return &_gadg ;};
+
+// Exec executes the operand `op` in the state specified by `stack`.
+func (_da *PSOperand )Exec (stack *PSStack )error {_dg :=ErrUnsupportedOperand ;switch *_da {case "\u0061\u0062\u0073":_dg =_da .abs (stack );case "\u0061\u0064\u0064":_dg =_da .add (stack );case "\u0061\u006e\u0064":_dg =_da .and (stack );case "\u0061\u0074\u0061\u006e":_dg =_da .atan (stack );
+case "\u0062\u0069\u0074\u0073\u0068\u0069\u0066\u0074":_dg =_da .bitshift (stack );case "\u0063e\u0069\u006c\u0069\u006e\u0067":_dg =_da .ceiling (stack );case "\u0063\u006f\u0070\u0079":_dg =_da .copy (stack );case "\u0063\u006f\u0073":_dg =_da .cos (stack );
+case "\u0063\u0076\u0069":_dg =_da .cvi (stack );case "\u0063\u0076\u0072":_dg =_da .cvr (stack );case "\u0064\u0069\u0076":_dg =_da .div (stack );case "\u0064\u0075\u0070":_dg =_da .dup (stack );case "\u0065\u0071":_dg =_da .eq (stack );case "\u0065\u0078\u0063\u0068":_dg =_da .exch (stack );
+case "\u0065\u0078\u0070":_dg =_da .exp (stack );case "\u0066\u006c\u006fo\u0072":_dg =_da .floor (stack );case "\u0067\u0065":_dg =_da .ge (stack );case "\u0067\u0074":_dg =_da .gt (stack );case "\u0069\u0064\u0069\u0076":_dg =_da .idiv (stack );case "\u0069\u0066":_dg =_da .ifCondition (stack );
+case "\u0069\u0066\u0065\u006c\u0073\u0065":_dg =_da .ifelse (stack );case "\u0069\u006e\u0064e\u0078":_dg =_da .index (stack );case "\u006c\u0065":_dg =_da .le (stack );case "\u006c\u006f\u0067":_dg =_da .log (stack );case "\u006c\u006e":_dg =_da .ln (stack );
+case "\u006c\u0074":_dg =_da .lt (stack );case "\u006d\u006f\u0064":_dg =_da .mod (stack );case "\u006d\u0075\u006c":_dg =_da .mul (stack );case "\u006e\u0065":_dg =_da .ne (stack );case "\u006e\u0065\u0067":_dg =_da .neg (stack );case "\u006e\u006f\u0074":_dg =_da .not (stack );
+case "\u006f\u0072":_dg =_da .or (stack );case "\u0070\u006f\u0070":_dg =_da .pop (stack );case "\u0072\u006f\u0075n\u0064":_dg =_da .round (stack );case "\u0072\u006f\u006c\u006c":_dg =_da .roll (stack );case "\u0073\u0069\u006e":_dg =_da .sin (stack );
+case "\u0073\u0071\u0072\u0074":_dg =_da .sqrt (stack );case "\u0073\u0075\u0062":_dg =_da .sub (stack );case "\u0074\u0072\u0075\u006e\u0063\u0061\u0074\u0065":_dg =_da .truncate (stack );case "\u0078\u006f\u0072":_dg =_da .xor (stack );};return _dg ;
+};
+
+// NewPSExecutor returns an initialized PSExecutor for an input `program`.
+func NewPSExecutor (program *PSProgram )*PSExecutor {_gd :=&PSExecutor {};_gd .Stack =NewPSStack ();_gd ._gb =program ;return _gd ;};
+
+// PSInteger represents an integer.
+type PSInteger struct{Val int ;};func (_gfaa *PSParser )skipSpaces ()(int ,error ){_dfc :=0;for {_begd ,_ddcg :=_gfaa ._abaf .Peek (1);if _ddcg !=nil {return 0,_ddcg ;};if _ff .IsWhiteSpace (_begd [0]){_gfaa ._abaf .ReadByte ();_dfc ++;}else {break ;};
+};return _dfc ,nil ;};var ErrUndefinedResult =_c .New ("\u0075\u006e\u0064\u0065fi\u006e\u0065\u0064\u0020\u0072\u0065\u0073\u0075\u006c\u0074\u0020\u0065\u0072\u0072o\u0072");func (_db *PSOperand )Duplicate ()PSObject {_dcb :=*_db ;return &_dcb };
+
+// PSObjectArrayToFloat64Array converts []PSObject into a []float64 array. Each PSObject must represent a number,
+// otherwise a ErrTypeCheck error occurs.
+func PSObjectArrayToFloat64Array (objects []PSObject )([]float64 ,error ){var _cgg []float64 ;for _ ,_cgge :=range objects {if _df ,_e :=_cgge .(*PSInteger );_e {_cgg =append (_cgg ,float64 (_df .Val ));}else if _afa ,_ea :=_cgge .(*PSReal );_ea {_cgg =append (_cgg ,_afa .Val );
+}else {return nil ,ErrTypeCheck ;};};return _cgg ,nil ;};var ErrUnsupportedOperand =_c .New ("\u0075\u006e\u0073\u0075pp\u006f\u0072\u0074\u0065\u0064\u0020\u006f\u0070\u0065\u0072\u0061\u006e\u0064");
+
+// MakeReal returns a new PSReal object initialized with `val`.
+func MakeReal (val float64 )*PSReal {_cdcf :=PSReal {};_cdcf .Val =val ;return &_cdcf };func (_bcd *PSOperand )copy (_gad *PSStack )error {_adb ,_cae :=_gad .PopInteger ();if _cae !=nil {return _cae ;};if _adb < 0{return ErrRangeCheck ;};if _adb > len (*_gad ){return ErrRangeCheck ;
+};*_gad =append (*_gad ,(*_gad )[len (*_gad )-_adb :]...);return nil ;};func (_baae *PSOperand )gt (_cfa *PSStack )error {_aac ,_ead :=_cfa .PopNumberAsFloat64 ();if _ead !=nil {return _ead ;};_ffc ,_ead :=_cfa .PopNumberAsFloat64 ();if _ead !=nil {return _ead ;
+};if _ca .Abs (_ffc -_aac )< _cc {_efed :=_cfa .Push (MakeBool (false ));return _efed ;}else if _ffc > _aac {_afdf :=_cfa .Push (MakeBool (true ));return _afdf ;}else {_ffg :=_cfa .Push (MakeBool (false ));return _ffg ;};};func (_agbf *PSOperand )sub (_dad *PSStack )error {_dged ,_dedg :=_dad .Pop ();
+if _dedg !=nil {return _dedg ;};_ddff ,_dedg :=_dad .Pop ();if _dedg !=nil {return _dedg ;};_afg ,_ggc :=_dged .(*PSReal );_afc ,_aefb :=_dged .(*PSInteger );if !_ggc &&!_aefb {return ErrTypeCheck ;};_eecb ,_ggca :=_ddff .(*PSReal );_fab ,_acee :=_ddff .(*PSInteger );
+if !_ggca &&!_acee {return ErrTypeCheck ;};if _aefb &&_acee {_dgee :=_fab .Val -_afc .Val ;_dgga :=_dad .Push (MakeInteger (_dgee ));return _dgga ;};var _bfg float64 =0;if _ggca {_bfg =_eecb .Val ;}else {_bfg =float64 (_fab .Val );};if _ggc {_bfg -=_afg .Val ;
+}else {_bfg -=float64 (_afc .Val );};_dedg =_dad .Push (MakeReal (_bfg ));return _dedg ;};
+
+// String returns a string representation of the stack.
+func (_gggc *PSStack )String ()string {_cgff :="\u005b\u0020";for _ ,_dfe :=range *_gggc {_cgff +=_dfe .String ();_cgff +="\u0020";};_cgff +="\u005d";return _cgff ;};func (_bd *PSProgram )String ()string {_eaa :="\u007b\u0020";for _ ,_efa :=range *_bd {_eaa +=_efa .String ();
+_eaa +="\u0020";};_eaa +="\u007d";return _eaa ;};func (_ecgf *PSOperand )bitshift (_cb *PSStack )error {_cdf ,_bdb :=_cb .PopInteger ();if _bdb !=nil {return _bdb ;};_cdb ,_bdb :=_cb .PopInteger ();if _bdb !=nil {return _bdb ;};var _bff int ;if _cdf >=0{_bff =_cdb <<uint (_cdf );
+}else {_bff =_cdb >>uint (-_cdf );};_bdb =_cb .Push (MakeInteger (_bff ));return _bdb ;};func (_gfa *PSOperand )roll (_fdc *PSStack )error {_eabd ,_fdb :=_fdc .Pop ();if _fdb !=nil {return _fdb ;};_fedf ,_fdb :=_fdc .Pop ();if _fdb !=nil {return _fdb ;
+};_gge ,_dfb :=_eabd .(*PSInteger );if !_dfb {return ErrTypeCheck ;};_fee ,_dfb :=_fedf .(*PSInteger );if !_dfb {return ErrTypeCheck ;};if _fee .Val < 0{return ErrRangeCheck ;};if _fee .Val ==0||_fee .Val ==1{return nil ;};if _fee .Val > len (*_fdc ){return ErrStackUnderflow ;
+};for _cfd :=0;_cfd < _bbda (_gge .Val );_cfd ++{var _cef []PSObject ;_cef =(*_fdc )[len (*_fdc )-(_fee .Val ):len (*_fdc )];if _gge .Val > 0{_egdb :=_cef [len (_cef )-1];_cef =append ([]PSObject {_egdb },_cef [0:len (_cef )-1]...);}else {_bdff :=_cef [len (_cef )-_fee .Val ];
+_cef =append (_cef [1:],_bdff );};_dec :=append ((*_fdc )[0:len (*_fdc )-_fee .Val ],_cef ...);_fdc =&_dec ;};return nil ;};func (_ffe *PSOperand )not (_aea *PSStack )error {_fcaeg ,_eac :=_aea .Pop ();if _eac !=nil {return _eac ;};if _eadc ,_ffeb :=_fcaeg .(*PSBoolean );
+_ffeb {_eac =_aea .Push (MakeBool (!_eadc .Val ));return _eac ;}else if _gga ,_eea :=_fcaeg .(*PSInteger );_eea {_eac =_aea .Push (MakeInteger (^_gga .Val ));return _eac ;}else {return ErrTypeCheck ;};};func (_baa *PSOperand )DebugString ()string {return _g .Sprintf ("\u006fp\u003a\u0027\u0025\u0073\u0027",*_baa );
+};func (_gced *PSOperand )neg (_fggc *PSStack )error {_acdd ,_ega :=_fggc .Pop ();if _ega !=nil {return _ega ;};if _eaf ,_egb :=_acdd .(*PSReal );_egb {_ega =_fggc .Push (MakeReal (-_eaf .Val ));return _ega ;}else if _gdf ,_dgge :=_acdd .(*PSInteger );
+_dgge {_ega =_fggc .Push (MakeInteger (-_gdf .Val ));return _ega ;}else {return ErrTypeCheck ;};};var ErrTypeCheck =_c .New ("\u0074\u0079p\u0065\u0020\u0063h\u0065\u0063\u006b\u0020\u0065\u0072\u0072\u006f\u0072");func (_aab *PSOperand )xor (_eeg *PSStack )error {_dbbb ,_ggff :=_eeg .Pop ();
+if _ggff !=nil {return _ggff ;};_ccf ,_ggff :=_eeg .Pop ();if _ggff !=nil {return _ggff ;};if _dagg ,_bfaf :=_dbbb .(*PSBoolean );_bfaf {_dbe ,_dedga :=_ccf .(*PSBoolean );if !_dedga {return ErrTypeCheck ;};_ggff =_eeg .Push (MakeBool (_dagg .Val !=_dbe .Val ));
+return _ggff ;};if _dggg ,_cga :=_dbbb .(*PSInteger );_cga {_aaba ,_gbd :=_ccf .(*PSInteger );if !_gbd {return ErrTypeCheck ;};_ggff =_eeg .Push (MakeInteger (_dggg .Val ^_aaba .Val ));return _ggff ;};return ErrTypeCheck ;};func (_eff *PSBoolean )String ()string {return _g .Sprintf ("\u0025\u0076",_eff .Val )};
+func (_ecfb *PSParser )parseOperand ()(*PSOperand ,error ){var _begdg []byte ;for {_baca ,_ebb :=_ecfb ._abaf .Peek (1);if _ebb !=nil {if _ebb ==_f .EOF {break ;};return nil ,_ebb ;};if _ff .IsDelimiter (_baca [0]){break ;};if _ff .IsWhiteSpace (_baca [0]){break ;
+};_gdfg ,_ :=_ecfb ._abaf .ReadByte ();_begdg =append (_begdg ,_gdfg );};if len (_begdg )==0{return nil ,_c .New ("\u0069\u006e\u0076al\u0069\u0064\u0020\u006f\u0070\u0065\u0072\u0061\u006e\u0064\u0020\u0028\u0065\u006d\u0070\u0074\u0079\u0029");};return MakeOperand (string (_begdg )),nil ;
+};
+
+// MakeBool returns a new PSBoolean object initialized with `val`.
+func MakeBool (val bool )*PSBoolean {_caa :=PSBoolean {};_caa .Val =val ;return &_caa };func (_cea *PSParser )skipComments ()error {if _ ,_gfb :=_cea .skipSpaces ();_gfb !=nil {return _gfb ;};_ecea :=true ;for {_cece ,_cfcf :=_cea ._abaf .Peek (1);if _cfcf !=nil {_fe .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u0020\u0025\u0073",_cfcf .Error ());
+return _cfcf ;};if _ecea &&_cece [0]!='%'{return nil ;};_ecea =false ;if (_cece [0]!='\r')&&(_cece [0]!='\n'){_cea ._abaf .ReadByte ();}else {break ;};};return _cea .skipComments ();};func (_bdfe *PSOperand )ifelse (_ace *PSStack )error {_bfd ,_gda :=_ace .Pop ();
+if _gda !=nil {return _gda ;};_dgce ,_gda :=_ace .Pop ();if _gda !=nil {return _gda ;};_dee ,_gda :=_ace .Pop ();if _gda !=nil {return _gda ;};_bfa ,_ecc :=_bfd .(*PSProgram );if !_ecc {return ErrTypeCheck ;};_fadd ,_ecc :=_dgce .(*PSProgram );if !_ecc {return ErrTypeCheck ;
+};_efg ,_ecc :=_dee .(*PSBoolean );if !_ecc {return ErrTypeCheck ;};if _efg .Val {_aae :=_fadd .Exec (_ace );return _aae ;};_gda =_bfa .Exec (_ace );return _gda ;};func (_ec *PSInteger )Duplicate ()PSObject {_ffbf :=PSInteger {};_ffbf .Val =_ec .Val ;return &_ffbf };
+func (_efe *PSReal )String ()string {return _g .Sprintf ("\u0025\u002e\u0035\u0066",_efe .Val )};
+
+// Empty empties the stack.
+func (_bbdb *PSStack )Empty (){*_bbdb =[]PSObject {}};
+
+// PSOperand represents a Postscript operand (text string).
+type PSOperand string ;func (_ae *PSOperand )div (_edb *PSStack )error {_egc ,_fdd :=_edb .Pop ();if _fdd !=nil {return _fdd ;};_bea ,_fdd :=_edb .Pop ();if _fdd !=nil {return _fdd ;};_aba ,_efae :=_egc .(*PSReal );_cbf ,_gbcf :=_egc .(*PSInteger );if !_efae &&!_gbcf {return ErrTypeCheck ;
+};if _efae &&_aba .Val ==0{return ErrUndefinedResult ;};if _gbcf &&_cbf .Val ==0{return ErrUndefinedResult ;};_eedg ,_de :=_bea .(*PSReal );_dag ,_gca :=_bea .(*PSInteger );if !_de &&!_gca {return ErrTypeCheck ;};var _efff float64 ;if _de {_efff =_eedg .Val ;
+}else {_efff =float64 (_dag .Val );};if _efae {_efff /=_aba .Val ;}else {_efff /=float64 (_cbf .Val );};_fdd =_edb .Push (MakeReal (_efff ));return _fdd ;};func (_dc *PSReal )DebugString ()string {return _g .Sprintf ("\u0072e\u0061\u006c\u003a\u0025\u002e\u0035f",_dc .Val );
+};
+
+// Execute executes the program for an input parameters `objects` and returns a slice of output objects.
+func (_ed *PSExecutor )Execute (objects []PSObject )([]PSObject ,error ){for _ ,_ef :=range objects {_gbg :=_ed .Stack .Push (_ef );if _gbg !=nil {return nil ,_gbg ;};};_bf :=_ed ._gb .Exec (_ed .Stack );if _bf !=nil {_fe .Log .Debug ("\u0045x\u0065c\u0020\u0066\u0061\u0069\u006c\u0065\u0064\u003a\u0020\u0025\u0076",_bf );
+return nil ,_bf ;};_ffb :=[]PSObject (*_ed .Stack );_ed .Stack .Empty ();return _ffb ,nil ;};
+
+// PSParser is a basic Postscript parser.
+type PSParser struct{_abaf *_cg .Reader };var ErrRangeCheck =_c .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");
+
+// NewPSProgram returns an empty, initialized PSProgram.
+func NewPSProgram ()*PSProgram {return &PSProgram {}};func (_edg *PSOperand )pop (_abec *PSStack )error {_ ,_ebaa :=_abec .Pop ();if _ebaa !=nil {return _ebaa ;};return nil ;};
+
+// PopNumberAsFloat64 pops and return the numeric value of the top of the stack as a float64.
+// Real or integer only.
+func (_ggbc *PSStack )PopNumberAsFloat64 ()(float64 ,error ){_fbaa ,_gdff :=_ggbc .Pop ();if _gdff !=nil {return 0,_gdff ;};if _bagd ,_dbfe :=_fbaa .(*PSReal );_dbfe {return _bagd .Val ,nil ;}else if _add ,_gab :=_fbaa .(*PSInteger );_gab {return float64 (_add .Val ),nil ;
+}else {return 0,ErrTypeCheck ;};};func (_aef *PSOperand )ln (_fag *PSStack )error {_edfa ,_ggb :=_fag .PopNumberAsFloat64 ();if _ggb !=nil {return _ggb ;};_cfgg :=_ca .Log (_edfa );_ggb =_fag .Push (MakeReal (_cfgg ));return _ggb ;};
+
+// Parse parses the postscript and store as a program that can be executed.
+func (_dgcg *PSParser )Parse ()(*PSProgram ,error ){_dgcg .skipSpaces ();_cfda ,_dbaf :=_dgcg ._abaf .Peek (2);if _dbaf !=nil {return nil ,_dbaf ;};if _cfda [0]!='{'{return nil ,_c .New ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0050\u0053\u0020\u0050\u0072\u006f\u0067\u0072\u0061\u006d\u0020\u006e\u006f\u0074\u0020\u0073t\u0061\u0072\u0074\u0069\u006eg\u0020\u0077i\u0074\u0068\u0020\u007b");
+};_dcc ,_dbaf :=_dgcg .parseFunction ();if _dbaf !=nil &&_dbaf !=_f .EOF {return nil ,_dbaf ;};return _dcc ,_dbaf ;};func (_cd *PSOperand )abs (_dca *PSStack )error {_eed ,_fbb :=_dca .Pop ();if _fbb !=nil {return _fbb ;};if _ge ,_be :=_eed .(*PSReal );
+_be {_edf :=_ge .Val ;if _edf < 0{_fbb =_dca .Push (MakeReal (-_edf ));}else {_fbb =_dca .Push (MakeReal (_edf ));};}else if _fcg ,_aff :=_eed .(*PSInteger );_aff {_gc :=_fcg .Val ;if _gc < 0{_fbb =_dca .Push (MakeInteger (-_gc ));}else {_fbb =_dca .Push (MakeInteger (_gc ));
+};}else {return ErrTypeCheck ;};return _fbb ;};func (_ce *PSBoolean )DebugString ()string {return _g .Sprintf ("\u0062o\u006f\u006c\u003a\u0025\u0076",_ce .Val );};
+
+// Append appends an object to the PSProgram.
+func (_bb *PSProgram )Append (obj PSObject ){*_bb =append (*_bb ,obj )};var ErrStackUnderflow =_c .New ("\u0073t\u0061c\u006b\u0020\u0075\u006e\u0064\u0065\u0072\u0066\u006c\u006f\u0077");func (_cag *PSOperand )String ()string {return string (*_cag )};

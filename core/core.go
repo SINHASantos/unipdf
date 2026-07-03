@@ -12,56 +12,99 @@
 // Package core defines and implements the primitive PDF object types in golang, and provides functionality
 // for parsing those from a PDF file stream. This includes I/O handling, cross references, repairs, encryption,
 // encoding and other core capabilities.
-package core ;import (_fae "bufio";_f "bytes";_d "compress/lzw";_ae "compress/zlib";_bf "crypto/md5";_agc "crypto/rand";_abc "encoding/hex";_de "errors";_ee "fmt";_bd "github.com/unidoc/unipdf/v4/common";_gbg "github.com/unidoc/unipdf/v4/core/security";
-_bff "github.com/unidoc/unipdf/v4/core/security/crypt";_fef "github.com/unidoc/unipdf/v4/internal/ccittfax";_fd "github.com/unidoc/unipdf/v4/internal/imageutil";_be "github.com/unidoc/unipdf/v4/internal/jbig2";_ff "github.com/unidoc/unipdf/v4/internal/jbig2/bitmap";
-_fg "github.com/unidoc/unipdf/v4/internal/jbig2/decoder";_eea "github.com/unidoc/unipdf/v4/internal/jbig2/document";_eb "github.com/unidoc/unipdf/v4/internal/jbig2/errors";_fefg "github.com/unidoc/unipdf/v4/internal/precision";_cef "github.com/unidoc/unipdf/v4/internal/strutils";
-_bgf "golang.org/x/image/tiff/lzw";_dc "golang.org/x/text/unicode/bidi";_bg "golang.org/x/xerrors";_b "image";_ag "image/color";_ad "image/jpeg";_ce "io";_a "os";_g "reflect";_fe "regexp";_ef "sort";_c "strconv";_fa "strings";_gb "sync";_ca "time";_ab "unicode";
-);func (_afbd *PdfCrypt )loadCryptFilters (_dcfa *PdfObjectDictionary )error {_afbd ._edb =cryptFilters {};_dgf :=_dcfa .Get ("\u0043\u0046");_dgf =TraceToDirectObject (_dgf );if _dccg ,_aaea :=_dgf .(*PdfObjectReference );_aaea {_aca ,_acdg :=_afbd ._acbf .LookupByReference (*_dccg );
-if _acdg !=nil {_bd .Log .Debug ("\u0045\u0072r\u006f\u0072\u0020\u006c\u006f\u006f\u006b\u0069\u006e\u0067\u0020\u0075\u0070\u0020\u0043\u0046\u0020\u0072\u0065\u0066\u0065\u0072en\u0063\u0065");return _acdg ;};_dgf =TraceToDirectObject (_aca );};_cde ,_cdf :=_dgf .(*PdfObjectDictionary );
-if !_cdf {_bd .Log .Debug ("I\u006ev\u0061\u006c\u0069\u0064\u0020\u0043\u0046\u002c \u0074\u0079\u0070\u0065: \u0025\u0054",_dgf );return _de .New ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0043\u0046");};for _ ,_bcf :=range _cde .Keys (){_aeea :=_cde .Get (_bcf );
-if _bcb ,_cbde :=_aeea .(*PdfObjectReference );_cbde {_abb ,_gfca :=_afbd ._acbf .LookupByReference (*_bcb );if _gfca !=nil {_bd .Log .Debug ("\u0045\u0072ro\u0072\u0020\u006co\u006f\u006b\u0075\u0070 up\u0020di\u0063\u0074\u0069\u006f\u006e\u0061\u0072y \u0072\u0065\u0066\u0065\u0072\u0065\u006ec\u0065");
-return _gfca ;};_aeea =TraceToDirectObject (_abb );};_dggc ,_gfcff :=_aeea .(*PdfObjectDictionary );if !_gfcff {return _ee .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0064\u0069\u0063\u0074\u0020\u0069\u006e \u0043\u0046\u0020\u0028\u006e\u0061\u006d\u0065\u0020\u0025\u0073\u0029\u0020-\u0020\u006e\u006f\u0074\u0020\u0061\u0020\u0064\u0069\u0063\u0074\u0069on\u0061\u0072\u0079\u0020\u0062\u0075\u0074\u0020\u0025\u0054",_bcf ,_aeea );
-};if _bcf =="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079"{_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u002d\u0020\u0043\u0061\u006e\u006e\u006f\u0074\u0020\u006f\u0076\u0065\u0072\u0077r\u0069\u0074\u0065\u0020\u0074\u0068\u0065\u0020\u0069d\u0065\u006e\u0074\u0069\u0074\u0079\u0020\u0066\u0069\u006c\u0074\u0065\u0072 \u002d\u0020\u0054\u0072\u0079\u0069n\u0067\u0020\u006ee\u0078\u0074");
-continue ;};var _dee _bff .FilterDict ;if _cadg :=_agcf (&_dee ,_dggc );_cadg !=nil {return _cadg ;};_dege ,_cca :=_bff .NewFilter (_dee );if _cca !=nil {return _cca ;};_afbd ._edb [string (_bcf )]=_dege ;};_afbd ._edb ["\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079"]=_bff .NewIdentity ();
-_afbd ._eabe ="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079";if _ebfg ,_efb :=_dcfa .Get ("\u0053\u0074\u0072\u0046").(*PdfObjectName );_efb {if _ ,_bga :=_afbd ._edb [string (*_ebfg )];!_bga {return _ee .Errorf ("\u0063\u0072\u0079\u0070t\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0020\u0066o\u0072\u0020\u0053\u0074\u0072\u0046\u0020\u006e\u006f\u0074\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069e\u0064\u0020\u0069\u006e\u0020C\u0046\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079\u0020\u0028\u0025\u0073\u0029",*_ebfg );
-};_afbd ._eabe =string (*_ebfg );};_afbd ._dcg ="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079";if _edg ,_adc :=_dcfa .Get ("\u0053\u0074\u006d\u0046").(*PdfObjectName );_adc {if _ ,_feg :=_afbd ._edb [string (*_edg )];!_feg {return _ee .Errorf ("\u0063\u0072\u0079\u0070t\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0020\u0066o\u0072\u0020\u0053\u0074\u006d\u0046\u0020\u006e\u006f\u0074\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069e\u0064\u0020\u0069\u006e\u0020C\u0046\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079\u0020\u0028\u0025\u0073\u0029",*_edg );
-};_afbd ._dcg =string (*_edg );};return nil ;};
+package core ;import (_ecd "bufio";_ad "bytes";_caa "compress/lzw";_f "compress/zlib";_cag "crypto/md5";_ba "crypto/rand";_ee "encoding/hex";_bc "errors";_ebc "fmt";_be "github.com/unidoc/unipdf/v4/common";_ce "github.com/unidoc/unipdf/v4/core/security";
+_bb "github.com/unidoc/unipdf/v4/core/security/crypt";_cc "github.com/unidoc/unipdf/v4/internal/ccittfax";_bg "github.com/unidoc/unipdf/v4/internal/imageutil";_ggf "github.com/unidoc/unipdf/v4/internal/jbig2";_ga "github.com/unidoc/unipdf/v4/internal/jbig2/bitmap";
+_ea "github.com/unidoc/unipdf/v4/internal/jbig2/decoder";_dg "github.com/unidoc/unipdf/v4/internal/jbig2/document";_fb "github.com/unidoc/unipdf/v4/internal/jbig2/errors";_age "github.com/unidoc/unipdf/v4/internal/precision";_gg "github.com/unidoc/unipdf/v4/internal/strutils";
+_ag "golang.org/x/image/tiff/lzw";_gb "golang.org/x/text/unicode/bidi";_aa "golang.org/x/xerrors";_ed "image";_ca "image/color";_af "image/jpeg";_g "io";_b "os";_e "reflect";_c "regexp";_ec "sort";_d "strconv";_ff "strings";_cd "sync";_fe "time";_eb "unicode";
+);func (_cffba *PdfObjectDictionary )setWithLock (_dfeb PdfObjectName ,_adab PdfObject ,_eddbd bool ){if _eddbd {_cffba ._egfe .Lock ();defer _cffba ._egfe .Unlock ();};_ ,_bffb :=_cffba ._dbcd [_dfeb ];if !_bffb {_cffba ._gaga =append (_cffba ._gaga ,_dfeb );
+};_cffba ._dbcd [_dfeb ]=_adab ;};
 
-// PdfObjectArray represents the primitive PDF array object.
-type PdfObjectArray struct{_bgegc []PdfObject };
+// UpdateParams updates the parameter values of the encoder.
+func (_gceff *DCTEncoder )UpdateParams (params *PdfObjectDictionary ){_ddc ,_ddag :=GetNumberAsInt64 (params .Get ("\u0043o\u006co\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u0073"));if _ddag ==nil {_gceff .ColorComponents =int (_ddc );
+};_affae ,_ddag :=GetNumberAsInt64 (params .Get ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074"));if _ddag ==nil {_gceff .BitsPerComponent =int (_affae );};_fafb ,_ddag :=GetNumberAsInt64 (params .Get ("\u0057\u0069\u0064t\u0068"));
+if _ddag ==nil {_gceff .Width =int (_fafb );};_bfbb ,_ddag :=GetNumberAsInt64 (params .Get ("\u0048\u0065\u0069\u0067\u0068\u0074"));if _ddag ==nil {_gceff .Height =int (_bfbb );};_fabc ,_ddag :=GetNumberAsInt64 (params .Get ("\u0051u\u0061\u006c\u0069\u0074\u0079"));
+if _ddag ==nil {_gceff .Quality =int (_fabc );};_gdca ,_dee :=GetArray (params .Get ("\u0044\u0065\u0063\u006f\u0064\u0065"));if _dee {_gceff .Decode ,_ddag =_gdca .ToFloat64Array ();if _ddag !=nil {_be .Log .Error ("F\u0061\u0069\u006c\u0065\u0064\u0020\u0063\u006f\u006ev\u0065\u0072\u0074\u0069\u006e\u0067\u0020de\u0063\u006f\u0064\u0065 \u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0069\u006eto\u0020\u0061r\u0072\u0061\u0079\u0073\u003a\u0020\u0025\u0076",_ddag );
+};};};
 
-// IsAuthenticated returns true if the PDF has already been authenticated for accessing.
-func (_cdg *PdfParser )IsAuthenticated ()bool {return _cdg ._ggee ._ccc };func (_ddgd *PdfCrypt )saveCryptFilters (_gcdd *PdfObjectDictionary )error {if _ddgd ._aff .V < 4{return _de .New ("\u0063\u0061\u006e\u0020\u006f\u006e\u006c\u0079\u0020\u0062\u0065 \u0075\u0073\u0065\u0064\u0020\u0077\u0069\u0074\u0068\u0020V\u003e\u003d\u0034");
-};_afc :=MakeDict ();_gcdd .Set ("\u0043\u0046",_afc );for _fff ,_gfga :=range _ddgd ._edb {if _fff =="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079"{continue ;};_dab :=_bcba (_gfga ,"");_afc .Set (PdfObjectName (_fff ),_dab );};_gcdd .Set ("\u0053\u0074\u0072\u0046",MakeName (_ddgd ._eabe ));
-_gcdd .Set ("\u0053\u0074\u006d\u0046",MakeName (_ddgd ._dcg ));return nil ;};
+// Discard discards the next n bytes from the buffered reader.
+func (_cf *bufferedReadSeeker )Discard (n int )(int ,error ){return _cf ._df .Discard (n )};func (_db *PdfParser )lookupByNumber (_cea int ,_afc bool )(PdfObject ,bool ,error ){_aeg ,_edaf :=_db .ObjCache [_cea ];if _edaf {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0052\u0065\u0074\u0075\u0072\u006e\u0069\u006e\u0067\u0020\u0063a\u0063\u0068\u0065\u0064\u0020\u006f\u0062\u006a\u0065\u0063t\u0020\u0025\u0064",_cea );
+};return _aeg ,false ,nil ;};if _db ._ebga ==nil {_db ._ebga =map[int ]bool {};};if _db ._ebga [_cea ]{_be .Log .Debug ("ER\u0052\u004f\u0052\u003a\u0020\u004c\u006fok\u0075\u0070\u0020\u006f\u0066\u0020\u0025\u0064\u0020\u0069\u0073\u0020\u0061\u006c\u0072e\u0061\u0064\u0079\u0020\u0069\u006e\u0020\u0070\u0072\u006f\u0067\u0072\u0065\u0073\u0073\u0020\u002d\u0020\u0072\u0065c\u0075\u0072\u0073\u0069\u0076\u0065 \u006c\u006f\u006f\u006b\u0075\u0070\u0020\u0061\u0074t\u0065m\u0070\u0074\u0020\u0062\u006c\u006f\u0063\u006b\u0065\u0064",_cea );
+return nil ,false ,_bc .New ("\u0072\u0065\u0063\u0075\u0072\u0073\u0069\u0076\u0065\u0020\u006c\u006f\u006f\u006b\u0075p\u0020a\u0074\u0074\u0065\u006d\u0070\u0074\u0020\u0062\u006c\u006f\u0063\u006b\u0065\u0064");};_db ._ebga [_cea ]=true ;defer delete (_db ._ebga ,_cea );
+_gad ,_edaf :=_db ._dggd .ObjectMap [_cea ];if !_edaf {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0055\u006e\u0061\u0062l\u0065\u0020\u0074\u006f\u0020\u006c\u006f\u0063\u0061t\u0065\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0069\u006e\u0020\u0078\u0072\u0065\u0066\u0073\u0021 \u002d\u0020\u0052\u0065\u0074u\u0072\u006e\u0069\u006e\u0067\u0020\u006e\u0075\u006c\u006c\u0020\u006f\u0062\u006a\u0065\u0063\u0074");
+};var _ffbe PdfObjectNull ;return &_ffbe ,false ,nil ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("L\u006fo\u006b\u0075\u0070\u0020\u006f\u0062\u006a\u0020n\u0075\u006d\u0062\u0065r \u0025\u0064",_cea );};switch _gad .XType {case XrefTypeTableEntry :if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0078r\u0065f\u006f\u0062\u006a\u0020\u006fb\u006a\u0020n\u0075\u006d\u0020\u0025\u0064",_gad .ObjectNumber );
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0078\u0072\u0065\u0066\u006f\u0062\u006a\u0020\u0067e\u006e\u0020\u0025\u0064",_gad .Generation );};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0078\u0072\u0065\u0066\u006f\u0062\u006a\u0020\u006f\u0066\u0066\u0073e\u0074\u0020\u0025\u0064",_gad .Offset );
+};_db ._eece .Seek (_gad .Offset ,_g .SeekStart );_egda ,_fea :=_db .ParseIndirectObject ();if _fea !=nil {_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0046\u0061\u0069\u006ce\u0064\u0020\u0072\u0065\u0061\u0064\u0069n\u0067\u0020\u0078\u0072\u0065\u0066\u0020\u0028\u0025\u0073\u0029",_fea );
+if _afc {_be .Log .Debug ("\u0041\u0074t\u0065\u006d\u0070\u0074i\u006e\u0067 \u0074\u006f\u0020\u0072\u0065\u0070\u0061\u0069r\u0020\u0078\u0072\u0065\u0066\u0073\u0020\u0028\u0074\u006f\u0070\u0020d\u006f\u0077\u006e\u0029");_ffe ,_gbdb :=_db .repairRebuildXrefsTopDown ();
+if _gbdb !=nil {_be .Log .Debug ("\u0045R\u0052\u004f\u0052\u0020\u0046\u0061\u0069\u006c\u0065\u0064\u0020r\u0065\u0070\u0061\u0069\u0072\u0020\u0028\u0025\u0073\u0029",_gbdb );return nil ,false ,_gbdb ;};_db ._dggd =*_ffe ;return _db .lookupByNumber (_cea ,false );
+};return nil ,false ,_fea ;};if _afc {_caad ,_ ,_ :=_cdf (_egda );if int (_caad )!=_cea {_be .Log .Debug ("\u0049n\u0076\u0061\u006c\u0069d\u0020\u0078\u0072\u0065\u0066s\u003a \u0052e\u0062\u0075\u0069\u006c\u0064\u0069\u006eg");_ge :=_db .rebuildXrefTable ();
+if _ge !=nil {return nil ,false ,_ge ;};_db .ObjCache =objectCache {};return _db .lookupByNumberWrapper (_cea ,false );};};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0052\u0065\u0074\u0075\u0072\u006e\u0069\u006e\u0067\u0020\u006f\u0062\u006a");
+};_db .ObjCache [_cea ]=_egda ;return _egda ,false ,nil ;case XrefTypeObjectStream :if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0078r\u0065\u0066\u0020\u0066\u0072\u006f\u006d\u0020\u006f\u0062\u006ae\u0063\u0074\u0020\u0073\u0074\u0072\u0065\u0061\u006d\u0021");
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u003e\u004c\u006f\u0061\u0064\u0020\u0076\u0069\u0061\u0020\u004f\u0053\u0021");};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004f\u0062\u006a\u0065\u0063\u0074\u0020\u0073\u0074\u0072\u0065\u0061\u006d \u0061\u0076\u0061\u0069\u006c\u0061b\u006c\u0065\u0020\u0069\u006e\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020%\u0064\u002f\u0025\u0064",_gad .OsObjNumber ,_gad .OsObjIndex );
+};if _gad .OsObjNumber ==_cea {_be .Log .Debug ("E\u0052\u0052\u004f\u0052\u0020\u0043i\u0072\u0063\u0075\u006c\u0061\u0072\u0020\u0072\u0065f\u0065\u0072\u0065n\u0063e\u0021\u003f\u0021");return nil ,true ,_bc .New ("\u0078\u0072\u0065f \u0063\u0069\u0072\u0063\u0075\u006c\u0061\u0072\u0020\u0072\u0065\u0066\u0065\u0072\u0065\u006e\u0063\u0065");
+};if _ ,_fcc :=_db ._dggd .ObjectMap [_gad .OsObjNumber ];_fcc {_aeea ,_cbf :=_db .lookupObjectViaOS (_gad .OsObjNumber ,_cea );if _cbf !=nil {_be .Log .Debug ("\u0045R\u0052\u004f\u0052\u0020\u0052\u0065\u0074\u0075\u0072\u006e\u0069n\u0067\u0020\u0045\u0052\u0052\u0020\u0028\u0025\u0073\u0029",_cbf );
+return nil ,true ,_cbf ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u003c\u004c\u006f\u0061\u0064\u0065\u0064\u0020\u0076i\u0061\u0020\u004f\u0053");};_db .ObjCache [_cea ]=_aeea ;if _db ._aebd !=nil {_db ._aebd ._gef [_aeea ]=true ;
+};return _aeea ,true ,nil ;};_be .Log .Debug ("\u003f\u003f\u0020\u0042\u0065\u006c\u006f\u006eg\u0073\u0020\u0074o \u0061\u0020\u006e\u006f\u006e\u002dc\u0072\u006f\u0073\u0073\u0020\u0072\u0065\u0066\u0065\u0072\u0065\u006e\u0063\u0065\u0064 \u006f\u0062\u006a\u0065\u0063\u0074\u0020\u002e.\u002e\u0021");
+return nil ,true ,_bc .New ("\u006f\u0073\u0020\u0062\u0065\u006c\u006fn\u0067\u0073\u0020t\u006f\u0020\u0061\u0020n\u006f\u006e\u0020\u0063\u0072\u006f\u0073\u0073\u0020\u0072\u0065\u0066\u0065\u0072\u0065\u006e\u0063\u0065\u0064\u0020\u006f\u0062\u006a\u0065\u0063\u0074");
+};return nil ,false ,_bc .New ("\u0075\u006e\u006b\u006e\u006f\u0077\u006e\u0020\u0078\u0072\u0065\u0066 \u0074\u0079\u0070\u0065");};
 
-// IsHexadecimal checks if the PdfObjectString contains Hexadecimal data.
-func (_fcgd *PdfObjectString )IsHexadecimal ()bool {return _fcgd ._gfedc };func _edde (_afeg *PdfObjectStream ,_cffea *MultiEncoder )(*DCTEncoder ,error ){_bfbfa :=NewDCTEncoder ();_decb :=_afeg .PdfObjectDictionary ;if _decb ==nil {return _bfbfa ,nil ;
-};var _geg _ce .Reader =_f .NewReader (_afeg .Stream );if _cffea !=nil {_geg =_cffea .DecodeReader (_geg );if _beff ,_bddf :=_geg .(_ce .Closer );_bddf {defer _beff .Close ();};};_eede ,_efbc :=_ad .DecodeConfig (_geg );if _efbc !=nil {_bd .Log .Debug ("\u0045\u0072\u0072or\u0020\u0064\u0065\u0063\u006f\u0064\u0069\u006e\u0067\u0020\u0066\u0069\u006c\u0065\u003a\u0020\u0025\u0073",_efbc );
-return nil ,_efbc ;};switch _eede .ColorModel {case _ag .RGBAModel :_bfbfa .BitsPerComponent =8;_bfbfa .ColorComponents =3;_bfbfa .Decode =[]float64 {0.0,1.0,0.0,1.0,0.0,1.0};case _ag .RGBA64Model :_bfbfa .BitsPerComponent =16;_bfbfa .ColorComponents =3;
-_bfbfa .Decode =[]float64 {0.0,1.0,0.0,1.0,0.0,1.0};case _ag .GrayModel :_bfbfa .BitsPerComponent =8;_bfbfa .ColorComponents =1;_bfbfa .Decode =[]float64 {0.0,1.0};case _ag .Gray16Model :_bfbfa .BitsPerComponent =16;_bfbfa .ColorComponents =1;_bfbfa .Decode =[]float64 {0.0,1.0};
-case _ag .CMYKModel :_bfbfa .BitsPerComponent =8;_bfbfa .ColorComponents =4;_bfbfa .Decode =[]float64 {0.0,1.0,0.0,1.0,0.0,1.0,0.0,1.0};case _ag .YCbCrModel :_bfbfa .BitsPerComponent =8;_bfbfa .ColorComponents =3;_bfbfa .Decode =[]float64 {0.0,1.0,0.0,1.0,0.0,1.0};
-default:return nil ,_de .New ("\u0075\u006e\u0073up\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0063\u006f\u006c\u006f\u0072\u0020\u006d\u006f\u0064\u0065\u006c");};_bfbfa .Width =_eede .Width ;_bfbfa .Height =_eede .Height ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0044\u0043T\u0020\u0045\u006ec\u006f\u0064\u0065\u0072\u003a\u0020\u0025\u002b\u0076",_bfbfa );
-};_bfbfa .Quality =DefaultJPEGQuality ;_bceb ,_ageg :=GetArray (_decb .Get ("\u0044\u0065\u0063\u006f\u0064\u0065"));if _ageg {_feda ,_ccfc :=_bceb .ToFloat64Array ();if _ccfc !=nil {return _bfbfa ,_ccfc ;};_bfbfa .Decode =_feda ;};return _bfbfa ,nil ;
-};
+// GetCrypter returns the PdfCrypt instance which has information about the PDFs encryption.
+func (_abfcb *PdfParser )GetCrypter ()*PdfCrypt {return _abfcb ._aebd };
 
-// Decoded returns the PDFDocEncoding or UTF-16BE decoded string contents.
-// UTF-16BE is applied when the first two bytes are 0xFE, 0XFF, otherwise decoding of
-// PDFDocEncoding is performed.
-func (_ebff *PdfObjectString )Decoded ()string {if _ebff ==nil {return "";};_eedbe :=[]byte (_ebff ._fadd );if len (_eedbe )>=2&&_eedbe [0]==0xFE&&_eedbe [1]==0xFF{return _cef .UTF16ToString (_eedbe [2:]);};return _cef .PDFDocEncodingToString (_eedbe );
-};
+// EncryptInfo contains an information generated by the document encrypter.
+type EncryptInfo struct{Version ;
 
-// HasDataAfterEOF checks if there is some data after EOF marker.
-func (_bef ParserMetadata )HasDataAfterEOF ()bool {return _bef ._gda };
+// Encrypt is an encryption dictionary that contains all necessary parameters.
+// It should be stored in all copies of the document trailer.
+Encrypt *PdfObjectDictionary ;
 
-// Reset resets the buffered reader with a new io.Reader.
-func (_gfc *bufferedReadSeeker )Reset (r _ce .Reader ){_gfc ._cad .Reset (r )};func _gcfa (_dbba int )int {_ccbd :=_dbba >>(_febe -1);return (_dbba ^_ccbd )-_ccbd };
+// ID0 and ID1 are IDs used in the trailer. Older algorithms such as RC4 uses them for encryption.
+ID0 ,ID1 string ;};func (_bdg *PdfParser )lookupByNumberWrapper (_fbg int ,_ccec bool )(PdfObject ,bool ,error ){_fed ,_gdb ,_dce :=_bdg .lookupByNumber (_fbg ,_ccec );if _dce !=nil {return nil ,_gdb ,_dce ;};if !_gdb &&_bdg ._aebd !=nil &&_bdg ._aebd ._gge &&!_bdg ._aebd .isDecrypted (_fed ){_egdd :=_bdg ._aebd .Decrypt (_fed ,0,0);
+if _egdd !=nil {return nil ,_gdb ,_egdd ;};};return _fed ,_gdb ,nil ;};
 
-// XrefTable represents the cross references in a PDF, i.e. the table of objects and information
-// where to access within the PDF file.
-type XrefTable struct{ObjectMap map[int ]XrefObject ;_aeee []XrefObject ;};func (_ggfc *PdfParser )xrefNextObjectOffset (_bbcg int64 )int64 {_dgaf :=int64 (0);if len (_ggfc ._gabb .ObjectMap )==0{return 0;};if len (_ggfc ._gabb ._aeee )==0{_bgbc :=0;for _ ,_fgce :=range _ggfc ._gabb .ObjectMap {if _fgce .Offset > 0{_bgbc ++;
-};};if _bgbc ==0{return 0;};_ggfc ._gabb ._aeee =make ([]XrefObject ,_bgbc );_bggc :=0;for _ ,_fdcb :=range _ggfc ._gabb .ObjectMap {if _fdcb .Offset > 0{_ggfc ._gabb ._aeee [_bggc ]=_fdcb ;_bggc ++;};};_ef .Slice (_ggfc ._gabb ._aeee ,func (_gdeee ,_addef int )bool {return _ggfc ._gabb ._aeee [_gdeee ].Offset < _ggfc ._gabb ._aeee [_addef ].Offset ;
-});};_ggce :=_ef .Search (len (_ggfc ._gabb ._aeee ),func (_bcbb int )bool {return _ggfc ._gabb ._aeee [_bcbb ].Offset >=_bbcg });if _ggce < len (_ggfc ._gabb ._aeee ){_dgaf =_ggfc ._gabb ._aeee [_ggce ].Offset ;};return _dgaf ;};
+// NewFlateEncoder makes a new flate encoder with default parameters, predictor 1 and bits per component 8.
+func NewFlateEncoder ()*FlateEncoder {_caf :=&FlateEncoder {};_caf .Predictor =1;_caf .BitsPerComponent =8;_caf .Colors =1;_caf .Columns =1;return _caf ;};
+
+// Write outputs the object as it is to be written to file.
+func (_ccdf *PdfIndirectObject )Write ()[]byte {return _cage (func (_cgec *_ad .Buffer ){_cgec .WriteString (_d .FormatInt (_ccdf .ObjectNumber ,10));_cgec .WriteString ("\u0020\u0030\u0020\u0052");});};
+
+// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
+func (_eaae *ASCIIHexEncoder )MakeStreamDict ()*PdfObjectDictionary {_baad :=MakeDict ();_baad .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_eaae .GetFilterName ()));return _baad ;};func _fgf (_effc *_ce .StdEncryptDict ,_bee *PdfObjectDictionary )error {R ,_aceeb :=_bee .Get ("\u0052").(*PdfObjectInteger );
+if !_aceeb {return _bc .New ("\u0065\u006e\u0063\u0072y\u0070\u0074\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006ea\u0072y\u0020\u006d\u0069\u0073\u0073\u0069\u006eg\u0020\u0052");};if *R < 2||*R > 6{return _ebc .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0052 \u0028\u0025\u0064\u0029",*R );
+};_effc .R =int (*R );O ,_aceeb :=_bee .GetString ("\u004f");if !_aceeb {return _bc .New ("\u0065\u006e\u0063\u0072y\u0070\u0074\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006ea\u0072y\u0020\u006d\u0069\u0073\u0073\u0069\u006eg\u0020\u004f");};if _effc .R ==5||_effc .R ==6{if len (O )< 48{return _ebc .Errorf ("\u004c\u0065\u006e\u0067th\u0028\u004f\u0029\u0020\u003c\u0020\u0034\u0038\u0020\u0028\u0025\u0064\u0029",len (O ));
+};}else if len (O )!=32{return _ebc .Errorf ("L\u0065n\u0067\u0074\u0068\u0028\u004f\u0029\u0020\u0021=\u0020\u0033\u0032\u0020(%\u0064\u0029",len (O ));};_effc .O =[]byte (O );U ,_aceeb :=_bee .GetString ("\u0055");if !_aceeb {return _bc .New ("\u0065\u006e\u0063\u0072y\u0070\u0074\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006ea\u0072y\u0020\u006d\u0069\u0073\u0073\u0069\u006eg\u0020\u0055");
+};if _effc .R ==5||_effc .R ==6{if len (U )< 48{return _ebc .Errorf ("\u004c\u0065\u006e\u0067th\u0028\u0055\u0029\u0020\u003c\u0020\u0034\u0038\u0020\u0028\u0025\u0064\u0029",len (U ));};}else if len (U )!=32{_be .Log .Debug ("\u0057\u0061r\u006e\u0069\u006e\u0067\u003a\u0020\u004c\u0065\u006e\u0067\u0074\u0068\u0028\u0055\u0029\u0020\u0021\u003d\u0020\u0033\u0032\u0020(%\u0064\u0029",len (U ));
+};_effc .U =[]byte (U );if _effc .R >=5{OE ,_ded :=_bee .GetString ("\u004f\u0045");if !_ded {return _bc .New ("\u0065\u006ec\u0072\u0079\u0070\u0074\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079\u0020\u006d\u0069\u0073\u0073\u0069\u006eg \u004f\u0045");
+}else if len (OE )!=32{return _ebc .Errorf ("L\u0065\u006e\u0067\u0074h(\u004fE\u0029\u0020\u0021\u003d\u00203\u0032\u0020\u0028\u0025\u0064\u0029",len (OE ));};_effc .OE =[]byte (OE );UE ,_ded :=_bee .GetString ("\u0055\u0045");if !_ded {return _bc .New ("\u0065\u006ec\u0072\u0079\u0070\u0074\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079\u0020\u006d\u0069\u0073\u0073\u0069\u006eg \u0055\u0045");
+}else if len (UE )!=32{return _ebc .Errorf ("L\u0065\u006e\u0067\u0074h(\u0055E\u0029\u0020\u0021\u003d\u00203\u0032\u0020\u0028\u0025\u0064\u0029",len (UE ));};_effc .UE =[]byte (UE );};P ,_aceeb :=_bee .Get ("\u0050").(*PdfObjectInteger );if !_aceeb {return _bc .New ("\u0065\u006e\u0063\u0072\u0079\u0070\u0074 \u0064\u0069\u0063t\u0069\u006f\u006e\u0061r\u0079\u0020\u006d\u0069\u0073\u0073\u0069\u006e\u0067\u0020\u0070\u0065\u0072\u006d\u0069\u0073\u0073\u0069\u006f\u006e\u0073\u0020\u0061\u0074\u0074\u0072");
+};_effc .P =_ce .Permissions (*P );if _effc .R ==6{Perms ,_geb :=_bee .GetString ("\u0050\u0065\u0072m\u0073");if !_geb {return _bc .New ("\u0065\u006e\u0063\u0072\u0079\u0070\u0074\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006ea\u0072y\u0020\u006d\u0069\u0073\u0073\u0069\u006e\u0067\u0020\u0050\u0065\u0072\u006d\u0073");
+}else if len (Perms )!=16{return _ebc .Errorf ("\u004ce\u006e\u0067\u0074\u0068\u0028\u0050\u0065\u0072\u006d\u0073\u0029 \u0021\u003d\u0020\u0031\u0036\u0020\u0028\u0025\u0064\u0029",len (Perms ));};_effc .Perms =[]byte (Perms );};if _bgea ,_acaa :=_bee .Get ("\u0045n\u0063r\u0079\u0070\u0074\u004d\u0065\u0074\u0061\u0064\u0061\u0074\u0061").(*PdfObjectBool );
+_acaa {_effc .EncryptMetadata =bool (*_bgea );}else {_effc .EncryptMetadata =true ;};return nil ;};
+
+// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
+// Has the Filter set.  Some other parameters are generated elsewhere.
+func (_dda *DCTEncoder )MakeStreamDict ()*PdfObjectDictionary {_fbc :=MakeDict ();_fbc .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_dda .GetFilterName ()));return _fbc ;};func _cbd (_gced *PdfObjectStream ,_bgc *PdfObjectDictionary )(*FlateEncoder ,error ){_efeda :=NewFlateEncoder ();
+_eegd :=_gced .PdfObjectDictionary ;if _eegd ==nil {return _efeda ,nil ;};_efeda ._dgcb =_afcb (_eegd );if _bgc ==nil {_bcfc :=TraceToDirectObject (_eegd .Get ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073"));switch _cdga :=_bcfc .(type ){case *PdfObjectArray :if _cdga .Len ()!=1{_be .Log .Debug ("\u0045\u0072\u0072\u006f\u0072:\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073\u0020a\u0072\u0072\u0061\u0079\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0021\u003d\u0020\u0031\u0020\u0028\u0025\u0064\u0029",_cdga .Len ());
+return nil ,_bc .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};if _eca ,_ceag :=GetDict (_cdga .Get (0));_ceag {_bgc =_eca ;};case *PdfObjectDictionary :_bgc =_cdga ;case *PdfObjectNull ,nil :default:_be .Log .Debug ("E\u0072\u0072\u006f\u0072\u003a\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073\u0020n\u006f\u0074\u0020\u0061\u0020\u0064\u0069\u0063\u0074\u0069on\u0061\u0072\u0079 \u0028%\u0054\u0029",_bcfc );
+return nil ,_ebc .Errorf ("\u0069\u006e\u0076\u0061li\u0064\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073");};};if _bgc ==nil {return _efeda ,nil ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0064\u0065\u0063\u006f\u0064\u0065\u0020\u0070\u0061\u0072\u0061\u006ds\u003a\u0020\u0025\u0073",_bgc .String ());
+};_daab :=_bgc .Get ("\u0050r\u0065\u0064\u0069\u0063\u0074\u006fr");if _daab ==nil {_be .Log .Debug ("E\u0072\u0072o\u0072\u003a\u0020\u0050\u0072\u0065\u0064\u0069\u0063\u0074\u006f\u0072\u0020\u006d\u0069\u0073\u0073\u0069\u006e\u0067 \u0066\u0072\u006f\u006d\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073 \u002d\u0020\u0043\u006f\u006e\u0074\u0069\u006e\u0075\u0065\u0020\u0077\u0069t\u0068\u0020\u0064\u0065\u0066\u0061\u0075\u006c\u0074\u0020\u00281\u0029");
+}else {_effe ,_dedf :=_daab .(*PdfObjectInteger );if !_dedf {_be .Log .Debug ("E\u0072\u0072\u006f\u0072\u003a\u0020\u0050\u0072\u0065d\u0069\u0063\u0074\u006f\u0072\u0020\u0073pe\u0063\u0069\u0066\u0069e\u0064\u0020\u0062\u0075\u0074\u0020\u006e\u006f\u0074 n\u0075\u006de\u0072\u0069\u0063\u0020\u0028\u0025\u0054\u0029",_daab );
+return nil ,_ebc .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0050\u0072\u0065\u0064i\u0063\u0074\u006f\u0072");};_efeda .Predictor =int (*_effe );};_daab =_bgc .Get ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074");
+if _daab !=nil {_efbb ,_ecge :=_daab .(*PdfObjectInteger );if !_ecge {_be .Log .Debug ("\u0045\u0052\u0052O\u0052\u003a\u0020\u0049n\u0076\u0061\u006c\u0069\u0064\u0020\u0042i\u0074\u0073\u0050\u0065\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074");
+return nil ,_ebc .Errorf ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0042\u0069\u0074\u0073\u0050e\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074");};_efeda .BitsPerComponent =int (*_efbb );if _efeda .BitsPerComponent !=_efeda ._dgcb .BitsPerComponent {_be .Log .Debug ("\u0057A\u0052\u004e\u0049\u004eG\u003a \u0042\u0069\u0074\u0073\u0050\u0065\u0072\u0043\u006fm\u0070\u006f\u006e\u0065\u006e\u0074\u0020\u006di\u0073\u006d\u0061\u0074\u0063\u0068\u0020\u0077\u0069\u0074\u0068 \u0069\u006d\u0061\u0067\u0065\u0020\u0028\u0025\u0064\u002f%\u0064\u0029\u002c\u0020\u0075\u0073\u0069\u006e\u0067\u0020\u0042\u0069\u0074\u0073\u0050\u0065\u0072\u0043\u006fm\u0070\u006f\u006e\u0065\u006e\u0074\u0020\u0066\u0072\u006f\u006d\u0020i\u006da\u0067\u0065",_efeda .BitsPerComponent ,_efeda ._dgcb .BitsPerComponent );
+_efeda .BitsPerComponent =_efeda ._dgcb .BitsPerComponent ;};};if _efeda .Predictor > 1{_efeda .Columns =1;_daab =_bgc .Get ("\u0043o\u006c\u0075\u006d\u006e\u0073");if _daab !=nil {_dcd ,_dae :=_daab .(*PdfObjectInteger );if !_dae {return nil ,_ebc .Errorf ("\u0070r\u0065\u0064\u0069\u0063\u0074\u006f\u0072\u0020\u0063\u006f\u006cu\u006d\u006e\u0020\u0069\u006e\u0076\u0061\u006c\u0069\u0064");
+};_efeda .Columns =int (*_dcd );};_efeda .Colors =1;_daab =_bgc .Get ("\u0043\u006f\u006c\u006f\u0072\u0073");if _daab !=nil {_ccb ,_ddb :=_daab .(*PdfObjectInteger );if !_ddb {return nil ,_ebc .Errorf ("\u0070\u0072\u0065d\u0069\u0063\u0074\u006fr\u0020\u0063\u006f\u006c\u006f\u0072\u0073 \u006e\u006f\u0074\u0020\u0061\u006e\u0020\u0069\u006e\u0074\u0065\u0067\u0065\u0072");
+};_efeda .Colors =int (*_ccb );};};return _efeda ,nil ;};func (_beddc *asciiHexReader )nextDigit ()(byte ,bool ){for {_gea ,_ffeed :=_beddc ._fffd .ReadByte ();if _ffeed !=nil {if _ffeed ==_g .EOF {_ffeed =_g .ErrUnexpectedEOF ;};_beddc ._bebb =_ffeed ;
+return 0,false ;};if _gea =='>'{_beddc ._bebb =_g .EOF ;return 0,false ;};if IsWhiteSpace (_gea ){continue ;};if (_gea >='0'&&_gea <='9')||(_gea >='a'&&_gea <='f')||(_gea >='A'&&_gea <='F'){return _gea ,true ;};_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0049\u006e\u0076\u0061\u006c\u0069d\u0020\u0061\u0073\u0063\u0069\u0069 \u0068\u0065\u0078\u0020\u0063\u0068\u0061\u0072\u0061\u0063\u0074\u0065\u0072 \u0028\u0025\u0063\u0029",_gea );
+_beddc ._bebb =_ebc .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0061\u0073\u0063\u0069\u0069\u0020\u0068e\u0078 \u0063\u0068\u0061\u0072\u0061\u0063\u0074\u0065\u0072\u0020\u0028\u0025\u0063\u0029",_gea );return 0,false ;};};
+
+// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
+func (_bgb *CCITTFaxEncoder )MakeStreamDict ()*PdfObjectDictionary {_eaef :=MakeDict ();_eaef .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_bgb .GetFilterName ()));_eaef .SetIfNotNil ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073",_bgb .MakeDecodeParams ());
+return _eaef ;};func _bced (_bcbf *PdfObjectStream ,_abef *PdfObjectDictionary )(*JBIG2Encoder ,error ){const _gaea ="\u006ee\u0077\u004a\u0042\u0049G\u0032\u0044\u0065\u0063\u006fd\u0065r\u0046r\u006f\u006d\u0053\u0074\u0072\u0065\u0061m";_acdc :=NewJBIG2Encoder ();
+_fgga :=_bcbf .PdfObjectDictionary ;if _fgga ==nil {return _acdc ,nil ;};if _abef ==nil {_afcf :=_fgga .Get ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073");if _afcf !=nil {switch _bedfe :=_afcf .(type ){case *PdfObjectDictionary :_abef =_bedfe ;
+case *PdfObjectArray :if _bedfe .Len ()==1{if _adea ,_acebf :=GetDict (_bedfe .Get (0));_acebf {_abef =_adea ;};};default:_be .Log .Error ("\u0044\u0065\u0063\u006f\u0064\u0065P\u0061\u0072\u0061\u006d\u0073\u0020\u006e\u006f\u0074\u0020\u0061\u0020\u0064i\u0063\u0074\u0069\u006f\u006e\u0061\u0072y\u0020\u0025\u0023\u0076",_afcf );
+return nil ,_fb .Errorf (_gaea ,"\u0069\u006e\u0076\u0061l\u0069\u0064\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050a\u0072m\u0073\u0020\u0074\u0079\u0070\u0065\u003a \u0025\u0054",_bedfe );};};};if _abef ==nil {return _acdc ,nil ;};_acdc .UpdateParams (_abef );
+_afcd ,_adag :=GetStream (_abef .Get ("\u004a\u0042\u0049G\u0032\u0047\u006c\u006f\u0062\u0061\u006c\u0073"));if !_adag {return _acdc ,nil ;};var _fdfgf error ;_acdc .Globals ,_fdfgf =_ggf .DecodeGlobals (_afcd .Stream );if _fdfgf !=nil {_fdfgf =_fb .Wrap (_fdfgf ,_gaea ,"\u0063\u006f\u0072\u0072u\u0070\u0074\u0065\u0064\u0020\u006a\u0062\u0069\u0067\u0032 \u0065n\u0063\u006f\u0064\u0065\u0064\u0020\u0064a\u0074\u0061");
+_be .Log .Debug ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_fdfgf );return nil ,_fdfgf ;};return _acdc ,nil ;};
 
 // DecodeBytes decodes a byte slice from Run length encoding.
 //
@@ -71,144 +114,495 @@ type XrefTable struct{ObjectMap map[int ]XrefObject ;_aeee []XrefObject ;};func 
 // bytes of data. If the length byte is in the range 0 to 127, the following length + 1 (1 to 128) bytes shall be
 // copied literally during decompression. If length is in the range 129 to 255, the following single byte shall be
 // copied 257 - length (2 to 128) times during decompression. A length value of 128 shall denote EOD.
-func (_eeb *RunLengthEncoder )DecodeBytes (encoded []byte )([]byte ,error ){_dcga :=_f .NewReader (encoded );var _cgd []byte ;for {_gaeb ,_gegc :=_dcga .ReadByte ();if _gegc !=nil {return nil ,_gegc ;};if _gaeb > 128{_dded ,_fbgd :=_dcga .ReadByte ();if _fbgd !=nil {return nil ,_fbgd ;
-};for _gadb :=0;_gadb < 257-int (_gaeb );_gadb ++{_cgd =append (_cgd ,_dded );};}else if _gaeb < 128{for _dagc :=0;_dagc < int (_gaeb )+1;_dagc ++{_gcc ,_afcf :=_dcga .ReadByte ();if _afcf !=nil {return nil ,_afcf ;};_cgd =append (_cgd ,_gcc );};}else {break ;
-};};return _cgd ,nil ;};func (_bgg *runLengthReader )fillRun ()error {_bgdca ,_eebf :=_bgg ._dacfe .ReadByte ();if _eebf !=nil {return _eebf ;};switch {case _bgdca ==128:return _ce .EOF ;case _bgdca > 128:_egd ,_gfbb :=_bgg ._dacfe .ReadByte ();if _gfbb !=nil {return _gfbb ;
-};_bcec :=257-int (_bgdca );for _fafe :=0;_fafe < _bcec ;_fafe ++{_bgg ._abbbf [_fafe ]=_egd ;};_bgg ._ccgd =_bcec ;_bgg ._dcegb =0;return nil ;default:_bdda :=int (_bgdca )+1;if _ ,_bafc :=_ce .ReadFull (_bgg ._dacfe ,_bgg ._abbbf [:_bdda ]);_bafc !=nil {return _bafc ;
-};_bgg ._ccgd =_bdda ;_bgg ._dcegb =0;return nil ;};};
+func (_gada *RunLengthEncoder )DecodeBytes (encoded []byte )([]byte ,error ){_acgb :=_ad .NewReader (encoded );var _acb []byte ;for {_ggcg ,_gbge :=_acgb .ReadByte ();if _gbge !=nil {return nil ,_gbge ;};if _ggcg > 128{_ddaa ,_cagc :=_acgb .ReadByte ();
+if _cagc !=nil {return nil ,_cagc ;};for _ggec :=0;_ggec < 257-int (_ggcg );_ggec ++{_acb =append (_acb ,_ddaa );};}else if _ggcg < 128{for _dfag :=0;_dfag < int (_ggcg )+1;_dfag ++{_gfe ,_cccca :=_acgb .ReadByte ();if _cccca !=nil {return nil ,_cccca ;
+};_acb =append (_acb ,_gfe );};}else {break ;};};return _acb ,nil ;};func _gafe (_ *PdfObjectStream ,_ *PdfObjectDictionary )(*RunLengthEncoder ,error ){return NewRunLengthEncoder (),nil ;};
 
-// Write outputs the object as it is to be written to file.
-func (_fcbg *PdfObjectBool )Write ()[]byte {if *_fcbg {return []byte ("\u0074\u0072\u0075\u0065");};return []byte ("\u0066\u0061\u006cs\u0065");};func (_degg *PdfParser )checkPostEOFData ()error {const _dec ="\u0025\u0025\u0045O\u0046";_ ,_dece :=_degg ._fgaa .Seek (-int64 (len ([]byte (_dec )))-1,_ce .SeekEnd );
-if _dece !=nil {return _dece ;};_bgac :=make ([]byte ,len ([]byte (_dec ))+1);_ ,_dece =_degg ._fgaa .Read (_bgac );if _dece !=nil {if _dece !=_ce .EOF {return _dece ;};};if string (_bgac )==_dec ||string (_bgac )==_dec +"\u000a"{_degg ._dafba ._gda =true ;
-};return nil ;};
+// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
+func (_dbge *RunLengthEncoder )MakeStreamDict ()*PdfObjectDictionary {_baf :=MakeDict ();_baf .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_dbge .GetFilterName ()));return _baf ;};
 
-// MakeString creates an PdfObjectString from a string.
-// NOTE: PDF does not use utf-8 string encoding like Go so `s` will often not be a utf-8 encoded
-// string.
-func MakeString (s string )*PdfObjectString {_cfgag :=PdfObjectString {_fadd :s };return &_cfgag };const (XrefTypeTableEntry xrefType =iota ;XrefTypeObjectStream xrefType =iota ;);func (_gcdbc *PdfParser )readTextLine ()(string ,error ){_ddcfa :=_fgc ();
-defer _cd (_ddcfa );for {_gbbde ,_cecb :=_gcdbc ._fgaa .Peek (1);if _cecb !=nil {_bd .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u0020\u0025\u0073",_cecb .Error ());return _ddcfa .String (),_cecb ;};if (_gbbde [0]!='\r')&&(_gbbde [0]!='\n'){_fggf ,_ :=_gcdbc ._fgaa .ReadByte ();
-_ddcfa .WriteByte (_fggf );}else {break ;};};return _ddcfa .String (),nil ;};
+// ParserOpts defines configuration options for Parser.
+// These options allow setting customization flags to control parsing behaviors.
+type ParserOpts struct{
+
+// RelaxedMode enables tolerant parsing by ignoring certain non-critical PDF errors.
+// When set to true, the parser will attempt to continue processing despite certain
+// structural errors such as:
+// - Missing or invalid /XRefStm entries
+// - Non-/Page or non-/Pages objects found in the page tree (/Kids array)
+RelaxedMode bool ;
+
+// AutoRepairXrefTable enables automatic repair of the xref table when it is found to be malformed or missing objects.
+AutoRepairXrefTable bool ;};
+
+// EncodeBytes implements support for LZW encoding.  Currently not supporting predictors (raw compressed data only).
+// Only supports the Early change = 1 algorithm (compress/lzw) as the other implementation
+// does not have a write method.
+// TODO: Consider refactoring compress/lzw to allow both.
+func (_gbaa *LZWEncoder )EncodeBytes (data []byte )([]byte ,error ){if _gbaa .Predictor !=1{return nil ,_ebc .Errorf ("\u004c\u005aW \u0050\u0072\u0065d\u0069\u0063\u0074\u006fr =\u00201 \u006f\u006e\u006c\u0079\u0020\u0073\u0075pp\u006f\u0072\u0074\u0065\u0064\u0020\u0079e\u0074");
+};if _gbaa .EarlyChange ==1{return nil ,_ebc .Errorf ("\u004c\u005a\u0057\u0020\u0045\u0061\u0072\u006c\u0079\u0020\u0043\u0068\u0061n\u0067\u0065\u0020\u003d\u0020\u0030 \u006f\u006e\u006c\u0079\u0020\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065d\u0020\u0079\u0065\u0074");
+};var _cfdd _ad .Buffer ;_fbaa :=_caa .NewWriter (&_cfdd ,_caa .MSB ,8);_fbaa .Write (data );_fbaa .Close ();return _cfdd .Bytes (),nil ;};func (_dagd *PdfObjectInteger )String ()string {return _ebc .Sprintf ("\u0025\u0064",*_dagd )};func _bce (_eded _bb .Filter ,_adba _ce .AuthEvent )*PdfObjectDictionary {if _adba ==""{_adba =_ce .EventDocOpen ;
+};_cdbc :=MakeDict ();_cdbc .Set ("\u0054\u0079\u0070\u0065",MakeName ("C\u0072\u0079\u0070\u0074\u0046\u0069\u006c\u0074\u0065\u0072"));_cdbc .Set ("\u0041u\u0074\u0068\u0045\u0076\u0065\u006et",MakeName (string (_adba )));_cdbc .Set ("\u0043\u0046\u004d",MakeName (_eded .Name ()));
+_cdbc .Set ("\u004c\u0065\u006e\u0067\u0074\u0068",MakeInteger (int64 (_eded .KeyLength ())));return _cdbc ;};
+
+// ToGoImage converts the JBIG2Image to the golang image.Image.
+func (_baga *JBIG2Image )ToGoImage ()(_ed .Image ,error ){const _fbgd ="J\u0042I\u0047\u0032\u0049\u006d\u0061\u0067\u0065\u002eT\u006f\u0047\u006f\u0049ma\u0067\u0065";if _baga .Data ==nil {return nil ,_fb .Error (_fbgd ,"\u0069\u006d\u0061\u0067e \u0064\u0061\u0074\u0061\u0020\u006e\u006f\u0074\u0020\u0064\u0065\u0066\u0069\u006ee\u0064");
+};if _baga .Width ==0||_baga .Height ==0{return nil ,_fb .Error (_fbgd ,"\u0069\u006d\u0061\u0067\u0065\u0020h\u0065\u0069\u0067\u0068\u0074\u0020\u006f\u0072\u0020\u0077\u0069\u0064\u0074h\u0020\u006e\u006f\u0074\u0020\u0064\u0065f\u0069\u006e\u0065\u0064");
+};_gbfa ,_eddg :=_bg .NewImage (_baga .Width ,_baga .Height ,1,1,_baga .Data ,nil ,nil );if _eddg !=nil {return nil ,_eddg ;};return _gbfa ,nil ;};
+
+// DecodeStream returns the passed in stream as a slice of bytes.
+// The purpose of the method is to satisfy the StreamEncoder interface.
+func (_dfde *RawEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return streamObj .Stream ,nil ;};var _fffda =_bc .New ("\u0045\u004f\u0046\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064");
+
+// HasDataAfterEOF checks if there is some data after EOF marker.
+func (_aeeb ParserMetadata )HasDataAfterEOF ()bool {return _aeeb ._eaga };
+
+// Set sets the dictionary's key -> val mapping entry. Overwrites if key already set.
+func (_gffa *PdfObjectDictionary )Set (key PdfObjectName ,val PdfObject ){_gffa .setWithLock (key ,val ,true );};
+
+// IsPrintable checks if a character is printable.
+// Regular characters that are outside the range EXCLAMATION MARK(21h)
+// (!) to TILDE (7Eh) (~) should be written using the hexadecimal notation.
+func IsPrintable (c byte )bool {return 0x21<=c &&c <=0x7E};
+
+// DecodeStream decodes a FlateEncoded stream object and give back decoded bytes.
+func (_caca *FlateEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0046l\u0061t\u0065\u0044\u0065\u0063\u006fd\u0065\u0020s\u0074\u0072\u0065\u0061\u006d");};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0050\u0072\u0065\u0064\u0069\u0063\u0074\u006f\u0072\u003a\u0020\u0025\u0064",_caca .Predictor );
+};if _caca .BitsPerComponent !=8{return nil ,_ebc .Errorf ("\u0069\u006ev\u0061\u006c\u0069\u0064\u0020\u0042\u0069\u0074\u0073\u0050\u0065\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u003d\u0025\u0064\u0020\u0028\u006f\u006e\u006c\u0079\u0020\u0038\u0020\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0029",_caca .BitsPerComponent );
+};_fac ,_agad :=_caca .DecodeBytes (streamObj .Stream );if _agad !=nil {return nil ,_agad ;};_fac ,_agad =_caca .postDecodePredict (_fac );if _agad !=nil {return nil ,_agad ;};return _fac ,nil ;};
 
 // GetFilterName returns the name of the encoding filter.
-func (_eda *DCTEncoder )GetFilterName ()string {return StreamEncodingFilterNameDCT };
+func (_ebfe *JPXEncoder )GetFilterName ()string {return StreamEncodingFilterNameJPX };
 
-// IsEncrypted checks if the document is encrypted. A bool flag is returned indicating the result.
-// First time when called, will check if the Encrypt dictionary is accessible through the trailer dictionary.
-// If encrypted, prepares a crypt datastructure which can be used to authenticate and decrypt the document.
-// On failure, an error is returned.
-func (_ageb *PdfParser )IsEncrypted ()(bool ,error ){if _ageb ._ggee !=nil {return true ,nil ;}else if _ageb ._dbbf ==nil {return false ,nil ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0043\u0068\u0065c\u006b\u0069\u006e\u0067 \u0065\u006e\u0063\u0072\u0079\u0070\u0074i\u006f\u006e\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079\u0021");
-};_ffdg :=_ageb ._dbbf .Get ("\u0045n\u0063\u0072\u0079\u0070\u0074");if _ffdg ==nil {return false ,nil ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0049\u0073\u0020\u0065\u006e\u0063\u0072\u0079\u0070\u0074\u0065\u0064\u0021");
-};var (_gbbb *PdfObjectDictionary ;);switch _cdag :=_ffdg .(type ){case *PdfObjectDictionary :_gbbb =_cdag ;case *PdfObjectReference :if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0030\u003a\u0020\u004c\u006f\u006f\u006b\u0020\u0075\u0070\u0020\u0072e\u0066\u0020\u0025\u0071",_cdag );
-};_fedb ,_efde :=_ageb .LookupByReference (*_cdag );if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0031\u003a\u0020%\u0071",_fedb );};if _efde !=nil {return false ,_efde ;};_bfeg ,_bdac :=_fedb .(*PdfIndirectObject );if !_bdac {_bd .Log .Debug ("E\u006e\u0063\u0072\u0079\u0070\u0074\u0069\u006f\u006e\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u006eo\u0074\u0020\u0061\u006e\u0020\u0069\u006e\u0064\u0069\u0072ec\u0074\u0020\u006fb\u006ae\u0063\u0074");
-return false ,_de .New ("\u0074\u0079p\u0065\u0020\u0063h\u0065\u0063\u006b\u0020\u0065\u0072\u0072\u006f\u0072");};_acaf ,_bdac :=_bfeg .PdfObject .(*PdfObjectDictionary );_ageb ._afdd =_bfeg ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0032\u003a\u0020%\u0071",_acaf );
-};if !_bdac {return false ,_de .New ("\u0074\u0072a\u0069\u006c\u0065\u0072 \u0045\u006ec\u0072\u0079\u0070\u0074\u0020\u006f\u0062\u006ae\u0063\u0074\u0020\u006e\u006f\u006e\u0020\u0064\u0069\u0063\u0074\u0069o\u006e\u0061\u0072\u0079");};_gbbb =_acaf ;
-case *PdfObjectNull :_bd .Log .Debug ("\u0045\u006e\u0063\u0072\u0079\u0070\u0074 \u0069\u0073\u0020a\u0020\u006e\u0075l\u006c\u0020o\u0062\u006a\u0065\u0063\u0074\u002e \u0046il\u0065\u0020\u0073\u0068\u006f\u0075\u006c\u0064\u0020\u006e\u006f\u0074\u0020\u0062\u0065\u0020\u0065\u006e\u0063\u0072\u0079\u0070\u0074\u0065\u0064\u002e");
-return false ,nil ;default:return false ,_ee .Errorf ("u\u006es\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064 \u0074\u0079\u0070\u0065: \u0025\u0054",_cdag );};_geccf ,_cfaae :=PdfCryptNewDecrypt (_ageb ,_gbbb ,_ageb ._dbbf );if _cfaae !=nil {return false ,_cfaae ;
-};for _ ,_acdgb :=range []string {"\u0045n\u0063\u0072\u0079\u0070\u0074"}{_aagd :=_ageb ._dbbf .Get (PdfObjectName (_acdgb ));if _aagd ==nil {continue ;};switch _eabda :=_aagd .(type ){case *PdfObjectReference :_geccf ._afea [int (_eabda .ObjectNumber )]=struct{}{};
-case *PdfIndirectObject :_geccf ._aae [_eabda ]=true ;_geccf ._afea [int (_eabda .ObjectNumber )]=struct{}{};};};_ageb ._ggee =_geccf ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0043\u0072\u0079\u0070\u0074\u0065\u0072\u0020\u006f\u0062\u006a\u0065c\u0074\u0020\u0025\u0062",_geccf );
-};return true ,nil ;};
+// ToInt64Slice returns a slice of all array elements as an int64 slice. An error is returned if the
+// array non-integer objects. Each element can only be PdfObjectInteger.
+func (_gagbe *PdfObjectArray )ToInt64Slice ()([]int64 ,error ){var _bbcac []int64 ;for _ ,_egad :=range _gagbe .Elements (){if _cgcgg ,_geed :=_egad .(*PdfObjectInteger );_geed {_bbcac =append (_bbcac ,int64 (*_cgcgg ));}else {return nil ,ErrTypeError ;
+};};return _bbcac ,nil ;};
 
-// Bytes returns the PdfObjectString content as a []byte array.
-func (_abdaf *PdfObjectString )Bytes ()[]byte {return []byte (_abdaf ._fadd )};var _agec =[]byte ("\u0030\u0031\u0032\u003345\u0036\u0037\u0038\u0039\u0061\u0062\u0063\u0064\u0065\u0066\u0041\u0042\u0043\u0044E\u0046");var _dfbd =[]PdfObjectName {"\u0056","\u0052","\u004f","\u0055","\u0050"};
-func (_bffa *FlateEncoder )postDecodePredict (_gfcg []byte )([]byte ,error ){if _bffa .Predictor > 1{if _bffa .Predictor ==2{defer ReleaseBytes (_gfcg );if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0054\u0069\u0066\u0066\u0020\u0065\u006e\u0063\u006f\u0064\u0069\u006e\u0067");
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0043\u006f\u006c\u006f\u0072\u0073\u003a\u0020\u0025\u0064",_bffa .Colors );};_gfe :=_bffa .Columns *_bffa .Colors ;if _gfe < 1{return []byte {},nil ;};_efbd :=len (_gfcg )/_gfe ;if len (_gfcg )%_gfe !=0{_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020T\u0049\u0046\u0046 \u0065\u006e\u0063\u006fd\u0069\u006e\u0067\u003a\u0020\u0049\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u006f\u0077\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u002e\u002e\u002e");
-return nil ,_ee .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u006f\u0077 \u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064/\u0025\u0064\u0029",len (_gfcg ),_gfe );};if _gfe %_bffa .Colors !=0{return nil ,_ee .Errorf ("\u0069\u006ev\u0061\u006c\u0069\u0064 \u0072\u006fw\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u0020(\u0025\u0064\u0029\u0020\u0066\u006f\u0072\u0020\u0063\u006f\u006c\u006fr\u0073\u0020\u0025\u0064",_gfe ,_bffa .Colors );
-};if _gfe > len (_gfcg ){_bd .Log .Debug ("\u0052\u006fw\u0020\u006c\u0065\u006e\u0067t\u0068\u0020\u0063\u0061\u006en\u006f\u0074\u0020\u0062\u0065\u0020\u006c\u006f\u006e\u0067\u0065\u0072\u0020\u0074\u0068\u0061\u006e\u0020\u0064\u0061\u0074\u0061\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064\u002f\u0025\u0064\u0029",_gfe ,len (_gfcg ));
-return nil ,_de .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("i\u006e\u0070\u0020\u006fut\u0044a\u0074\u0061\u0020\u0028\u0025d\u0029\u003a\u0020\u0025\u0020\u0078",len (_gfcg ),_gfcg );
-};_dfcd :=_f .NewBuffer (nil );for _fcbf :=0;_fcbf < _efbd ;_fcbf ++{_ecf :=_gfcg [_gfe *_fcbf :_gfe *(_fcbf +1)];for _bbe :=_bffa .Colors ;_bbe < _gfe ;_bbe ++{_ecf [_bbe ]+=_ecf [_bbe -_bffa .Colors ];};_dfcd .Write (_ecf );};_acc :=_dfcd .Bytes ();if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0050O\u0075t\u0044\u0061\u0074\u0061\u0020(\u0025\u0064)\u003a\u0020\u0025\u0020\u0078",len (_acc ),_acc );
-};return _acc ,nil ;}else if _bffa .Predictor >=10&&_bffa .Predictor <=15{defer ReleaseBytes (_gfcg );if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0050\u004e\u0047 \u0045\u006e\u0063\u006f\u0064\u0069\u006e\u0067");};_eafb :=_bffa .Columns *_bffa .Colors +1;
-_aacb :=len (_gfcg )/_eafb ;if len (_gfcg )%_eafb !=0{return nil ,_ee .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u006f\u0077 \u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064/\u0025\u0064\u0029",len (_gfcg ),_eafb );};if _eafb > len (_gfcg ){_bd .Log .Debug ("\u0052\u006fw\u0020\u006c\u0065\u006e\u0067t\u0068\u0020\u0063\u0061\u006en\u006f\u0074\u0020\u0062\u0065\u0020\u006c\u006f\u006e\u0067\u0065\u0072\u0020\u0074\u0068\u0061\u006e\u0020\u0064\u0061\u0074\u0061\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064\u002f\u0025\u0064\u0029",_eafb ,len (_gfcg ));
-return nil ,_de .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};_dgag :=_f .NewBuffer (nil );if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("P\u0072\u0065\u0064\u0069ct\u006fr\u0020\u0063\u006f\u006c\u0075m\u006e\u0073\u003a\u0020\u0025\u0064",_bffa .Columns );
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004ce\u006e\u0067\u0074\u0068:\u0020\u0025\u0064\u0020\u002f \u0025d\u0020=\u0020\u0025\u0064\u0020\u0072\u006f\u0077s",len (_gfcg ),_eafb ,_aacb );};_baec :=make ([]byte ,_eafb );for _fcae :=0;
-_fcae < _eafb ;_fcae ++{_baec [_fcae ]=0;};_cbae :=_bffa .Colors ;for _dcca :=0;_dcca < _aacb ;_dcca ++{_agdf :=_gfcg [_eafb *_dcca :_eafb *(_dcca +1)];_dge :=_agdf [0];switch _dge {case _ebfe :case _afg :for _cfab :=1+_cbae ;_cfab < _eafb ;_cfab ++{_agdf [_cfab ]+=_agdf [_cfab -_cbae ];
-};case _gecc :for _aeg :=1;_aeg < _eafb ;_aeg ++{_agdf [_aeg ]+=_baec [_aeg ];};case _add :for _ebfd :=1;_ebfd < _cbae +1;_ebfd ++{_agdf [_ebfd ]+=_baec [_ebfd ]/2;};for _gcg :=_cbae +1;_gcg < _eafb ;_gcg ++{_agdf [_gcg ]+=byte ((int (_agdf [_gcg -_cbae ])+int (_baec [_gcg ]))/2);
-};case _eedg :for _gdga :=1;_gdga < _eafb ;_gdga ++{var _dfe ,_cbba ,_gea byte ;_cbba =_baec [_gdga ];if _gdga >=_cbae +1{_dfe =_agdf [_gdga -_cbae ];_gea =_baec [_gdga -_cbae ];};_agdf [_gdga ]+=_cage (_dfe ,_cbba ,_gea );};default:_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0049\u006e\u0076\u0061\u006c\u0069d\u0020\u0066\u0069\u006c\u0074\u0065r\u0020\u0062\u0079\u0074\u0065\u0020\u0028\u0025\u0064\u0029\u0020\u0040\u0072o\u0077\u0020\u0025\u0064",_dge ,_dcca );
-return nil ,_ee .Errorf ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0066\u0069\u006c\u0074\u0065r\u0020\u0062\u0079\u0074\u0065\u0020\u0028\u0025\u0064\u0029",_dge );};copy (_baec ,_agdf );_dgag .Write (_agdf [1:]);};_gbeac :=_dgag .Bytes ();return _gbeac ,nil ;
-}else {ReleaseBytes (_gfcg );_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0055\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0070r\u0065\u0064\u0069\u0063\u0074\u006f\u0072 \u0028\u0025\u0064\u0029",_bffa .Predictor );return nil ,_ee .Errorf ("\u0075\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064 \u0070\u0072\u0065\u0064\u0069\u0063\u0074\u006f\u0072\u0020(\u0025\u0064\u0029",_bffa .Predictor );
-};};return _gfcg ,nil ;};
+// ParserMetadata is the parser based metadata information about document.
+// The data here could be used on document verification.
+type ParserMetadata struct{_ggcf int ;_gbef bool ;_dccdb [4]byte ;_eaga bool ;_dddc bool ;_gee bool ;_dfdc bool ;_egddd bool ;_cde bool ;};var _eefc =_c .MustCompile ("\u005b\\\u0072\u005c\u006e\u005d\u005c\u0073\u002a\u0028\u0078\u0072\u0065f\u0029\u005c\u0073\u002a\u005b\u005c\u0072\u005c\u006e\u005d");
+func (_eeb *JBIG2Image )toBitmap ()(_agcc *_ga .Bitmap ,_gbaae error ){const _efab ="\u004a\u0042\u0049\u00472I\u006d\u0061\u0067\u0065\u002e\u0074\u006f\u0042\u0069\u0074\u006d\u0061\u0070";if _eeb .Data ==nil {return nil ,_fb .Error (_efab ,"\u0069\u006d\u0061\u0067e \u0064\u0061\u0074\u0061\u0020\u006e\u006f\u0074\u0020\u0064\u0065\u0066\u0069\u006ee\u0064");
+};if _eeb .Width ==0||_eeb .Height ==0{return nil ,_fb .Error (_efab ,"\u0069\u006d\u0061\u0067\u0065\u0020h\u0065\u0069\u0067\u0068\u0074\u0020\u006f\u0072\u0020\u0077\u0069\u0064\u0074h\u0020\u006e\u006f\u0074\u0020\u0064\u0065f\u0069\u006e\u0065\u0064");
+};if _eeb .HasPadding {_agcc ,_gbaae =_ga .NewWithData (_eeb .Width ,_eeb .Height ,_eeb .Data );}else {_agcc ,_gbaae =_ga .NewWithUnpaddedData (_eeb .Width ,_eeb .Height ,_eeb .Data );};if _gbaae !=nil {return nil ,_fb .Wrap (_gbaae ,_efab ,"");};return _agcc ,nil ;
+};
+
+// Encrypt an object with specified key. For numbered objects,
+// the key argument is not used and a new one is generated based
+// on the object and generation number.
+// Traverses through all the subobjects (recursive).
+//
+// Does not look up references..  That should be done prior to calling.
+func (_fbag *PdfCrypt )Encrypt (obj PdfObject ,parentObjNum ,parentGenNum int64 )error {if _fbag .isEncrypted (obj ){return nil ;};switch _cfff :=obj .(type ){case *PdfIndirectObject :_fbag ._bba [_cfff ]=true ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0045\u006e\u0063\u0072\u0079\u0070\u0074\u0069\u006e\u0067 \u0069\u006e\u0064\u0069\u0072\u0065\u0063t\u0020\u0025\u0064\u0020\u0025\u0064\u0020\u006f\u0062\u006a\u0021",_cfff .ObjectNumber ,_cfff .GenerationNumber );
+};_cbfg :=_cfff .ObjectNumber ;_dccb :=_cfff .GenerationNumber ;_bcf :=_fbag .Encrypt (_cfff .PdfObject ,_cbfg ,_dccb );if _bcf !=nil {return _bcf ;};return nil ;case *PdfObjectStream :_fbag ._bba [_cfff ]=true ;_fdfg :=_cfff .PdfObjectDictionary ;if _bbe ,_fgeg :=_fdfg .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );
+_fgeg &&*_bbe =="\u0058\u0052\u0065\u0066"{return nil ;};_cdaf :=_cfff .ObjectNumber ;_caabf :=_cfff .GenerationNumber ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0045n\u0063\u0072\u0079\u0070t\u0069\u006e\u0067\u0020\u0073t\u0072e\u0061m\u0020\u0025\u0064\u0020\u0025\u0064\u0020!",_cdaf ,_caabf );
+};_gbe :=_ede ;if _fbag ._cbc .V >=4{_gbe =_fbag ._abc ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0074\u0068\u0069\u0073.s\u0074\u0072\u0065\u0061\u006d\u0046\u0069\u006c\u0074\u0065\u0072\u0020\u003d\u0020%\u0073",_fbag ._abc );
+};if _aafba ,_acd :=_fdfg .Get ("\u0046\u0069\u006c\u0074\u0065\u0072").(*PdfObjectArray );_acd {if _gga ,_fga :=GetName (_aafba .Get (0));_fga {if *_gga =="\u0043\u0072\u0079p\u0074"{_gbe ="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079";if _gbb ,_egbf :=_fdfg .Get ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073").(*PdfObjectDictionary );
+_egbf {if _ccdb ,_fdbg :=_gbb .Get ("\u004e\u0061\u006d\u0065").(*PdfObjectName );_fdbg {if _ ,_aefg :=_fbag ._fege [string (*_ccdb )];_aefg {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0055\u0073\u0069\u006eg \u0073\u0074\u0072\u0065\u0061\u006d\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0020%\u0073",*_ccdb );
+};_gbe =string (*_ccdb );};};};};};};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0077\u0069\u0074\u0068\u0020\u0025\u0073\u0020\u0066i\u006c\u0074\u0065\u0072",_gbe );};if _gbe =="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079"{return nil ;
+};};_fede :=_fbag .Encrypt (_cfff .PdfObjectDictionary ,_cdaf ,_caabf );if _fede !=nil {return _fede ;};_fbd ,_fede :=_fbag .makeKey (_gbe ,uint32 (_cdaf ),uint32 (_caabf ),_fbag ._gdf );if _fede !=nil {return _fede ;};_cfff .Stream ,_fede =_fbag .encryptBytes (_cfff .Stream ,_gbe ,_fbd );
+if _fede !=nil {return _fede ;};_fdfg .Set ("\u004c\u0065\u006e\u0067\u0074\u0068",MakeInteger (int64 (len (_cfff .Stream ))));return nil ;case *PdfObjectString :if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0045n\u0063r\u0079\u0070\u0074\u0069\u006eg\u0020\u0073t\u0072\u0069\u006e\u0067\u0021");
+};_fgda :=_ede ;if _fbag ._cbc .V >=4{if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0077\u0069\u0074\u0068\u0020\u0025\u0073\u0020\u0066i\u006c\u0074\u0065\u0072",_fbag ._fbf );};if _fbag ._fbf =="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079"{return nil ;
+};_fgda =_fbag ._fbf ;};_dcfdb ,_fdgg :=_fbag .makeKey (_fgda ,uint32 (parentObjNum ),uint32 (parentGenNum ),_fbag ._gdf );if _fdgg !=nil {return _fdgg ;};_dea :=_cfff .Str ();_faff :=make ([]byte ,len (_dea ));for _gcg :=0;_gcg < len (_dea );_gcg ++{_faff [_gcg ]=_dea [_gcg ];
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0045n\u0063\u0072\u0079\u0070\u0074\u0020\u0073\u0074\u0072\u0069\u006eg\u003a\u0020\u0025\u0073\u0020\u003a\u0020\u0025\u0020\u0078",_faff ,_faff );};_faff ,_fdgg =_fbag .encryptBytes (_faff ,_fgda ,_dcfdb );
+if _fdgg !=nil {return _fdgg ;};_cfff ._babb =string (_faff );return nil ;case *PdfObjectArray :for _ ,_ead :=range _cfff .Elements (){_cacf :=_fbag .Encrypt (_ead ,parentObjNum ,parentGenNum );if _cacf !=nil {return _cacf ;};};return nil ;case *PdfObjectDictionary :_afca :=false ;
+if _gcc :=_cfff .Get ("\u0054\u0079\u0070\u0065");_gcc !=nil {_dadf ,_gcad :=_gcc .(*PdfObjectName );if _gcad &&*_dadf =="\u0053\u0069\u0067"{_afca =true ;};};for _ ,_eag :=range _cfff .Keys (){_gdfc :=_cfff .Get (_eag );if _afca &&string (_eag )=="\u0043\u006f\u006e\u0074\u0065\u006e\u0074\u0073"{continue ;
+};if string (_eag )!="\u0050\u0061\u0072\u0065\u006e\u0074"&&string (_eag )!="\u0050\u0072\u0065\u0076"&&string (_eag )!="\u004c\u0061\u0073\u0074"{_dffa :=_fbag .Encrypt (_gdfc ,parentObjNum ,parentGenNum );if _dffa !=nil {return _dffa ;};};};return nil ;
+};return nil ;};const JB2ImageAutoThreshold =-1.0;
+
+// NewMultiEncoder returns a new instance of MultiEncoder.
+func NewMultiEncoder ()*MultiEncoder {_efdg :=MultiEncoder {};_efdg ._dfbf =[]StreamEncoder {};return &_efdg ;};func _bae ()*_ad .Buffer {return _ebg .Get ().(*_ad .Buffer )};func (_cgf *FlateEncoder )postDecodePredict (_ecga []byte )([]byte ,error ){if _cgf .Predictor > 1{if _cgf .Predictor ==2{defer ReleaseBytes (_ecga );
+if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0054\u0069\u0066\u0066\u0020\u0065\u006e\u0063\u006f\u0064\u0069\u006e\u0067");};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0043\u006f\u006c\u006f\u0072\u0073\u003a\u0020\u0025\u0064",_cgf .Colors );
+};_dba :=_cgf .Columns *_cgf .Colors ;if _dba < 1{return []byte {},nil ;};_fdfa :=len (_ecga )/_dba ;if len (_ecga )%_dba !=0{_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020T\u0049\u0046\u0046 \u0065\u006e\u0063\u006fd\u0069\u006e\u0067\u003a\u0020\u0049\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u006f\u0077\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u002e\u002e\u002e");
+return nil ,_ebc .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u006f\u0077 \u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064/\u0025\u0064\u0029",len (_ecga ),_dba );};if _dba %_cgf .Colors !=0{return nil ,_ebc .Errorf ("\u0069\u006ev\u0061\u006c\u0069\u0064 \u0072\u006fw\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u0020(\u0025\u0064\u0029\u0020\u0066\u006f\u0072\u0020\u0063\u006f\u006c\u006fr\u0073\u0020\u0025\u0064",_dba ,_cgf .Colors );
+};if _dba > len (_ecga ){_be .Log .Debug ("\u0052\u006fw\u0020\u006c\u0065\u006e\u0067t\u0068\u0020\u0063\u0061\u006en\u006f\u0074\u0020\u0062\u0065\u0020\u006c\u006f\u006e\u0067\u0065\u0072\u0020\u0074\u0068\u0061\u006e\u0020\u0064\u0061\u0074\u0061\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064\u002f\u0025\u0064\u0029",_dba ,len (_ecga ));
+return nil ,_bc .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("i\u006e\u0070\u0020\u006fut\u0044a\u0074\u0061\u0020\u0028\u0025d\u0029\u003a\u0020\u0025\u0020\u0078",len (_ecga ),_ecga );
+};_gaad :=_ad .NewBuffer (nil );for _ggab :=0;_ggab < _fdfa ;_ggab ++{_ecag :=_ecga [_dba *_ggab :_dba *(_ggab +1)];for _gag :=_cgf .Colors ;_gag < _dba ;_gag ++{_ecag [_gag ]+=_ecag [_gag -_cgf .Colors ];};_gaad .Write (_ecag );};_bdfa :=_gaad .Bytes ();
+if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0050O\u0075t\u0044\u0061\u0074\u0061\u0020(\u0025\u0064)\u003a\u0020\u0025\u0020\u0078",len (_bdfa ),_bdfa );};return _bdfa ,nil ;}else if _cgf .Predictor >=10&&_cgf .Predictor <=15{defer ReleaseBytes (_ecga );
+if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0050\u004e\u0047 \u0045\u006e\u0063\u006f\u0064\u0069\u006e\u0067");};_bbgg :=_cgf .Columns *_cgf .Colors +1;_aggf :=len (_ecga )/_bbgg ;if len (_ecga )%_bbgg !=0{return nil ,_ebc .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u006f\u0077 \u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064/\u0025\u0064\u0029",len (_ecga ),_bbgg );
+};if _bbgg > len (_ecga ){_be .Log .Debug ("\u0052\u006fw\u0020\u006c\u0065\u006e\u0067t\u0068\u0020\u0063\u0061\u006en\u006f\u0074\u0020\u0062\u0065\u0020\u006c\u006f\u006e\u0067\u0065\u0072\u0020\u0074\u0068\u0061\u006e\u0020\u0064\u0061\u0074\u0061\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064\u002f\u0025\u0064\u0029",_bbgg ,len (_ecga ));
+return nil ,_bc .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};_aecbb :=_ad .NewBuffer (nil );if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("P\u0072\u0065\u0064\u0069ct\u006fr\u0020\u0063\u006f\u006c\u0075m\u006e\u0073\u003a\u0020\u0025\u0064",_cgf .Columns );
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004ce\u006e\u0067\u0074\u0068:\u0020\u0025\u0064\u0020\u002f \u0025d\u0020=\u0020\u0025\u0064\u0020\u0072\u006f\u0077s",len (_ecga ),_bbgg ,_aggf );};_cfe :=make ([]byte ,_bbgg );for _gcgc :=0;
+_gcgc < _bbgg ;_gcgc ++{_cfe [_gcgc ]=0;};_cad :=_cgf .Colors ;for _debg :=0;_debg < _aggf ;_debg ++{_beeb :=_ecga [_bbgg *_debg :_bbgg *(_debg +1)];_bcgg :=_beeb [0];switch _bcgg {case _cfg :case _ecgd :for _bdd :=1+_cad ;_bdd < _bbgg ;_bdd ++{_beeb [_bdd ]+=_beeb [_bdd -_cad ];
+};case _eae :for _edg :=1;_edg < _bbgg ;_edg ++{_beeb [_edg ]+=_cfe [_edg ];};case _adbg :for _fccf :=1;_fccf < _cad +1;_fccf ++{_beeb [_fccf ]+=_cfe [_fccf ]/2;};for _ggda :=_cad +1;_ggda < _bbgg ;_ggda ++{_beeb [_ggda ]+=byte ((int (_beeb [_ggda -_cad ])+int (_cfe [_ggda ]))/2);
+};case _acfa :for _dedba :=1;_dedba < _bbgg ;_dedba ++{var _ccbg ,_abce ,_adff byte ;_abce =_cfe [_dedba ];if _dedba >=_cad +1{_ccbg =_beeb [_dedba -_cad ];_adff =_cfe [_dedba -_cad ];};_beeb [_dedba ]+=_eabf (_ccbg ,_abce ,_adff );};default:_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0049\u006e\u0076\u0061\u006c\u0069d\u0020\u0066\u0069\u006c\u0074\u0065r\u0020\u0062\u0079\u0074\u0065\u0020\u0028\u0025\u0064\u0029\u0020\u0040\u0072o\u0077\u0020\u0025\u0064",_bcgg ,_debg );
+return nil ,_ebc .Errorf ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0066\u0069\u006c\u0074\u0065r\u0020\u0062\u0079\u0074\u0065\u0020\u0028\u0025\u0064\u0029",_bcgg );};copy (_cfe ,_beeb );_aecbb .Write (_beeb [1:]);};_dfff :=_aecbb .Bytes ();return _dfff ,nil ;
+}else {ReleaseBytes (_ecga );_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0055\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0070r\u0065\u0064\u0069\u0063\u0074\u006f\u0072 \u0028\u0025\u0064\u0029",_cgf .Predictor );return nil ,_ebc .Errorf ("\u0075\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064 \u0070\u0072\u0065\u0064\u0069\u0063\u0074\u006f\u0072\u0020(\u0025\u0064\u0029",_cgf .Predictor );
+};};return _ecga ,nil ;};
+
+// DecodeReader returns r unchanged.
+func (_ccfe *RawEncoder )DecodeReader (r _g .Reader )_g .Reader {return r };
+
+// MakeDecodeParams makes a new instance of an encoding dictionary based on
+// the current encoder settings.
+func (_ggea *ASCII85Encoder )MakeDecodeParams ()PdfObject {return nil };func (_bbce *ASCII85Encoder )base256Tobase85 (_dcga uint32 )[5]byte {_dffag :=[5]byte {0,0,0,0,0};_ebcf :=_dcga ;for _agcg :=0;_agcg < 5;_agcg ++{_cdbg :=uint32 (1);for _edbg :=0;_edbg < 4-_agcg ;
+_edbg ++{_cdbg *=85;};_gddd :=_ebcf /_cdbg ;_ebcf =_ebcf %_cdbg ;_dffag [_agcg ]=byte (_gddd );};return _dffag ;};
+
+// DecodeStream implements ASCII85 stream decoding.
+func (_bgab *ASCII85Encoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return _bgab .DecodeBytes (streamObj .Stream );};
+
+// GetFilterName returns the name of the encoding filter.
+func (_cdeb *ASCIIHexEncoder )GetFilterName ()string {return StreamEncodingFilterNameASCIIHex };var _ccba =_c .MustCompile ("\u0025P\u0044F\u002d\u0028\u005c\u0064\u0029\u005c\u002e\u0028\u005c\u0064\u0029");
+
+// Reset resets the buffered reader with a new io.Reader.
+func (_bgg *bufferedReadSeeker )Reset (r _g .Reader ){_bgg ._df .Reset (r )};func (_edcg *PdfCrypt )newEncryptDict ()*PdfObjectDictionary {_egca :=MakeDict ();_egca .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName ("\u0053\u0074\u0061\u006e\u0064\u0061\u0072\u0064"));
+_egca .Set ("\u0056",MakeInteger (int64 (_edcg ._cbc .V )));_egca .Set ("\u004c\u0065\u006e\u0067\u0074\u0068",MakeInteger (int64 (_edcg ._cbc .Length )));return _egca ;};
+
+// Len returns the number of elements in the streams.
+func (_ccfaa *PdfObjectStreams )Len ()int {if _ccfaa ==nil {return 0;};return len (_ccfaa ._fefge );};
+
+// Encode encodes previously prepare jbig2 document and stores it as the byte slice.
+func (_dbgee *JBIG2Encoder )Encode ()(_adgd []byte ,_aecbc error ){const _dagc ="J\u0042I\u0047\u0032\u0044\u006f\u0063\u0075\u006d\u0065n\u0074\u002e\u0045\u006eco\u0064\u0065";if _dbgee ._ceef ==nil {return nil ,_fb .Errorf (_dagc ,"\u0064\u006f\u0063u\u006d\u0065\u006e\u0074 \u0069\u006e\u0070\u0075\u0074\u0020\u0064a\u0074\u0061\u0020\u006e\u006f\u0074\u0020\u0064\u0065\u0066\u0069\u006e\u0065\u0064");
+};_dbgee ._ceef .FullHeaders =_dbgee .DefaultPageSettings .FileMode ;_adgd ,_aecbc =_dbgee ._ceef .Encode ();if _aecbc !=nil {return nil ,_fb .Wrap (_aecbc ,_dagc ,"");};return _adgd ,nil ;};
+
+// String returns the PDF version as a string. Implements interface fmt.Stringer.
+func (_gfec Version )String ()string {return _ebc .Sprintf ("\u00250\u0064\u002e\u0025\u0030\u0064",_gfec .Major ,_gfec .Minor );};var _gadac =_c .MustCompile ("\u0028\u005c\u0064\u002b\u0029\u005c\u0073\u002b\u0028\u005c\u0064+\u0029\u005c\u0073\u002b\u0028\u005b\u006e\u0066\u005d\u0029\\\u0073\u002a\u0024");
+
+
+// GetFloatVal returns the float64 value represented by the PdfObject directly or indirectly if contained within an
+// indirect object. On type mismatch the found bool flag returned is false and a nil pointer is returned.
+func GetFloatVal (obj PdfObject )(_cfcd float64 ,_gbdcff bool ){_bdcbg ,_gbdcff :=TraceToDirectObject (obj ).(*PdfObjectFloat );if _gbdcff {return float64 (*_bdcbg ),true ;};return 0,false ;};func (_eace *offsetReader )Seek (offset int64 ,whence int )(int64 ,error ){if whence ==_g .SeekStart {offset +=_eace ._egee ;
+};_fbacd ,_gceb :=_eace ._acfb .Seek (offset ,whence );if _gceb !=nil {return _fbacd ,_gceb ;};if whence ==_g .SeekCurrent {_fbacd -=_eace ._egee ;};if _fbacd < 0{return 0,_bc .New ("\u0063\u006f\u0072\u0065\u002eo\u0066\u0066\u0073\u0065\u0074\u0052\u0065\u0061\u0064\u0065\u0072\u002e\u0053e\u0065\u006b\u003a\u0020\u006e\u0065\u0067\u0061\u0074\u0069\u0076\u0065\u0020\u0070\u006f\u0073\u0069\u0074\u0069\u006f\u006e");
+};return _fbacd ,nil ;};
+
+// HasOddLengthHexStrings checks if the document has odd length hexadecimal strings.
+func (_bbag ParserMetadata )HasOddLengthHexStrings ()bool {return _bbag ._dddc };
+
+// IsDecimalDigit checks if the character is a part of a decimal number string.
+func IsDecimalDigit (c byte )bool {return '0'<=c &&c <='9'};
+
+// ToIntegerArray returns a slice of all array elements as an int slice. An error is returned if the
+// array non-integer objects. Each element can only be PdfObjectInteger.
+func (_dfcb *PdfObjectArray )ToIntegerArray ()([]int ,error ){var _faddb []int ;for _ ,_bbeb :=range _dfcb .Elements (){if _dfgf ,_aded :=_bbeb .(*PdfObjectInteger );_aded {_faddb =append (_faddb ,int (*_dfgf ));}else {return nil ,ErrTypeError ;};};return _faddb ,nil ;
+};
+
+// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
+func (_bfeb *JBIG2Encoder )MakeStreamDict ()*PdfObjectDictionary {_gda :=MakeDict ();_gda .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_bfeb .GetFilterName ()));return _gda ;};var _ebg =_cd .Pool {New :func ()interface{}{return new (_ad .Buffer )}};
+
+
+// NewDCTEncoder makes a new DCT encoder with default parameters.
+func NewDCTEncoder ()*DCTEncoder {_ffdbb :=&DCTEncoder {};_ffdbb .ColorComponents =3;_ffdbb .BitsPerComponent =8;_ffdbb .Quality =DefaultJPEGQuality ;_ffdbb .Decode =[]float64 {0.0,1.0,0.0,1.0,0.0,1.0};return _ffdbb ;};
+
+// RegisterCustomStreamEncoder register a custom encoder handler for certain filter.
+func RegisterCustomStreamEncoder (filterName string ,customStreamEncoder StreamEncoder ){_cgaf .Store (filterName ,customStreamEncoder );};
+
+// MakeDecodeParams makes a new instance of an encoding dictionary based on
+// the current encoder settings.
+func (_bcgc *LZWEncoder )MakeDecodeParams ()PdfObject {if _bcgc .Predictor > 1{_facf :=MakeDict ();_facf .Set ("\u0050r\u0065\u0064\u0069\u0063\u0074\u006fr",MakeInteger (int64 (_bcgc .Predictor )));if _bcgc .BitsPerComponent !=8{_facf .Set ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074",MakeInteger (int64 (_bcgc .BitsPerComponent )));
+};if _bcgc .Columns !=1{_facf .Set ("\u0043o\u006c\u0075\u006d\u006e\u0073",MakeInteger (int64 (_bcgc .Columns )));};if _bcgc .Colors !=1{_facf .Set ("\u0043\u006f\u006c\u006f\u0072\u0073",MakeInteger (int64 (_bcgc .Colors )));};return _facf ;};return nil ;
+};type objectStream struct{N int ;_edc []byte ;_ffd map[int ]int64 ;};
+
+// GetFilterName returns the name of the encoding filter.
+func (_ccce *ASCII85Encoder )GetFilterName ()string {return StreamEncodingFilterNameASCII85 };
+
+// PdfObjectStreams represents the primitive PDF object streams.
+// 7.5.7 Object Streams (page 45).
+type PdfObjectStreams struct{PdfObjectReference ;_fefge []PdfObject ;};
+
+// XrefObject defines a cross reference entry which is a map between object number (with generation number) and the
+// location of the actual object, either as a file offset (xref table entry), or as a location within an xref
+// stream object (xref object stream).
+type XrefObject struct{XType xrefType ;ObjectNumber int ;Generation int ;
+
+// For normal xrefs (defined by OFFSET)
+Offset int64 ;
+
+// For xrefs to object streams.
+OsObjNumber int ;OsObjIndex int ;};
+
+// GetFilterName returns the name of the encoding filter.
+func (_agdb *DCTEncoder )GetFilterName ()string {return StreamEncodingFilterNameDCT };func _ebfg (_gdfa _g .Reader )(_g .ReadCloser ,error ){_aaac :=_fdc .Get ().(_g .ReadCloser );if _bfc :=_aaac .(_f .Resetter ).Reset (_gdfa ,nil );_bfc !=nil {_fdc .Put (_aaac );
+return nil ,_bfc ;};return _aaac ,nil ;};const (DefaultJPEGQuality =75;);
+
+// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
+func (_ddeg *MultiEncoder )MakeStreamDict ()*PdfObjectDictionary {_agec :=MakeDict ();_agec .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",_ddeg .GetFilterArray ());for _ ,_cfeb :=range _ddeg ._dfbf {_cbbe :=_cfeb .MakeStreamDict ();for _ ,_dfge :=range _cbbe .Keys (){_cagcd :=_cbbe .Get (_dfge );
+if _dfge !="\u0046\u0069\u006c\u0074\u0065\u0072"&&_dfge !="D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073"{_agec .Set (_dfge ,_cagcd );};};};_egge :=_ddeg .MakeDecodeParams ();if _egge !=nil {_agec .Set ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073",_egge );
+};return _agec ;};
+
+// ReadByte reads a single byte from the buffered reader.
+func (_ccd *bufferedReadSeeker )ReadByte ()(byte ,error ){_aac ,_fd :=_ccd ._df .ReadByte ();if _fd !=nil {return 0,_fd ;};return _aac ,nil ;};func _eecb (_cede _g .ReadSeeker ,_ddfg int64 )(*offsetReader ,error ){_eedg :=&offsetReader {_acfb :_cede ,_egee :_ddfg };
+_ ,_adge :=_eedg .Seek (0,_g .SeekStart );return _eedg ,_adge ;};
+
+// EqualObjects returns true if `obj1` and `obj2` have the same contents.
+// It performs a deep recursive comparison, dereferencing indirect objects and
+// comparing stream data. Circular references are detected and handled safely.
+//
+// NOTE: It is a good idea to flatten obj1 and obj2 with FlattenObject before calling this function
+// so that contents, rather than references, can be compared.
+func EqualObjects (obj1 ,obj2 PdfObject )bool {return _fagf (obj1 ,obj2 ,0,nil )};
+
+// NewCompliancePdfParser creates a new PdfParser that will parse input reader with the focus on extracting more metadata, which
+// might affect performance of the regular PdfParser this function.
+func NewCompliancePdfParser (rs _g .ReadSeeker )(_dbc *PdfParser ,_bacc error ){_dbc =&PdfParser {_eece :_fee (rs ),ObjCache :make (objectCache ),_cacd :map[int64 ]bool {},_dbdc :true ,_ceggf :make (map[*PdfParser ]*PdfParser )};if _bacc =_dbc .parseDetailedHeader ();
+_bacc !=nil {return nil ,_bacc ;};if _dbc ._gdfce ,_bacc =_dbc .loadXrefs ();_bacc !=nil {_be .Log .Debug ("\u0045\u0052RO\u0052\u003a\u0020F\u0061\u0069\u006c\u0065d t\u006f l\u006f\u0061\u0064\u0020\u0078\u0072\u0065f \u0074\u0061\u0062\u006c\u0065\u0021\u0020%\u0073",_bacc );
+return nil ,_bacc ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("T\u0072\u0061\u0069\u006c\u0065\u0072\u003a\u0020\u0025\u0073",_dbc ._gdfce );};if len (_dbc ._dggd .ObjectMap )==0{return nil ,_ebc .Errorf ("\u0065\u006d\u0070\u0074\u0079\u0020\u0058\u0052\u0045\u0046\u0020t\u0061\u0062\u006c\u0065\u0020\u002d\u0020\u0049\u006e\u0076a\u006c\u0069\u0064");
+};return _dbc ,nil ;};
+
+// Decrypt attempts to decrypt the PDF file with a specified password.  Also tries to
+// decrypt with an empty password.  Returns true if successful, false otherwise.
+// An error is returned when there is a problem with decrypting.
+func (_bbbbd *PdfParser )Decrypt (password []byte )(bool ,error ){if _bbbbd ._aebd ==nil {return false ,_bc .New ("\u0063\u0068\u0065\u0063k \u0065\u006e\u0063\u0072\u0079\u0070\u0074\u0069\u006f\u006e\u0020\u0066\u0069\u0072s\u0074");};_beagcg ,_dfaf :=_bbbbd ._aebd .authenticate (password );
+if _dfaf !=nil {return false ,_dfaf ;};if !_beagcg {_beagcg ,_dfaf =_bbbbd ._aebd .authenticate ([]byte (""));};return _beagcg ,_dfaf ;};
+
+// DecodeBytes decodes a slice of Flate encoded bytes and returns the result.
+func (_abd *FlateEncoder )DecodeBytes (encoded []byte )([]byte ,error ){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0046\u006c\u0061\u0074\u0065\u0044\u0065\u0063\u006f\u0064\u0065\u0020b\u0079\u0074\u0065\u0073");};if len (encoded )==0{_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0065\u006d\u0070\u0074\u0079\u0020\u0046\u006c\u0061\u0074\u0065 e\u006ec\u006f\u0064\u0065\u0064\u0020\u0062\u0075\u0066\u0066\u0065\u0072\u002e \u0052\u0065\u0074\u0075\u0072\u006e\u0069\u006e\u0067\u0020\u0065\u006d\u0070\u0074\u0079\u0020\u0062y\u0074\u0065\u0020\u0073\u006c\u0069\u0063\u0065\u002e");
+return []byte {},nil ;};_acac :=_ad .NewReader (encoded );_gaff ,_fab :=_ebfg (_acac );if _fab !=nil {_be .Log .Debug ("\u0044e\u0063o\u0064\u0069\u006e\u0067\u0020e\u0072\u0072o\u0072\u0020\u0025\u0076\u000a",_fab );_be .Log .Debug ("\u0053t\u0072e\u0061\u006d\u0020\u0028\u0025\u0064\u0029\u0020\u0025\u0020\u0078",len (encoded ),encoded );
+return nil ,_fab ;};_beag :=_bae ();_beag .ReadFrom (_gaff );_fdc .Put (_gaff );_aeac :=AcquireBytes (_beag .Len ());copy (_aeac ,_beag .Bytes ());_ac (_beag );return _aeac ,nil ;};
+
+// GetArray returns the *PdfObjectArray represented by the PdfObject directly or indirectly within an indirect
+// object. On type mismatch the found bool flag is false and a nil pointer is returned.
+func GetArray (obj PdfObject )(_cae *PdfObjectArray ,_gfef bool ){_cae ,_gfef =TraceToDirectObject (obj ).(*PdfObjectArray );return _cae ,_gfef ;};
+
+// SetFileOffset sets the file to an offset position and resets buffer.
+func (_aee *bufferedReadSeeker )SetFileOffset (offset int64 ){if offset < 0{offset =0;};_aee .Seek (offset ,_g .SeekStart );};
+
+// NewJPXEncoder returns a new instance of JPXEncoder.
+func NewJPXEncoder ()*JPXEncoder {return &JPXEncoder {}};
+
+// GetFilterName returns the names of the underlying encoding filters,
+// separated by spaces.
+// Note: This is just a string, should not be used in /Filter dictionary entry. Use GetFilterArray for that.
+// TODO(v4): Refactor to GetFilter() which can be used for /Filter (either Name or Array), this can be
+// renamed to String() as a pretty string to use in debugging etc.
+func (_dede *MultiEncoder )GetFilterName ()string {_cfba :="";for _eddce ,_efg :=range _dede ._dfbf {_cfba +=_efg .GetFilterName ();if _eddce < len (_dede ._dfbf )-1{_cfba +="\u0020";};};return _cfba ;};func _cage (_cdc func (*_ad .Buffer ))[]byte {_fc :=_bae ();
+defer _ac (_fc );_cdc (_fc );_edd :=_fc .Bytes ();_gbd :=make ([]byte ,len (_edd ));copy (_gbd ,_edd );return _gbd ;};
+
+// Resolve resolves a PdfObject to direct object, looking up and resolving references as needed (unlike TraceToDirect).
+func (_agc *PdfParser )Resolve (obj PdfObject )(PdfObject ,error ){_cec ,_abf :=obj .(*PdfObjectReference );if !_abf {return obj ,nil ;};_eeaa :=_agc .GetFileOffset ();defer func (){_agc .SetFileOffset (_eeaa )}();_bedd ,_fa :=_agc .LookupByReference (*_cec );
+if _fa !=nil {return nil ,_fa ;};_gbfd ,_aafb :=_bedd .(*PdfIndirectObject );if !_aafb {return _bedd ,nil ;};_bedd =_gbfd .PdfObject ;_ ,_abf =_bedd .(*PdfObjectReference );if _abf {return _gbfd ,_bc .New ("\u006d\u0075lt\u0069\u0020\u0064e\u0070\u0074\u0068\u0020tra\u0063e \u0070\u006f\u0069\u006e\u0074\u0065\u0072 t\u006f\u0020\u0070\u006f\u0069\u006e\u0074e\u0072");
+};return _bedd ,nil ;};
+
+// DecodeReader returns a reader that decodes the chain of sub-encoders in
+// forward (decode) order: r → encoders[0].DecodeReader → ... → output.
+//
+// The first sub-encoder that does NOT implement StreamingDecoder (typically
+// DCT, JPX, CCITTFax, JBIG2) terminates the streaming portion: the upstream
+// reader is drained into memory and the remaining encoders run via their
+// DecodeBytes. The end-to-end output is therefore identical to DecodeBytes,
+// but only the portion of the chain up to (and not including) the first
+// non-streaming encoder runs without full materialization.
+func (_fbfd *MultiEncoder )DecodeReader (r _g .Reader )_g .Reader {_gaac :=r ;for _cfcf ,_eadf :=range _fbfd ._dfbf {_bcd ,_cbge :=_eadf .(StreamingDecoder );if !_cbge {return &multiFallbackReader {_eagff :_gaac ,_ffdbd :_fbfd ._dfbf [_cfcf :]};};_gaac =_bcd .DecodeReader (_gaac );
+};return _gaac ;};func (_dbedb *PdfParser )repairLocateXref ()(int64 ,error ){_eabbg :=int64 (1000);_dbedb ._eece .Seek (-_eabbg ,_g .SeekCurrent );_eedfb ,_abed :=_dbedb ._eece .Seek (0,_g .SeekCurrent );if _abed !=nil {return 0,_abed ;};_dgdd :=make ([]byte ,_eabbg );
+_dbedb ._eece .Read (_dgdd );_bcfbb :=_eefc .FindAllStringIndex (string (_dgdd ),-1);if len (_bcfbb )< 1{_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0052\u0065\u0070a\u0069\u0072\u003a\u0020\u0078\u0072\u0065f\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064\u0021");
+return 0,_bc .New ("\u0072\u0065\u0070\u0061ir\u003a\u0020\u0078\u0072\u0065\u0066\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075n\u0064");};_fafbd :=int64 (_bcfbb [len (_bcfbb )-1][0]);_dfcab :=_eedfb +_fafbd ;return _dfcab ,nil ;};
+
+// PdfParser parses a PDF file and provides access to the object structure of the PDF.
+type PdfParser struct{_ebff Version ;_eece *bufferedReadSeeker ;_fafe int64 ;_dggd XrefTable ;_gggf int64 ;_dgef *xrefType ;_fgbgc objectStreams ;_gdfce *PdfObjectDictionary ;_aebd *PdfCrypt ;_gbfg *PdfIndirectObject ;_begg bool ;ObjCache objectCache ;
+_ebga map[int ]bool ;_cacd map[int64 ]bool ;_deaa ParserMetadata ;_dbdc bool ;_bceb []int64 ;_fcaf int ;_dfcf bool ;_cgda int64 ;_ceggf map[*PdfParser ]*PdfParser ;_bbcfb []*PdfParser ;
+
+// Opts holds different parsing options.
+Opts *ParserOpts ;};
+
+// DecodeBytes returns the passed in slice of bytes.
+// The purpose of the method is to satisfy the StreamEncoder interface.
+func (_fged *RawEncoder )DecodeBytes (encoded []byte )([]byte ,error ){return encoded ,nil };
+
+// IsWhiteSpace checks if byte represents a white space character.
+func IsWhiteSpace (ch byte )bool {if (ch ==0x00)||(ch ==0x09)||(ch ==0x0A)||(ch ==0x0C)||(ch ==0x0D)||(ch ==0x20){return true ;};return false ;};
+
+// UpdateParams updates the parameter values of the encoder.
+func (_aacg *LZWEncoder )UpdateParams (params *PdfObjectDictionary ){_fadd ,_dgfa :=GetNumberAsInt64 (params .Get ("\u0050r\u0065\u0064\u0069\u0063\u0074\u006fr"));if _dgfa ==nil {_aacg .Predictor =int (_fadd );};_bfa ,_dgfa :=GetNumberAsInt64 (params .Get ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074"));
+if _dgfa ==nil {_aacg .BitsPerComponent =int (_bfa );};_dbd ,_dgfa :=GetNumberAsInt64 (params .Get ("\u0057\u0069\u0064t\u0068"));if _dgfa ==nil {_aacg .Columns =int (_dbd );};_fgb ,_dgfa :=GetNumberAsInt64 (params .Get ("\u0043o\u006co\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u0073"));
+if _dgfa ==nil {_aacg .Colors =int (_fgb );};_gcb ,_dgfa :=GetNumberAsInt64 (params .Get ("E\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065"));if _dgfa ==nil {_aacg .EarlyChange =int (_gcb );};};const (StreamEncodingFilterNameFlate ="F\u006c\u0061\u0074\u0065\u0044\u0065\u0063\u006f\u0064\u0065";
+StreamEncodingFilterNameLZW ="\u004cZ\u0057\u0044\u0065\u0063\u006f\u0064e";StreamEncodingFilterNameDCT ="\u0044C\u0054\u0044\u0065\u0063\u006f\u0064e";StreamEncodingFilterNameRunLength ="\u0052u\u006eL\u0065\u006e\u0067\u0074\u0068\u0044\u0065\u0063\u006f\u0064\u0065";
+StreamEncodingFilterNameASCIIHex ="\u0041\u0053\u0043\u0049\u0049\u0048\u0065\u0078\u0044e\u0063\u006f\u0064\u0065";StreamEncodingFilterNameASCII85 ="\u0041\u0053\u0043\u0049\u0049\u0038\u0035\u0044\u0065\u0063\u006f\u0064\u0065";StreamEncodingFilterNameCCITTFax ="\u0043\u0043\u0049\u0054\u0054\u0046\u0061\u0078\u0044e\u0063\u006f\u0064\u0065";
+StreamEncodingFilterNameJBIG2 ="J\u0042\u0049\u0047\u0032\u0044\u0065\u0063\u006f\u0064\u0065";StreamEncodingFilterNameJPX ="\u004aP\u0058\u0044\u0065\u0063\u006f\u0064e";StreamEncodingFilterNameRaw ="\u0052\u0061\u0077";);
+
+// Set sets the PdfObject at index i of the array. An error is returned if the index is outside bounds.
+func (_adga *PdfObjectArray )Set (i int ,obj PdfObject )error {if i < 0||i >=len (_adga ._dccdc ){return _bc .New ("\u006f\u0075\u0074\u0073\u0069\u0064\u0065\u0020\u0062o\u0075\u006e\u0064\u0073");};_adga ._dccdc [i ]=obj ;return nil ;};
+
+// MakeStringFromBytes creates an PdfObjectString from a byte array.
+// This is more natural than MakeString as `data` is usually not utf-8 encoded.
+func MakeStringFromBytes (data []byte )*PdfObjectString {return MakeString (string (data ))};
+
+// GetFilterName returns the name of the encoding filter.
+func (_dgag *CCITTFaxEncoder )GetFilterName ()string {return StreamEncodingFilterNameCCITTFax };
+
+// Get returns the i-th element of the array or nil if out of bounds (by index).
+func (_bdgd *PdfObjectArray )Get (i int )PdfObject {if _bdgd ==nil ||i >=len (_bdgd ._dccdc )||i < 0{return nil ;};return _bdgd ._dccdc [i ];};
+
+// String returns a string describing `ref`.
+func (_dedbg *PdfObjectReference )String ()string {return _ebc .Sprintf ("\u0052\u0065\u0066\u0028\u0025\u0064\u0020\u0025\u0064\u0029",_dedbg .ObjectNumber ,_dedbg .GenerationNumber );};func (_abegb *PdfParser )xrefNextObjectOffset (_geceb int64 )int64 {_geab :=int64 (0);
+if len (_abegb ._dggd .ObjectMap )==0{return 0;};if len (_abegb ._dggd ._acf )==0{_cdge :=0;for _ ,_ffda :=range _abegb ._dggd .ObjectMap {if _ffda .Offset > 0{_cdge ++;};};if _cdge ==0{return 0;};_abegb ._dggd ._acf =make ([]XrefObject ,_cdge );_gcefg :=0;
+for _ ,_ffacc :=range _abegb ._dggd .ObjectMap {if _ffacc .Offset > 0{_abegb ._dggd ._acf [_gcefg ]=_ffacc ;_gcefg ++;};};_ec .Slice (_abegb ._dggd ._acf ,func (_cagda ,_ecgdc int )bool {return _abegb ._dggd ._acf [_cagda ].Offset < _abegb ._dggd ._acf [_ecgdc ].Offset ;
+});};_bagae :=_ec .Search (len (_abegb ._dggd ._acf ),func (_eebb int )bool {return _abegb ._dggd ._acf [_eebb ].Offset >=_geceb });if _bagae < len (_abegb ._dggd ._acf ){_geab =_abegb ._dggd ._acf [_bagae ].Offset ;};return _geab ;};func _bafe ()string {return _be .Version };
+func (_bdad *multiFallbackReader )Read (p []byte )(int ,error ){if !_bdad ._agbf {_bdad ._agbf =true ;_cfeg ,_cbea :=_g .ReadAll (_bdad ._eagff );if _cbea !=nil {_bdad ._fgcad =_cbea ;return 0,_cbea ;};for _ ,_ggadd :=range _bdad ._ffdbd {_cfeg ,_cbea =_ggadd .DecodeBytes (_cfeg );
+if _cbea !=nil {_bdad ._fgcad =_cbea ;return 0,_cbea ;};};_bdad ._dgb =_cfeg ;};if _bdad ._fgcad !=nil {return 0,_bdad ._fgcad ;};if _bdad ._aeacc >=len (_bdad ._dgb ){return 0,_g .EOF ;};_egec :=copy (p ,_bdad ._dgb [_bdad ._aeacc :]);_bdad ._aeacc +=_egec ;
+return _egec ,nil ;};
+
+// NewRunLengthEncoder makes a new run length encoder
+func NewRunLengthEncoder ()*RunLengthEncoder {return &RunLengthEncoder {}};
+
+// DecodeStream decodes the stream containing CCITTFax encoded image data.
+func (_gac *CCITTFaxEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return _gac .DecodeBytes (streamObj .Stream );};
 
 // FlattenObject returns the contents of `obj`. In other words, `obj` with indirect objects replaced
 // by their values.
 // The replacements are made recursively to a depth of traceMaxDepth.
 // NOTE: Dicts are sorted to make objects with same contents have the same PDF object strings.
-func FlattenObject (obj PdfObject )PdfObject {return _bgbde (obj ,0)};func (_bdfg *PdfParser )parseHexString ()(*PdfObjectString ,error ){_bdfg ._fgaa .ReadByte ();_beea :=_fgc ();defer _cd (_beea );for {_faeg ,_dfde :=_bdfg ._fgaa .Peek (1);if _dfde !=nil {return MakeString (""),_dfde ;
-};if _faeg [0]=='>'{_bdfg ._fgaa .ReadByte ();break ;};_ecbaf ,_ :=_bdfg ._fgaa .ReadByte ();if _bdfg ._egbdb {if _f .IndexByte (_agec ,_ecbaf )==-1{_bdfg ._dafba ._bbbf =true ;};};if !IsWhiteSpace (_ecbaf ){_beea .WriteByte (_ecbaf );};};if _beea .Len ()%2==1{_bdfg ._dafba ._dfca =true ;
-_beea .WriteRune ('0');};_cddf ,_ :=_abc .DecodeString (_beea .String ());return MakeHexString (string (_cddf )),nil ;};
+func FlattenObject (obj PdfObject )PdfObject {return _affd (obj ,0)};
+
+// MakeName creates a PdfObjectName from a string.
+func MakeName (s string )*PdfObjectName {_bfbbb :=PdfObjectName (s );return &_bfbbb };
+
+// PdfObjectDictionary represents the primitive PDF dictionary/map object.
+type PdfObjectDictionary struct{_dbcd map[PdfObjectName ]PdfObject ;_gaga []PdfObjectName ;_egfe _cd .RWMutex ;_gcgcf *PdfParser ;};
+
+// MakeLazy create temporary file for stream to reduce memory usage.
+// It can be used for creating PDF with many images.
+// Temporary files are removed automatically when Write/WriteToFile is called for creator object.
+func (_fbdf *PdfObjectStream )MakeLazy ()error {if _fbdf .Lazy {return nil ;};_egged ,_eeee :=_b .CreateTemp ("","\u0078o\u0062\u006a\u0065\u0063\u0074");if _eeee !=nil {return _eeee ;};defer _egged .Close ();_ ,_eeee =_egged .Write (_fbdf .Stream );if _eeee !=nil {return _eeee ;
+};_fbdf .Lazy =true ;_fbdf .Stream =nil ;_fbdf .TempFile =_egged .Name ();return nil ;};func (_gacc *PdfParser )parseObject ()(PdfObject ,error ){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0052e\u0061d\u0020\u0064\u0069\u0072\u0065c\u0074\u0020o\u0062\u006a\u0065\u0063\u0074");
+};_gacc .skipSpaces ();for {_gcacg ,_bgbg :=_gacc ._eece .Peek (2);if _bgbg !=nil {if _bgbg !=_g .EOF ||len (_gcacg )==0{return nil ,_bgbg ;};if len (_gcacg )==1{_gcacg =append (_gcacg ,' ');};};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0050e\u0065k\u0020\u0073\u0074\u0072\u0069\u006e\u0067\u003a\u0020\u0025\u0073",string (_gcacg ));
+};if _gcacg [0]=='/'{_babf ,_daef :=_gacc .parseName ();if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d\u003e\u004ea\u006d\u0065\u003a\u0020\u0027\u0025\u0073\u0027",_babf );};return &_babf ,_daef ;}else if _gcacg [0]=='('{if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d>\u0053\u0074\u0072\u0069\u006e\u0067!");
+};_dbgd ,_aacf :=_gacc .parseString ();return _dbgd ,_aacf ;}else if _gcacg [0]=='['{if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d\u003e\u0041\u0072\u0072\u0061\u0079\u0021");};_ffcee ,_efac :=_gacc .parseArray ();return _ffcee ,_efac ;
+}else if (_gcacg [0]=='<')&&(_gcacg [1]=='<'){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d>\u0044\u0069\u0063\u0074\u0021");};_bace ,_cegb :=_gacc .ParseDict ();return _bace ,_cegb ;}else if _gcacg [0]=='<'{if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d\u003e\u0048\u0065\u0078\u0020\u0073\u0074\u0072\u0069\u006e\u0067\u0021");
+};_afe ,_feccb :=_gacc .parseHexString ();return _afe ,_feccb ;}else if _gcacg [0]=='%'{_gacc .readComment ();_gacc .skipSpaces ();}else {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d\u003eN\u0075\u006d\u0062e\u0072\u0020\u006f\u0072\u0020\u0072\u0065\u0066\u003f");
+};_gcacg ,_ =_gacc ._eece .Peek (15);_bgde :=string (_gcacg );if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0050\u0065\u0065k\u0020\u0073\u0074\u0072\u003a\u0020\u0025\u0073",_bgde );};if (len (_bgde )> 3)&&(_bgde [:4]=="\u006e\u0075\u006c\u006c"){_cdcee ,_fgbga :=_gacc .parseNull ();
+return &_cdcee ,_fgbga ;}else if (len (_bgde )> 4)&&(_bgde [:5]=="\u0066\u0061\u006cs\u0065"){_cgdc ,_aed :=_gacc .parseBool ();return &_cgdc ,_aed ;}else if (len (_bgde )> 3)&&(_bgde [:4]=="\u0074\u0072\u0075\u0065"){_bdgg ,_gdab :=_gacc .parseBool ();
+return &_bdgg ,_gdab ;};_gagbd :=_ecaf .FindStringSubmatchIndex (_bgde );if len (_gagbd )>=6{if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d\u003e\u0020\u0021\u0052\u0065\u0066\u003a\u0020\u0027\u0025\u0073\u0027",_bgde [:_gagbd [1]]);
+};_cege ,_ :=_d .Atoi (_bgde [_gagbd [2]:_gagbd [3]]);_cge ,_ :=_d .Atoi (_bgde [_gagbd [4]:_gagbd [5]]);_gacc ._eece .Discard (_gagbd [1]);_eggd :=PdfObjectReference {ObjectNumber :int64 (_cege ),GenerationNumber :int64 (_cge ),_bgaa :_gacc };return &_eggd ,nil ;
+};_abcc :=_bdab .FindStringSubmatch (_bgde );if len (_abcc )> 1{if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d\u003e\u0020\u004e\u0075\u006d\u0062\u0065\u0072\u0021");};_bcaa ,_fceb :=_gacc .parseNumber ();return _bcaa ,_fceb ;};
+_abcc =_bcaeg .FindStringSubmatch (_bgde );if len (_abcc )> 1{if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d\u003e\u0020\u0045xp\u006f\u006e\u0065\u006e\u0074\u0069\u0061\u006c\u0020\u004e\u0075\u006d\u0062\u0065r\u0021");};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0025\u0020\u0073",_abcc );
+};_fcda ,_cedg :=_gacc .parseNumber ();return _fcda ,_cedg ;};_be .Log .Debug ("\u0045R\u0052\u004f\u0052\u0020U\u006e\u006b\u006e\u006f\u0077n\u0020(\u0070e\u0065\u006b\u0020\u0022\u0025\u0073\u0022)",_bgde );return nil ,_bc .New ("\u006f\u0062\u006a\u0065\u0063t\u0020\u0070\u0061\u0072\u0073\u0069\u006e\u0067\u0020\u0065\u0072\u0072\u006fr\u0020\u002d\u0020\u0075\u006e\u0065\u0078\u0070\u0065\u0063\u0074\u0065\u0064\u0020\u0070\u0061\u0074\u0074\u0065\u0072\u006e");
+};};};type xrefType int ;
+
+// MakeEncodedString creates a PdfObjectString with encoded content, which can be either
+// UTF-16BE or PDFDocEncoding depending on whether `utf16BE` is true or false respectively.
+func MakeEncodedString (s string ,utf16BE bool )*PdfObjectString {if utf16BE {var _beda _ad .Buffer ;_beda .Write ([]byte {0xFE,0xFF});_beda .WriteString (_gg .StringToUTF16 (s ));return &PdfObjectString {_babb :_beda .String (),_cdebe :true };};return &PdfObjectString {_babb :string (_gg .StringToPDFDocEncoding (s )),_cdebe :false };
+};
+
+// GetRevisionNumber returns the current version of the Pdf document.
+func (_bagcf *PdfParser )GetRevisionNumber ()int {return _bagcf ._fcaf };type cryptFilters map[string ]_bb .Filter ;
+
+// ShallowCopy returns a new PdfObjectDictionary with the same key-value mappings.
+// The new dictionary has its own mutex and independent keys slice, but values
+// are shared (not deep-copied).
+func (_ecdg *PdfObjectDictionary )ShallowCopy ()*PdfObjectDictionary {_ecdg ._egfe .RLock ();defer _ecdg ._egfe .RUnlock ();_agfa :=&PdfObjectDictionary {};_agfa ._dbcd =make (map[PdfObjectName ]PdfObject ,len (_ecdg ._dbcd ));_agfa ._gaga =make ([]PdfObjectName ,len (_ecdg ._gaga ));
+copy (_agfa ._gaga ,_ecdg ._gaga );for _bgdb ,_ddcd :=range _ecdg ._dbcd {_agfa ._dbcd [_bgdb ]=_ddcd ;};_agfa ._gcgcf =_ecdg ._gcgcf ;return _agfa ;};
+
+// DecodeBytes decodes the CCITTFax encoded image data.
+func (_gbgb *CCITTFaxEncoder )DecodeBytes (encoded []byte )([]byte ,error ){_gbad ,_ccbf :=_cc .NewDecoder (encoded ,_cc .DecodeOptions {Columns :_gbgb .Columns ,Rows :_gbgb .Rows ,K :_gbgb .K ,EncodedByteAligned :_gbgb .EncodedByteAlign ,BlackIsOne :_gbgb .BlackIs1 ,EndOfBlock :_gbgb .EndOfBlock ,EndOfLine :_gbgb .EndOfLine ,DamagedRowsBeforeError :_gbgb .DamagedRowsBeforeError });
+if _ccbf !=nil {return nil ,_ccbf ;};_gaaa ,_ccbf :=_g .ReadAll (_gbad );if _ccbf !=nil {return nil ,_ccbf ;};return _gaaa ,nil ;};
+
+// PdfObjectStream represents the primitive PDF Object stream.
+type PdfObjectStream struct{PdfObjectReference ;*PdfObjectDictionary ;Stream []byte ;Lazy bool ;TempFile string ;};func _bdc (_becf int )int {_baadd :=_becf >>(_ddga -1);return (_becf ^_baadd )-_baadd };func _afcb (_feea *PdfObjectDictionary )(_cace *_bg .ImageBase ){var (_eeeeb *PdfObjectInteger ;
+_acfba bool ;);if _eeeeb ,_acfba =_feea .Get ("\u0057\u0069\u0064t\u0068").(*PdfObjectInteger );_acfba {_cace =&_bg .ImageBase {Width :int (*_eeeeb )};}else {return nil ;};if _eeeeb ,_acfba =_feea .Get ("\u0048\u0065\u0069\u0067\u0068\u0074").(*PdfObjectInteger );
+_acfba {_cace .Height =int (*_eeeeb );};if _eeeeb ,_acfba =_feea .Get ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074").(*PdfObjectInteger );_acfba {_cace .BitsPerComponent =int (*_eeeeb );};if _eeeeb ,_acfba =_feea .Get ("\u0043o\u006co\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u0073").(*PdfObjectInteger );
+_acfba {_cace .ColorComponents =int (*_eeeeb );};return _cace ;};
 
 // ReleaseBytes returns buf to the pool bucket whose capacity matches cap(buf).
 // Buffers whose cap does not match any bucket (including nil and empty
 // slices) are dropped silently, so this is safe to call with any []byte.
-func ReleaseBytes (buf []byte ){_fgd :=cap (buf );if _fgd ==0{return ;};for _dff ,_ebe :=range _gbd {if _fgd ==_ebe {_gd :=buf [:_fgd ];_agf [_dff ].Put (&_gd );return ;};};};
+func ReleaseBytes (buf []byte ){_ceb :=cap (buf );if _ceb ==0{return ;};for _daa ,_aga :=range _aacee {if _ceb ==_aga {_gbf :=buf [:_ceb ];_feg [_daa ].Put (&_gbf );return ;};};};
+
+// EncodeStream encodes the stream data using the encoded specified by the stream's dictionary.
+func EncodeStream (streamObj *PdfObjectStream )error {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0045\u006e\u0063\u006f\u0064\u0065\u0020\u0073\u0074\u0072\u0065\u0061\u006d");};_fbagg ,_cfcg :=NewEncoderFromStream (streamObj );if _cfcg !=nil {_be .Log .Debug ("\u0053\u0074\u0072\u0065\u0061\u006d\u0020\u0064\u0065\u0063\u006fd\u0069\u006e\u0067\u0020\u0066\u0061\u0069\u006c\u0065\u0064:\u0020\u0025\u0076",_cfcg );
+return _cfcg ;};if _aagb ,_beea :=_fbagg .(*LZWEncoder );_beea {_aagb .EarlyChange =0;streamObj .Set ("E\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065",MakeInteger (0));};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0045\u006e\u0063\u006f\u0064\u0065\u0072\u003a\u0020\u0025\u002b\u0076\u000a",_fbagg );
+};_edbf ,_cfcg :=_fbagg .EncodeBytes (streamObj .Stream );if _cfcg !=nil {_be .Log .Debug ("\u0053\u0074\u0072\u0065\u0061\u006d\u0020\u0065\u006e\u0063\u006fd\u0069\u006e\u0067\u0020\u0066\u0061\u0069\u006c\u0065\u0064:\u0020\u0025\u0076",_cfcg );return _cfcg ;
+};streamObj .Stream =_edbf ;streamObj .Set ("\u004c\u0065\u006e\u0067\u0074\u0068",MakeInteger (int64 (len (_edbf ))));return nil ;};func (_fddaf *PdfParser )skipComments ()error {if _ ,_cdgf :=_fddaf .skipSpaces ();_cdgf !=nil {return _cdgf ;};_eadd :=true ;
+for {_afgbg ,_afcfa :=_fddaf ._eece .Peek (1);if _afcfa !=nil {_be .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u0020\u0025\u0073",_afcfa .Error ());return _afcfa ;};if _eadd &&_afgbg [0]!='%'{return nil ;};_eadd =false ;if (_afgbg [0]!='\r')&&(_afgbg [0]!='\n'){_fddaf ._eece .ReadByte ();
+}else {break ;};};return _fddaf .skipComments ();};
+
+// UpdateParams updates the parameter values of the encoder.
+func (_agecb *MultiEncoder )UpdateParams (params *PdfObjectDictionary ){for _ ,_fecc :=range _agecb ._dfbf {_fecc .UpdateParams (params );};};
+
+// GetUpdatedObjects returns pdf objects which were updated from the specific version (from prevParser).
+func (_fgbae *PdfParser )GetUpdatedObjects (prevParser *PdfParser )(map[int64 ]PdfObject ,error ){if prevParser ==nil {return nil ,_bc .New ("\u0070\u0072e\u0076\u0069\u006f\u0075\u0073\u0020\u0070\u0061\u0072\u0073\u0065\u0072\u0020\u0063\u0061\u006e\u0027\u0074\u0020\u0062\u0065\u0020nu\u006c\u006c");
+};_gbff ,_dfac :=_fgbae .getNumbersOfUpdatedObjects (prevParser );if _dfac !=nil {return nil ,_dfac ;};_dbef :=make (map[int64 ]PdfObject );for _ ,_cgcg :=range _gbff {if _bdff ,_cgag :=_fgbae .LookupByNumber (_cgcg );_cgag ==nil {_dbef [int64 (_cgcg )]=_bdff ;
+}else {return nil ,_cgag ;};};return _dbef ,nil ;};
+
+// Write outputs the object as it is to be written to file.
+func (_dedfe *PdfObjectName )Write ()[]byte {return _cage (func (_afde *_ad .Buffer ){if len (*_dedfe )> 127{_be .Log .Debug ("\u0045R\u0052\u004f\u0052\u003a \u004e\u0061\u006d\u0065\u0020t\u006fo\u0020l\u006f\u006e\u0067\u0020\u0028\u0025\u0073)",*_dedfe );
+};_afde .WriteString ("\u002f");for _gefd :=0;_gefd < len (*_dedfe );_gefd ++{_befec :=(*_dedfe )[_gefd ];if !IsPrintable (_befec )||_befec =='#'||IsDelimiter (_befec ){_ebc .Fprintf (_afde ,"\u0023\u0025\u002e2\u0078",_befec );}else {_afde .WriteByte (_befec );
+};};});};func _dccf (_fef *PdfObjectStream ,_dcca *PdfObjectDictionary )(*CCITTFaxEncoder ,error ){_eegb :=NewCCITTFaxEncoder ();_gafg :=_fef .PdfObjectDictionary ;if _gafg ==nil {return _eegb ,nil ;};if _dcca ==nil {_acdb :=TraceToDirectObject (_gafg .Get ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073"));
+if _acdb !=nil {switch _gfbd :=_acdb .(type ){case *PdfObjectDictionary :_dcca =_gfbd ;case *PdfObjectArray :if _gfbd .Len ()==1{if _afab ,_ggge :=GetDict (_gfbd .Get (0));_ggge {_dcca =_afab ;};};default:_be .Log .Error ("\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073\u0020\u006e\u006f\u0074 \u0061 \u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079\u0020\u0025\u0023\u0076",_acdb );
+return nil ,_bc .New ("\u0069\u006e\u0076\u0061li\u0064\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073");};};if _dcca ==nil {_be .Log .Error ("\u0044\u0065c\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073\u0020\u006e\u006f\u0074\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069\u0065\u0064 %\u0023\u0076",_acdb );
+return nil ,_bc .New ("\u0069\u006e\u0076\u0061li\u0064\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073");};};if _fdcf ,_bfaa :=GetNumberAsInt64 (_dcca .Get ("\u004b"));_bfaa ==nil {_eegb .K =int (_fdcf );};if _edbgb ,_ddf :=GetNumberAsInt64 (_dcca .Get ("\u0043o\u006c\u0075\u006d\u006e\u0073"));
+_ddf ==nil {_eegb .Columns =int (_edbgb );}else {_eegb .Columns =1728;};if _fgba ,_beg :=GetNumberAsInt64 (_dcca .Get ("\u0042\u006c\u0061\u0063\u006b\u0049\u0073\u0031"));_beg ==nil {_eegb .BlackIs1 =_fgba > 0;}else {if _adcb ,_acc :=GetBoolVal (_dcca .Get ("\u0042\u006c\u0061\u0063\u006b\u0049\u0073\u0031"));
+_acc {_eegb .BlackIs1 =_adcb ;}else {if _fbec ,_gdgc :=GetArray (_dcca .Get ("\u0044\u0065\u0063\u006f\u0064\u0065"));_gdgc {_eddd ,_efef :=_fbec .ToIntegerArray ();if _efef ==nil {_eegb .BlackIs1 =_eddd [0]==1&&_eddd [1]==0;};};};};if _bgf ,_ggcb :=GetNumberAsInt64 (_dcca .Get ("\u0045\u006ec\u006f\u0064\u0065d\u0042\u0079\u0074\u0065\u0041\u006c\u0069\u0067\u006e"));
+_ggcb ==nil {_eegb .EncodedByteAlign =_bgf > 0;}else {if _adeg ,_aaed :=GetBoolVal (_dcca .Get ("\u0045\u006ec\u006f\u0064\u0065d\u0042\u0079\u0074\u0065\u0041\u006c\u0069\u0067\u006e"));_aaed {_eegb .EncodedByteAlign =_adeg ;};};if _gagb ,_cba :=GetNumberAsInt64 (_dcca .Get ("\u0045n\u0064\u004f\u0066\u004c\u0069\u006ee"));
+_cba ==nil {_eegb .EndOfLine =_gagb > 0;}else {if _gdfg ,_ccdgf :=GetBoolVal (_dcca .Get ("\u0045n\u0064\u004f\u0066\u004c\u0069\u006ee"));_ccdgf {_eegb .EndOfLine =_gdfg ;};};if _ggabf ,_feaf :=GetNumberAsInt64 (_dcca .Get ("\u0052\u006f\u0077\u0073"));
+_feaf ==nil {_eegb .Rows =int (_ggabf );};_eegb .EndOfBlock =true ;if _bfg ,_bedc :=GetNumberAsInt64 (_dcca .Get ("\u0045\u006e\u0064\u004f\u0066\u0042\u006c\u006f\u0063\u006b"));_bedc ==nil {_eegb .EndOfBlock =_bfg > 0;}else {if _cfaf ,_fdgb :=GetBoolVal (_dcca .Get ("\u0045\u006e\u0064\u004f\u0066\u0042\u006c\u006f\u0063\u006b"));
+_fdgb {_eegb .EndOfBlock =_cfaf ;};};if _bfca ,_aeae :=GetNumberAsInt64 (_dcca .Get ("\u0044\u0061\u006d\u0061ge\u0064\u0052\u006f\u0077\u0073\u0042\u0065\u0066\u006f\u0072\u0065\u0045\u0072\u0072o\u0072"));_aeae !=nil {_eegb .DamagedRowsBeforeError =int (_bfca );
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0064\u0065\u0063\u006f\u0064\u0065\u0020\u0070\u0061\u0072\u0061\u006ds\u003a\u0020\u0025\u0073",_dcca .String ());};return _eegb ,nil ;};
+
+// EncodeBytes encodes slice of bytes into JBIG2 encoding format.
+// The input 'data' must be an image. In order to Decode it a user is responsible to
+// load the codec ('png', 'jpg').
+// Returns jbig2 single page encoded document byte slice. The encoder uses DefaultPageSettings
+// to encode given image.
+func (_fgfd *JBIG2Encoder )EncodeBytes (data []byte )([]byte ,error ){const _cced ="\u004aB\u0049\u0047\u0032\u0045\u006e\u0063\u006f\u0064\u0065\u0072\u002eE\u006e\u0063\u006f\u0064\u0065\u0042\u0079\u0074\u0065\u0073";if _fgfd .ColorComponents !=1||_fgfd .BitsPerComponent !=1{return nil ,_fb .Errorf (_cced ,"\u0070\u0072\u006f\u0076\u0069\u0064\u0065\u0064\u0020i\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0069\u006e\u0070\u0075\u0074\u0020\u0069\u006d\u0061\u0067\u0065\u002e\u0020\u004a\u0042\u0049G\u0032\u0020E\u006e\u0063o\u0064\u0065\u0072\u0020\u0072\u0065\u0071\u0075\u0069\u0072\u0065\u0073\u0020bi\u006e\u0061\u0072\u0079\u0020\u0069\u006d\u0061\u0067e\u0073\u0020\u0064\u0061\u0074\u0061");
+};var (_dcfg *_ga .Bitmap ;_abag error ;);_fgbg :=(_fgfd .Width *_fgfd .Height )==len (data );if _fgbg {_dcfg ,_abag =_ga .NewWithUnpaddedData (_fgfd .Width ,_fgfd .Height ,data );}else {_dcfg ,_abag =_ga .NewWithData (_fgfd .Width ,_fgfd .Height ,data );
+};if _abag !=nil {return nil ,_abag ;};_egdc :=_fgfd .DefaultPageSettings ;if _abag =_egdc .Validate ();_abag !=nil {return nil ,_fb .Wrap (_abag ,_cced ,"");};if _fgfd ._ceef ==nil {_fgfd ._ceef =_dg .InitEncodeDocument (_egdc .FileMode );};switch _egdc .Compression {case JB2Generic :if _abag =_fgfd ._ceef .AddGenericPage (_dcfg ,_egdc .DuplicatedLinesRemoval );
+_abag !=nil {return nil ,_fb .Wrap (_abag ,_cced ,"");};case JB2SymbolCorrelation :return nil ,_fb .Error (_cced ,"s\u0079\u006d\u0062\u006f\u006c\u0020\u0063\u006f\u0072r\u0065\u006c\u0061\u0074\u0069\u006f\u006e e\u006e\u0063\u006f\u0064i\u006e\u0067\u0020\u006e\u006f\u0074\u0020\u0069\u006dpl\u0065\u006de\u006e\u0074\u0065\u0064\u0020\u0079\u0065\u0074");
+case JB2SymbolRankHaus :return nil ,_fb .Error (_cced ,"\u0073y\u006d\u0062o\u006c\u0020\u0072a\u006e\u006b\u0020\u0068\u0061\u0075\u0073 \u0065\u006e\u0063\u006f\u0064\u0069n\u0067\u0020\u006e\u006f\u0074\u0020\u0069\u006d\u0070\u006c\u0065m\u0065\u006e\u0074\u0065\u0064\u0020\u0079\u0065\u0074");
+default:return nil ,_fb .Error (_cced ,"\u0070\u0072\u006f\u0076i\u0064\u0065\u0064\u0020\u0069\u006e\u0076\u0061\u006c\u0069d\u0020c\u006f\u006d\u0070\u0072\u0065\u0073\u0073i\u006f\u006e");};return _fgfd .Encode ();};
+
+// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
+// Has the Filter set and the DecodeParms.
+func (_gfbg *FlateEncoder )MakeStreamDict ()*PdfObjectDictionary {_fegeb :=MakeDict ();_fegeb .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_gfbg .GetFilterName ()));_cdef :=_gfbg .MakeDecodeParams ();if _cdef !=nil {_fegeb .Set ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073",_cdef );
+};return _fegeb ;};var _gfaf =_c .MustCompile ("\u0073t\u0061r\u0074\u0078\u003f\u0072\u0065f\u005c\u0073*\u0028\u005c\u0064\u002b\u0029");
+
+// HasEOLAfterHeader gets information if there is a EOL after the version header.
+func (_cccd ParserMetadata )HasEOLAfterHeader ()bool {return _cccd ._gbef };
+
+// DecodeBytes decodes a multi-encoded slice of bytes by passing it through the
+// DecodeBytes method of the underlying encoders.
+func (_ced *MultiEncoder )DecodeBytes (encoded []byte )([]byte ,error ){_cgde :=encoded ;var _egbd error ;for _ ,_dddg :=range _ced ._dfbf {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004du\u006c\u0074i\u0020\u0045\u006e\u0063o\u0064\u0065\u0072 \u0044\u0065\u0063\u006f\u0064\u0065\u003a\u0020\u0041pp\u006c\u0079\u0069n\u0067\u0020F\u0069\u006c\u0074\u0065\u0072\u003a \u0025\u0076 \u0025\u0054",_dddg ,_dddg );
+};_cgde ,_egbd =_dddg .DecodeBytes (_cgde );if _egbd !=nil {return nil ,_egbd ;};};return _cgde ,nil ;};
+
+// GetObjectNums returns a sorted list of object numbers of the PDF objects in the file.
+func (_acbfe *PdfParser )GetObjectNums ()[]int {var _gbbc []int ;for _ ,_egeaf :=range _acbfe ._dggd .ObjectMap {_gbbc =append (_gbbc ,_egeaf .ObjectNumber );};_ec .Ints (_gbbc );return _gbbc ;};func (_eddca *PdfParser )initParser ()error {_ceda ,_bbfb ,_egfgd :=_eddca .parsePdfVersion ();
+if _egfgd !=nil {_be .Log .Error ("U\u006e\u0061\u0062\u006c\u0065\u0020t\u006f\u0020\u0070\u0061\u0072\u0073\u0065\u0020\u0076e\u0072\u0073\u0069o\u006e:\u0020\u0025\u0076",_egfgd );return _egfgd ;};_eddca ._ebff .Major =_ceda ;_eddca ._ebff .Minor =_bbfb ;
+if _eddca ._gdfce ,_egfgd =_eddca .loadXrefs ();_egfgd !=nil {_be .Log .Debug ("\u0045\u0052RO\u0052\u003a\u0020F\u0061\u0069\u006c\u0065d t\u006f l\u006f\u0061\u0064\u0020\u0078\u0072\u0065f \u0074\u0061\u0062\u006c\u0065\u0021\u0020%\u0073",_egfgd );
+return _egfgd ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("T\u0072\u0061\u0069\u006c\u0065\u0072\u003a\u0020\u0025\u0073",_eddca ._gdfce );};_aceca ,_egfgd :=_eddca .parseLinearizedDictionary ();if _egfgd !=nil {return _egfgd ;};if _aceca !=nil {_eddca ._dfcf ,_egfgd =_eddca .checkLinearizedInformation (_aceca );
+if _egfgd !=nil {return _egfgd ;};};if len (_eddca ._dggd .ObjectMap )==0{return _ebc .Errorf ("\u0065\u006d\u0070\u0074\u0079\u0020\u0058\u0052\u0045\u0046\u0020t\u0061\u0062\u006c\u0065\u0020\u002d\u0020\u0049\u006e\u0076a\u006c\u0069\u0064");};_eddca ._fcaf =len (_eddca ._bceb );
+if _eddca ._dfcf &&_eddca ._fcaf !=0{_eddca ._fcaf --;};_eddca ._bbcfb =make ([]*PdfParser ,_eddca ._fcaf );return nil ;};
+
+// MakeBool creates a PdfObjectBool from a bool value.
+func MakeBool (val bool )*PdfObjectBool {_befeg :=PdfObjectBool (val );return &_befeg };const _bd =_cb /4;
+
+// DecodeBytes decodes a slice of JPX encoded bytes and returns the result.
+func (_debd *JPXEncoder )DecodeBytes (encoded []byte )([]byte ,error ){_be .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u003a\u0020\u0041t\u0074\u0065\u006dpt\u0069\u006e\u0067\u0020\u0074\u006f \u0075\u0073\u0065\u0020\u0075\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064 \u0065\u006e\u0063\u006f\u0064\u0069\u006e\u0067 \u0025\u0073",_debd .GetFilterName ());
+return encoded ,ErrNoJPXDecode ;};
+
+// SetImage sets the image base for given flate encoder.
+func (_aecb *FlateEncoder )SetImage (img *_bg .ImageBase ){_aecb ._dgcb =img };
+
+// Set sets the PdfObject at index i of the streams. An error is returned if the index is outside bounds.
+func (_daae *PdfObjectStreams )Set (i int ,obj PdfObject )error {if i < 0||i >=len (_daae ._fefge ){return _bc .New ("\u006f\u0075\u0074\u0073\u0069\u0064\u0065\u0020\u0062o\u0075\u006e\u0064\u0073");};_daae ._fefge [i ]=obj ;return nil ;};
 
 // GetNameVal returns the string value represented by the PdfObject directly or indirectly if
 // contained within an indirect object. On type mismatch the found bool flag returned is false and
 // an empty string is returned.
-func GetNameVal (obj PdfObject )(_dbfe string ,_dgcdb bool ){_dbggc ,_dgcdb :=TraceToDirectObject (obj ).(*PdfObjectName );if _dgcdb {return string (*_dbggc ),true ;};return ;};
+func GetNameVal (obj PdfObject )(_edbd string ,_bceg bool ){_gcafd ,_bceg :=TraceToDirectObject (obj ).(*PdfObjectName );if _bceg {return string (*_gcafd ),true ;};return ;};
 
-// MakeNull creates an PdfObjectNull.
-func MakeNull ()*PdfObjectNull {_faga :=PdfObjectNull {};return &_faga };
+// MakeDecodeParams makes a new instance of an encoding dictionary based on
+// the current encoder settings.
+func (_fagg *RawEncoder )MakeDecodeParams ()PdfObject {return nil };func (_dffd *PdfCrypt )securityHandler ()_ce .StdHandler {if _dffd ._eeae .R >=5{return _ce .NewHandlerR6 ();};return _ce .NewHandlerR4 (_dffd ._bf ,_dffd ._cbc .Length );};
 
-// DecodeBytes decodes a slice of JBIG2 encoded bytes and returns the results.
-func (_abfb *JBIG2Encoder )DecodeBytes (encoded []byte )([]byte ,error ){return _be .DecodeBytes (encoded ,_fg .Parameters {},_abfb .Globals );};var _edbc =_fe .MustCompile ("\u005e\u005b\u005c\u002b\u002d\u002e\u005d\u002a\u0028\u005b\u0030\u002d9\u002e\u005d\u002b\u0029");
+// GetStringBytes is like GetStringVal except that it returns the string as a []byte.
+// It is for convenience.
+func GetStringBytes (obj PdfObject )(_eecdg []byte ,_dgfab bool ){_bfcg ,_dgfab :=TraceToDirectObject (obj ).(*PdfObjectString );if _dgfab {return _bfcg .Bytes (),true ;};return ;};func (_eaea *PdfParser )repairRebuildXrefsTopDown ()(*XrefTable ,error ){if _eaea ._begg {return nil ,_ebc .Errorf ("\u0072\u0065\u0070\u0061\u0069\u0072\u0020\u0066\u0061\u0069\u006c\u0065\u0064");
+};_eaea ._begg =true ;_eaea ._eece .Seek (0,_g .SeekStart );_gbga :=20;_dabg :=make ([]byte ,_gbga );_aedf :=XrefTable {};_aedf .ObjectMap =make (map[int ]XrefObject );for {_bgaba ,_eafe :=_eaea ._eece .ReadByte ();if _eafe !=nil {if _eafe ==_g .EOF {break ;
+}else {return nil ,_eafe ;};};if _bgaba =='j'&&_dabg [_gbga -1]=='b'&&_dabg [_gbga -2]=='o'&&IsWhiteSpace (_dabg [_gbga -3]){_eacc :=_gbga -4;for IsWhiteSpace (_dabg [_eacc ])&&_eacc > 0{_eacc --;};if _eacc ==0||!IsDecimalDigit (_dabg [_eacc ]){continue ;
+};for IsDecimalDigit (_dabg [_eacc ])&&_eacc > 0{_eacc --;};if _eacc ==0||!IsWhiteSpace (_dabg [_eacc ]){continue ;};for IsWhiteSpace (_dabg [_eacc ])&&_eacc > 0{_eacc --;};if _eacc ==0||!IsDecimalDigit (_dabg [_eacc ]){continue ;};for IsDecimalDigit (_dabg [_eacc ])&&_eacc > 0{_eacc --;
+};if _eacc ==0{continue ;};_eecbge :=_eaea .GetFileOffset ()-int64 (_gbga -_eacc );_agbbb :=append (_dabg [_eacc +1:],_bgaba );_dfagb ,_gebe ,_edbea :=_cbca (string (_agbbb ));if _edbea !=nil {_be .Log .Debug ("\u0055\u006e\u0061\u0062\u006c\u0065 \u0074\u006f\u0020\u0070\u0061\u0072\u0073\u0065\u0020\u006f\u0062\u006a\u0065c\u0074\u0020\u006e\u0075\u006d\u0062\u0065r\u003a\u0020\u0025\u0076",_edbea );
+return nil ,_edbea ;};if _bdbbe ,_agebf :=_aedf .ObjectMap [_dfagb ];!_agebf ||_bdbbe .Generation <=_gebe {_debe :=XrefObject {};_debe .XType =XrefTypeTableEntry ;_debe .ObjectNumber =_dfagb ;_debe .Generation =_gebe ;_debe .Offset =_eecbge ;_aedf .ObjectMap [_dfagb ]=_debe ;
+};};_dabg =append (_dabg [1:_gbga ],_bgaba );};_eaea ._ebga =nil ;return &_aedf ,nil ;};
 
+// MakeStreamDict make a new instance of an encoding dictionary for a stream object.
+func (_facd *ASCII85Encoder )MakeStreamDict ()*PdfObjectDictionary {_dfdg :=MakeDict ();_dfdg .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_facd .GetFilterName ()));return _dfdg ;};
 
-// NewJPXEncoder returns a new instance of JPXEncoder.
-func NewJPXEncoder ()*JPXEncoder {return &JPXEncoder {}};func (_cge *PdfParser )lookupObjectViaOS (_bdc int ,_eee int )(PdfObject ,error ){var _da *_f .Reader ;var _fba objectStream ;var _cac bool ;_fba ,_cac =_cge ._cegf [_bdc ];if !_cac {_ade ,_cbc :=_cge .LookupByNumber (_bdc );
-if _cbc !=nil {_bd .Log .Debug ("\u004d\u0069ss\u0069\u006e\u0067 \u006f\u0062\u006a\u0065ct \u0073tr\u0065\u0061\u006d\u0020\u0077\u0069\u0074h \u006e\u0075\u006d\u0062\u0065\u0072\u0020%\u0064",_bdc );return nil ,_cbc ;};_ffd ,_ecc :=_ade .(*PdfObjectStream );
-if !_ecc {return nil ,_de .New ("i\u006e\u0076\u0061\u006cid\u0020o\u0062\u006a\u0065\u0063\u0074 \u0073\u0074\u0072\u0065\u0061\u006d");};if _cge ._ggee !=nil &&!_cge ._ggee .isDecrypted (_ffd ){return nil ,_de .New ("\u006e\u0065\u0065\u0064\u0020\u0074\u006f\u0020\u0064\u0065\u0063r\u0079\u0070\u0074\u0020\u0074\u0068\u0065\u0020\u0073\u0074r\u0065\u0061\u006d");
-};_ffc :=_ffd .PdfObjectDictionary ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0073o\u0020\u0064\u003a\u0020\u0025\u0073\n",_ffc .String ());};_agd ,_ecc :=_ffc .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );if !_ecc {_bd .Log .Debug ("\u0045\u0052R\u004f\u0052\u003a\u0020\u004f\u0062\u006a\u0065\u0063\u0074\u0020\u0073\u0074\u0072\u0065\u0061\u006d\u0020\u0073\u0068\u006f\u0075\u006c\u0064\u0020\u0061\u006c\u0077\u0061\u0079\u0073\u0020\u0068\u0061\u0076\u0065\u0020\u0061\u0020\u0054\u0079\u0070\u0065");
-return nil ,_de .New ("\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0073\u0074\u0072\u0065a\u006d\u0020\u006d\u0069\u0073\u0073\u0069\u006e\u0067\u0020T\u0079\u0070\u0065");};if _fa .ToLower (string (*_agd ))!="\u006f\u0062\u006a\u0073\u0074\u006d"{_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u004f\u0062\u006a\u0065\u0063\u0074\u0020\u0073\u0074\u0072\u0065a\u006d\u0020\u0074\u0079\u0070\u0065\u0020s\u0068\u0061\u006c\u006c\u0020\u0061\u006c\u0077\u0061\u0079\u0073 \u0062\u0065\u0020\u004f\u0062\u006a\u0053\u0074\u006d\u0020\u0021");
-return nil ,_de .New ("\u006f\u0062\u006a\u0065c\u0074\u0020\u0073\u0074\u0072\u0065\u0061\u006d\u0020\u0074y\u0070e\u0020\u0021\u003d\u0020\u004f\u0062\u006aS\u0074\u006d");};N ,_ecc :=_ffc .Get ("\u004e").(*PdfObjectInteger );if !_ecc {return nil ,_de .New ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u004e\u0020i\u006e\u0020\u0073\u0074\u0072\u0065\u0061m\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079");
-};_af ,_ecc :=_ffc .Get ("\u0046\u0069\u0072s\u0074").(*PdfObjectInteger );if !_ecc {return nil ,_de .New ("\u0069\u006e\u0076al\u0069\u0064\u0020\u0046\u0069\u0072\u0073\u0074\u0020i\u006e \u0073t\u0072e\u0061\u006d\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079");
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0074\u0079\u0070\u0065\u003a\u0020\u0025\u0073\u0020\u006eu\u006d\u0062\u0065\u0072\u0020\u006f\u0066 \u006f\u0062\u006a\u0065\u0063\u0074\u0073\u003a\u0020\u0025\u0064",_agd ,*N );};_dgd ,_cbc :=DecodeStream (_ffd );
-if _cbc !=nil {return nil ,_cbc ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("D\u0065\u0063\u006f\u0064\u0065\u0064\u003a\u0020\u0025\u0073",_dgd );};_ceb :=_cge .GetFileOffset ();defer func (){_cge .SetFileOffset (_ceb )}();_da =_f .NewReader (_dgd );
-_cge ._fgaa ._cad =_fae .NewReader (_da );if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0050a\u0072s\u0069\u006e\u0067\u0020\u006ff\u0066\u0073e\u0074\u0020\u006d\u0061\u0070");};_bfa :=map[int ]int64 {};for _gdc :=0;_gdc < int (*N );
-_gdc ++{_cge .skipSpaces ();_fcg ,_cacf :=_cge .parseNumber ();if _cacf !=nil {return nil ,_cacf ;};_cea ,_afd :=_fcg .(*PdfObjectInteger );if !_afd {return nil ,_de .New ("\u0069\u006e\u0076al\u0069\u0064\u0020\u006f\u0062\u006a\u0065\u0063\u0074 \u0073t\u0072e\u0061m\u0020\u006f\u0066\u0066\u0073\u0065\u0074\u0020\u0074\u0061\u0062\u006c\u0065");
-};_cge .skipSpaces ();_fcg ,_cacf =_cge .parseNumber ();if _cacf !=nil {return nil ,_cacf ;};_fee ,_afd :=_fcg .(*PdfObjectInteger );if !_afd {return nil ,_de .New ("\u0069\u006e\u0076al\u0069\u0064\u0020\u006f\u0062\u006a\u0065\u0063\u0074 \u0073t\u0072e\u0061m\u0020\u006f\u0066\u0066\u0073\u0065\u0074\u0020\u0074\u0061\u0062\u006c\u0065");
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u006f\u0062j\u0020\u0025\u0064 \u006f\u0066\u0066\u0073\u0065\u0074\u0020\u0025\u0064",*_cea ,*_fee );};_bfa [int (*_cea )]=int64 (*_af +*_fee );};_fba =objectStream {N :int (*N ),_dcf :_dgd ,_fcb :_bfa };
-_cge ._cegf [_bdc ]=_fba ;}else {_cab :=_cge .GetFileOffset ();defer func (){_cge .SetFileOffset (_cab )}();_da =_f .NewReader (_fba ._dcf );_cge ._fgaa ._cad =_fae .NewReader (_da );};_cfg :=_fba ._fcb [_eee ];if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0041\u0043\u0054\u0055AL\u0020\u006f\u0066\u0066\u0073\u0065\u0074\u005b\u0025\u0064\u005d\u0020\u003d\u0020%\u0064",_eee ,_cfg );
-};_da .Seek (_cfg ,_ce .SeekStart );_cge ._fgaa ._cad =_fae .NewReader (_da );_agg ,_ :=_cge ._fgaa ._cad .Peek (100);if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004f\u0042\u004a\u0020\u0070\u0065\u0065\u006b\u0020\u0022\u0025\u0073\u0022",string (_agg ));
-};_fge ,_ea :=_cge .parseObject ();if _ea !=nil {_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0046\u0061\u0069\u006c \u0074\u006f\u0020\u0072\u0065\u0061\u0064 \u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0028\u0025\u0073\u0029",_ea );return nil ,_ea ;
-};if _fge ==nil {return nil ,_de .New ("o\u0062\u006a\u0065\u0063t \u0063a\u006e\u006e\u006f\u0074\u0020b\u0065\u0020\u006e\u0075\u006c\u006c");};_fdb :=PdfIndirectObject {};_fdb .ObjectNumber =int64 (_eee );_fdb .PdfObject =_fge ;_fdb ._eebb =_cge ;return &_fdb ,nil ;
-};
+// IsHexadecimal checks if the PdfObjectString contains Hexadecimal data.
+func (_dcfa *PdfObjectString )IsHexadecimal ()bool {return _dcfa ._cdebe };
 
-// JBIG2CompressionType defines the enum compression type used by the JBIG2Encoder.
-type JBIG2CompressionType int ;
+// DecodeStream implements ASCII hex decoding.
+func (_cafga *ASCIIHexEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return _cafga .DecodeBytes (streamObj .Stream );};func _dged (_cadd byte )byte {switch {case _cadd <='9':return _cadd -'0';case _cadd <='F':return _cadd -'A'+10;default:return _cadd -'a'+10;
+};};const (JB2Generic JBIG2CompressionType =iota ;JB2SymbolCorrelation ;JB2SymbolRankHaus ;);
 
-// Discard discards the next n bytes from the buffered reader.
-func (_dcee *bufferedReadSeeker )Discard (n int )(int ,error ){return _dcee ._cad .Discard (n )};type offsetReader struct{_ffdf _ce .ReadSeeker ;_baccd int64 ;};
-
-// GetFileOffset returns the current file offset, accounting for buffered position.
-func (_dd *bufferedReadSeeker )GetFileOffset ()int64 {_fb ,_ :=_dd ._dbe .Seek (0,_ce .SeekCurrent );_fb -=int64 (_dd ._cad .Buffered ());return _fb ;};func _dfafe (_ebec string )(int ,int ,error ){_ddcce :=_facf .FindStringSubmatch (_ebec );if len (_ddcce )< 3{return 0,0,_de .New ("\u0075\u006e\u0061b\u006c\u0065\u0020\u0074\u006f\u0020\u0064\u0065\u0074\u0065\u0063\u0074\u0020\u0069\u006e\u0064\u0069\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020s\u0069\u0067\u006e\u0061\u0074\u0075\u0072\u0065");
-};_gage ,_ :=_c .Atoi (_ddcce [1]);_gfef ,_ :=_c .Atoi (_ddcce [2]);return _gage ,_gfef ,nil ;};
-
-// NewParser creates a new parser for a PDF file via ReadSeeker. Loads the cross reference stream and trailer.
-// An error is returned on failure.
-func NewParser (rs _ce .ReadSeeker )(*PdfParser ,error ){_adade :=&PdfParser {_fgaa :_ba (rs ),ObjCache :make (objectCache ),_eaba :map[int64 ]bool {},_ddfe :make ([]int64 ,0),_bfab :make (map[*PdfParser ]*PdfParser )};_bbbc :=_adade .initParser ();if _bbbc !=nil {return nil ,_bbbc ;
-};return _adade ,nil ;};
-
-// String returns a string representation of the *PdfObjectString.
-func (_bbdga *PdfObjectString )String ()string {return _bbdga ._fadd };
-
-// DecodeStream decodes the stream containing CCITTFax encoded image data.
-func (_dgaba *CCITTFaxEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return _dgaba .DecodeBytes (streamObj .Stream );};func _aagec (_bbcfd PdfObject ,_cbfc int ,_dfdc map[PdfObject ]struct{})error {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0054\u0072\u0061\u0076\u0065\u0072s\u0065\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0064\u0061\u0074\u0061 \u0028\u0064\u0065\u0070\u0074\u0068\u0020=\u0020\u0025\u0064\u0029",_cbfc );
-};if _ ,_edbb :=_dfdc [_bbcfd ];_edbb {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("-\u0041\u006c\u0072\u0065ad\u0079 \u0074\u0072\u0061\u0076\u0065r\u0073\u0065\u0064\u002e\u002e\u002e");};return nil ;};_dfdc [_bbcfd ]=struct{}{};switch _ddeae :=_bbcfd .(type ){case *PdfIndirectObject :_ggag :=_ddeae ;
-if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0069\u006f\u003a\u0020\u0025\u0073",_ggag );};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d\u0020\u0025\u0073",_ggag .PdfObject );};return _aagec (_ggag .PdfObject ,_cbfc +1,_dfdc );
-case *PdfObjectStream :_bccdg :=_ddeae ;return _aagec (_bccdg .PdfObjectDictionary ,_cbfc +1,_dfdc );case *PdfObjectDictionary :_eefa :=_ddeae ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d\u0020\u0064\u0069\u0063\u0074\u003a\u0020\u0025\u0073",_eefa );
-};for _ ,_gccc :=range _eefa .Keys (){_dcce :=_eefa .Get (_gccc );if _gddeb ,_adadf :=_dcce .(*PdfObjectReference );_adadf {_badb :=_gddeb .Resolve ();_eefa .Set (_gccc ,_badb );_edggb :=_aagec (_badb ,_cbfc +1,_dfdc );if _edggb !=nil {return _edggb ;};
-}else {_bbdf :=_aagec (_dcce ,_cbfc +1,_dfdc );if _bbdf !=nil {return _bbdf ;};};};return nil ;case *PdfObjectArray :_afad :=_ddeae ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("-\u0020\u0061\u0072\u0072\u0061\u0079\u003a\u0020\u0025\u0073",_afad );
-};for _cdcad ,_bcfda :=range _afad .Elements (){if _eecg ,_eggf :=_bcfda .(*PdfObjectReference );_eggf {_bbaab :=_eecg .Resolve ();_afad .Set (_cdcad ,_bbaab );_gdebe :=_aagec (_bbaab ,_cbfc +1,_dfdc );if _gdebe !=nil {return _gdebe ;};}else {_caecf :=_aagec (_bcfda ,_cbfc +1,_dfdc );
-if _caecf !=nil {return _caecf ;};};};return nil ;case *PdfObjectReference :_bd .Log .Debug ("E\u0052\u0052\u004f\u0052\u003a\u0020T\u0072\u0061\u0063\u0069\u006e\u0067\u0020\u0061\u0020r\u0065\u0066\u0065r\u0065n\u0063\u0065\u0021");return _de .New ("\u0065r\u0072\u006f\u0072\u0020t\u0072\u0061\u0063\u0069\u006eg\u0020a\u0020r\u0065\u0066\u0065\u0072\u0065\u006e\u0063e");
-};return nil ;};
-
-// NewASCIIHexEncoder makes a new ASCII hex encoder.
-func NewASCIIHexEncoder ()*ASCIIHexEncoder {_bgag :=&ASCIIHexEncoder {};return _bgag };
-
-// GetStream returns the *PdfObjectStream represented by the PdfObject. On type mismatch the found bool flag is
-// false and a nil pointer is returned.
-func GetStream (obj PdfObject )(_edbe *PdfObjectStream ,_becd bool ){obj =ResolveReference (obj );_edbe ,_becd =obj .(*PdfObjectStream );return _edbe ,_becd ;};func (_deeb *JBIG2Encoder )encodeImage (_fgbg _b .Image )([]byte ,error ){const _adaa ="e\u006e\u0063\u006f\u0064\u0065\u0049\u006d\u0061\u0067\u0065";
-_efaeg ,_bgfee :=GoImageToJBIG2 (_fgbg ,JB2ImageAutoThreshold );if _bgfee !=nil {return nil ,_eb .Wrap (_bgfee ,_adaa ,"\u0063\u006f\u006e\u0076\u0065\u0072\u0074\u0020\u0069\u006e\u0070\u0075\u0074\u0020\u0069m\u0061g\u0065\u0020\u0074\u006f\u0020\u006a\u0062\u0069\u0067\u0032\u0020\u0069\u006d\u0067");
-};if _bgfee =_deeb .AddPageImage (_efaeg ,&_deeb .DefaultPageSettings );_bgfee !=nil {return nil ,_eb .Wrap (_bgfee ,_adaa ,"");};return _deeb .Encode ();};
+// UpdateParams updates the parameter values of the encoder.
+func (_gcgcd *ASCIIHexEncoder )UpdateParams (params *PdfObjectDictionary ){};
 
 // StreamingDecoder is implemented by stream encoders that can decode their
 // input incrementally, without materializing the full decoded output in
@@ -218,73 +612,812 @@ _efaeg ,_bgfee :=GoImageToJBIG2 (_fgbg ,JB2ImageAutoThreshold );if _bgfee !=nil 
 // The reader returned by DecodeReader produces the same bytes that
 // DecodeBytes would produce for the same valid input. Decoding errors are
 // surfaced lazily via Read.
-type StreamingDecoder interface{DecodeReader (_gbgd _ce .Reader )_ce .Reader ;};
+type StreamingDecoder interface{DecodeReader (_beed _g .Reader )_g .Reader ;};
+
+// DecodeStream decodes a multi-encoded stream by passing it through the
+// DecodeStream method of the underlying encoders.
+func (_fcde *MultiEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return _fcde .DecodeBytes (streamObj .Stream );};type asciiHexReader struct{_fffd byteReader ;_bebb error ;};type byteReader interface{_g .Reader ;_g .ByteReader ;};
+
+// Str returns the string value of the PdfObjectString. Defined in addition to String() function to clarify that
+// this function returns the underlying string directly, whereas the String function technically could include
+// debug info.
+func (_aaddfe *PdfObjectString )Str ()string {return _aaddfe ._babb };
+
+// DecodeReader returns a reader that ASCII85-decodes from r. Handles the
+// PDF/Adobe variant: 5-char groups, 'z' shortcut for four zero bytes, '~>'
+// EOD marker, whitespace skipped. The stdlib's encoding/ascii85 does not
+// recognize '~>' (it treats '~' as a corrupt byte), so this decoder is
+// hand-rolled to match DecodeBytes.
+func (_ffacg *ASCII85Encoder )DecodeReader (r _g .Reader )_g .Reader {return &ascii85Reader {_egbcb :_gddf (r )};};
+
+// UnreadByte unreads the last byte read from the buffered reader.
+func (_ggfe *bufferedReadSeeker )UnreadByte ()error {return _ggfe ._df .UnreadByte ()};type ascii85Reader struct{_egbcb byteReader ;_eeaf error ;_addc [4]byte ;_fabcb int ;_efea int ;};var _aacee =[...]int {_cb ,_aace ,_agd ,_ebb ,_bag ,_ebe };
+
+// UpdateParams updates the parameter values of the encoder.
+func (_aae *ASCII85Encoder )UpdateParams (params *PdfObjectDictionary ){};
+
+// IsAuthenticated returns true if the PDF has already been authenticated for accessing.
+func (_bfac *PdfParser )IsAuthenticated ()bool {return _bfac ._aebd ._gge };const _cggg =10;
 
 // Write outputs the object as it is to be written to file.
-func (_fggba *PdfIndirectObject )Write ()[]byte {return _gf (func (_dgffe *_f .Buffer ){_dgffe .WriteString (_c .FormatInt (_fggba .ObjectNumber ,10));_dgffe .WriteString ("\u0020\u0030\u0020\u0052");});};
+func (_gabb *PdfObjectArray )Write ()[]byte {return _cage (func (_dface *_ad .Buffer ){_dface .WriteString ("\u005b");for _abbdc ,_dfdee :=range _gabb .Elements (){_dface .Write (_dfdee .Write ());if _abbdc < (_gabb .Len ()-1){_dface .WriteString ("\u0020");
+};};_dface .WriteString ("\u005d");});};
 
-// DecodeStream decodes a DCT encoded stream and returns the result as a
-// slice of bytes.
-func (_dcb *DCTEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return _dcb .DecodeBytes (streamObj .Stream );};
+// Write outputs the object as it is to be written to file.
+func (_bgcd *PdfObjectStreams )Write ()[]byte {return _cage (func (_eccg *_ad .Buffer ){_eccg .WriteString (_d .FormatInt (_bgcd .ObjectNumber ,10));_eccg .WriteString ("\u0020\u0030\u0020\u0052");});};var _fdc =_cd .Pool {New :func ()any {_agbe ,_ :=_f .NewReader (_ad .NewReader ([]byte {0x78,0x9c,0x01,0x00,0x00,0xff,0xff,0x00,0x00,0x00,0x01}));
+return _agbe ;}};type errorReader struct{_cabe error };type objectStreams map[int ]objectStream ;
 
-// NewJBIG2Encoder creates a new JBIG2Encoder.
-func NewJBIG2Encoder ()*JBIG2Encoder {return &JBIG2Encoder {_daa :_eea .InitEncodeDocument (false )}};
+// AddEncoder adds the passed in encoder to the underlying encoder slice.
+func (_eceeb *MultiEncoder )AddEncoder (encoder StreamEncoder ){_eceeb ._dfbf =append (_eceeb ._dfbf ,encoder );};var _cegd =[]PdfObjectName {"\u0056","\u0052","\u004f","\u0055","\u0050"};var _eecd =_c .MustCompile ("\u0028\u005c\u0064\u002b)\\\u0073\u002b\u0028\u005c\u0064\u002b\u0029\u005c\u0073\u002b\u006f\u0062\u006a");
 
-// DecodeStream decodes the stream data and returns the decoded data.
-// An error is returned upon failure.
-func DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0044\u0065\u0063\u006f\u0064\u0065\u0020\u0073\u0074\u0072\u0065\u0061\u006d");};_ddgf ,_fcfa :=NewEncoderFromStream (streamObj );
-if _fcfa !=nil {_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0053\u0074\u0072\u0065\u0061\u006d\u0020\u0064\u0065\u0063\u006f\u0064\u0069n\u0067\u0020\u0066\u0061\u0069\u006c\u0065d\u003a\u0020\u0025\u0076",_fcfa );return nil ,_fcfa ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0045\u006e\u0063\u006f\u0064\u0065\u0072\u003a\u0020\u0025\u0023\u0076\u000a",_ddgf );
-};_egbg ,_fcfa :=_ddgf .DecodeStream (streamObj );if _fcfa !=nil {_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0053\u0074\u0072\u0065\u0061\u006d\u0020\u0064\u0065\u0063\u006f\u0064\u0069n\u0067\u0020\u0066\u0061\u0069\u006c\u0065d\u003a\u0020\u0025\u0076",_fcfa );
-return nil ,_fcfa ;};return _egbg ,nil ;};
 
-// MultiEncoder supports serial encoding.
-type MultiEncoder struct{_gdgb []StreamEncoder };
+// UpdateParams updates the parameter values of the encoder.
+func (_bdaf *RawEncoder )UpdateParams (params *PdfObjectDictionary ){};func (_ggfd *PdfParser )loadXrefs ()(*PdfObjectDictionary ,error ){_ggfd ._dggd .ObjectMap =make (map[int ]XrefObject );_ggfd ._fgbgc =make (objectStreams );_dbdcb ,_acgf :=_ggfd ._eece .Seek (0,_g .SeekEnd );
+if _acgf !=nil {return nil ,_acgf ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0066s\u0069\u007a\u0065\u003a\u0020\u0025d",_dbdcb );};_ggfd ._fafe =_dbdcb ;_acgf =_ggfd .seekToEOFMarker (_dbdcb );if _acgf !=nil {_be .Log .Debug ("\u0046\u0061i\u006c\u0065\u0064\u0020\u0073\u0065\u0065\u006b\u0020\u0074\u006f\u0020\u0065\u006f\u0066\u0020\u006d\u0061\u0072\u006b\u0065\u0072: \u0025\u0076",_acgf );
+return nil ,_acgf ;};_bbdg ,_acgf :=_ggfd ._eece .Seek (0,_g .SeekCurrent );if _acgf !=nil {return nil ,_acgf ;};var _gdbff int64 =64;_eebf :=_bbdg -_gdbff ;if _eebf < 0{_eebf =0;};_ ,_acgf =_ggfd ._eece .Seek (_eebf ,_g .SeekStart );if _acgf !=nil {return nil ,_acgf ;
+};_dfecg :=make ([]byte ,_gdbff );_ ,_acgf =_ggfd ._eece .Read (_dfecg );if _acgf !=nil {_be .Log .Debug ("\u0046\u0061i\u006c\u0065\u0064\u0020\u0072\u0065\u0061\u0064\u0069\u006e\u0067\u0020\u0077\u0068\u0069\u006c\u0065\u0020\u006c\u006f\u006f\u006b\u0069\u006e\u0067\u0020\u0066\u006f\u0072\u0020\u0073\u0074\u0061\u0072\u0074\u0078\u0072\u0065\u0066\u003a\u0020\u0025\u0076",_acgf );
+return nil ,_acgf ;};_abeg :=_gfaf .FindStringSubmatch (string (_dfecg ));if len (_abeg )< 2{_be .Log .Debug ("E\u0072\u0072\u006f\u0072\u003a\u0020s\u0074\u0061\u0072\u0074\u0078\u0072\u0065\u0066\u0020n\u006f\u0074\u0020f\u006fu\u006e\u0064\u0021");return nil ,_bc .New ("\u0073\u0074\u0061\u0072tx\u0072\u0065\u0066\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064");
+};if len (_abeg )> 2{_be .Log .Debug ("\u0045\u0052\u0052O\u0052\u003a\u0020\u004du\u006c\u0074\u0069\u0070\u006c\u0065\u0020s\u0074\u0061\u0072\u0074\u0078\u0072\u0065\u0066\u0020\u0028\u0025\u0073\u0029\u0021",_dfecg );return nil ,_bc .New ("m\u0075\u006c\u0074\u0069\u0070\u006ce\u0020\u0073\u0074\u0061\u0072\u0074\u0078\u0072\u0065f\u0020\u0065\u006et\u0072i\u0065\u0073\u003f");
+};_bbad ,_ :=_d .ParseInt (_abeg [1],10,64);if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0073t\u0061r\u0074\u0078\u0072\u0065\u0066\u0020\u0061\u0074\u0020\u0025\u0064",_bbad );};if _bbad > _dbdcb {_be .Log .Debug ("\u0045\u0052\u0052OR\u003a\u0020\u0058\u0072\u0065\u0066\u0020\u006f\u0066f\u0073e\u0074 \u006fu\u0074\u0073\u0069\u0064\u0065\u0020\u006f\u0066\u0020\u0066\u0069\u006c\u0065");
+_be .Log .Debug ("\u0041\u0074\u0074\u0065\u006d\u0070\u0074\u0069\u006e\u0067\u0020\u0072e\u0070\u0061\u0069\u0072");_bbad ,_acgf =_ggfd .repairLocateXref ();if _acgf !=nil {_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0052\u0065\u0070\u0061\u0069\u0072\u0020\u0061\u0074\u0074\u0065\u006d\u0070t\u0020\u0066\u0061\u0069\u006c\u0065\u0064 \u0028\u0025\u0073\u0029");
+return nil ,_acgf ;};};_ggfd ._eece .Seek (_bbad ,_g .SeekStart );_aebf ,_acgf :=_ggfd .parseXref ();if _acgf !=nil {return nil ,_acgf ;};_ddcbf :=_aebf .Get ("\u0058R\u0065\u0066\u0053\u0074\u006d");if _ddcbf !=nil {_fdba ,_edabe :=_ddcbf .(*PdfObjectInteger );
+if !_edabe {return nil ,_bc .New ("\u0058\u0052\u0065\u0066\u0053\u0074\u006d\u0020\u0021=\u0020\u0069\u006e\u0074");};_ ,_acgf =_ggfd .parseXrefStream (_fdba );if _acgf !=nil &&_ggfd .Opts !=nil &&!_ggfd .Opts .RelaxedMode {return nil ,_acgf ;};};var _ecgcc []int64 ;
+_caba :=func (_feccgc int64 ,_edac []int64 )bool {for _ ,_bfeg :=range _edac {if _bfeg ==_feccgc {return true ;};};return false ;};_ddcbf =_aebf .Get ("\u0050\u0072\u0065\u0076");for _ddcbf !=nil {_bggef ,_eeddb :=_ddcbf .(*PdfObjectInteger );if !_eeddb {_be .Log .Debug ("\u0049\u006ev\u0061\u006c\u0069\u0064\u0020P\u0072\u0065\u0076\u0020\u0072e\u0066\u0065\u0072\u0065\u006e\u0063\u0065\u003a\u0020\u004e\u006f\u0074\u0020\u0061\u0020\u002a\u0050\u0064\u0066\u004f\u0062\u006a\u0065\u0063\u0074\u0049\u006e\u0074\u0065\u0067\u0065\u0072\u0020\u0028\u0025\u0054\u0029",_ddcbf );
+return _aebf ,nil ;};_fefb :=*_bggef ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0041\u006eot\u0068\u0065\u0072 \u0050\u0072\u0065\u0076 xr\u0065f \u0074\u0061\u0062\u006c\u0065\u0020\u006fbj\u0065\u0063\u0074\u0020\u0061\u0074\u0020%\u0064",_fefb );
+};_ggfd ._eece .Seek (int64 (_fefb ),_g .SeekStart );_dddd ,_addbf :=_ggfd .parseXref ();if _addbf !=nil {_be .Log .Debug ("\u0057\u0061\u0072\u006e\u0069\u006e\u0067\u003a\u0020\u0045\u0072\u0072\u006f\u0072\u0020-\u0020\u0046\u0061\u0069\u006c\u0065\u0064\u0020\u006c\u006f\u0061\u0064\u0069n\u0067\u0020\u0061\u006e\u006f\u0074\u0068\u0065\u0072\u0020\u0028\u0050re\u0076\u0029\u0020\u0074\u0072\u0061\u0069\u006c\u0065\u0072");
+_be .Log .Debug ("\u0041\u0074t\u0065\u006d\u0070\u0074i\u006e\u0067 \u0074\u006f\u0020\u0063\u006f\u006e\u0074\u0069n\u0075\u0065\u0020\u0062\u0079\u0020\u0069\u0067\u006e\u006f\u0072\u0069n\u0067\u0020\u0069\u0074");break ;};_ggfd ._bceb =append (_ggfd ._bceb ,int64 (_fefb ));
+_ddcbf =_dddd .Get ("\u0050\u0072\u0065\u0076");if _ddcbf !=nil {_fbcf :=*(_ddcbf .(*PdfObjectInteger ));if _caba (int64 (_fbcf ),_ecgcc ){_be .Log .Debug ("\u0050\u0072ev\u0065\u006e\u0074i\u006e\u0067\u0020\u0063irc\u0075la\u0072\u0020\u0078\u0072\u0065\u0066\u0020re\u0066\u0065\u0072\u0065\u006e\u0063\u0069n\u0067");
+break ;};_ecgcc =append (_ecgcc ,int64 (_fbcf ));};};if _ggfd .Opts !=nil &&_ggfd .Opts .AutoRepairXrefTable {_afdc :=_ggfd .xrefTableHealthCheck (_aebf );if _afdc !=nil {_be .Log .Debug ("\u0058\u0072\u0065\u0066\u0020\u0074\u0061\u0062\u006c\u0065\u0020\u0068\u0065\u0061\u006c\u0074\u0068\u0020c\u0068\u0065\u0063\u006b\u0020\u0066\u0061i\u006c\u0065\u0064\u003a\u0020\u0025\u0076\u002c\u0020\u0061\u0074t\u0065\u006d\u0070\u0074\u0020\u0072\u0065\u0070\u0061\u0069\u0072",_afdc );
+_gfgd ,_dbgg :=_ggfd .repairRebuildXrefsTopDown ();if _dbgg !=nil {_be .Log .Debug ("F\u0061\u0069\u006c\u0065\u0064\u0020\u0074\u006f\u0020r\u0065\u0062\u0075\u0069\u006c\u0064\u0020xr\u0065\u0066\u0073\u003a \u0025\u0076\u002c\u0020\u0066\u0069\u006c\u0065\u0020un\u0072\u0065c\u006f\u0076\u0065\u0072\u0061\u0062\u006c\u0065",_dbgg );
+return _aebf ,_dbgg ;};_ggfd ._dggd =*_gfgd ;};};return _aebf ,nil ;};func (_egfb *PdfParser )parseXref ()(*PdfObjectDictionary ,error ){_egfb .skipSpaces ();const _befe =20;_bfcb ,_ :=_egfb ._eece .Peek (_befe );for _cgef :=0;_cgef < 2;_cgef ++{if _egfb ._gggf ==0{_egfb ._gggf =_egfb .GetFileOffset ();
+};if _eecd .Match (_bfcb ){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0078\u0072e\u0066\u0020\u0070\u006f\u0069\u006e\u0074\u0073\u0020\u0074\u006f\u0020\u0061\u006e\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u002e\u0020\u0050\u0072\u006f\u0062\u0061\u0062\u006c\u0079\u0020\u0078\u0072\u0065\u0066\u0020\u006f\u0062\u006a\u0065\u0063\u0074");
+};_be .Log .Debug ("\u0073t\u0061r\u0074\u0069\u006e\u0067\u0020w\u0069\u0074h\u0020\u0022\u0025\u0073\u0022",string (_bfcb ));return _egfb .parseXrefStream (nil );};if _cefd .Match (_bfcb ){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0053\u0074\u0061\u006ed\u0061\u0072\u0064\u0020\u0078\u0072\u0065\u0066\u0020\u0073e\u0063t\u0069\u006f\u006e\u0020\u0074\u0061\u0062l\u0065\u0021");
+};return _egfb .parseXrefTable ();};_gged :=_egfb .GetFileOffset ();if _egfb ._gggf ==0{_egfb ._gggf =_gged ;};_egfb .SetFileOffset (_gged -_befe );defer _egfb .SetFileOffset (_gged );_cbeg ,_ :=_egfb ._eece .Peek (_befe );_bfcb =append (_cbeg ,_bfcb ...);
+};_be .Log .Debug ("\u0057\u0061\u0072\u006e\u0069\u006e\u0067\u003a\u0020\u0055\u006e\u0061\u0062\u006c\u0065\u0020\u0074\u006f \u0066\u0069\u006e\u0064\u0020\u0078\u0072\u0065f\u0020\u0074\u0061\u0062\u006c\u0065\u0020\u006fr\u0020\u0073\u0074\u0072\u0065\u0061\u006d.\u0020\u0052\u0065\u0070\u0061i\u0072\u0020\u0061\u0074\u0074e\u006d\u0070\u0074\u0065\u0064\u003a\u0020\u004c\u006f\u006f\u006b\u0069\u006e\u0067\u0020\u0066\u006f\u0072\u0020\u0065\u0061\u0072\u006c\u0069\u0065\u0073\u0074\u0020x\u0072\u0065\u0066\u0020\u0066\u0072\u006f\u006d\u0020\u0062\u006f\u0074to\u006d\u002e");
+if _fefg :=_egfb .repairSeekXrefMarker ();_fefg !=nil {_be .Log .Debug ("\u0052e\u0070a\u0069\u0072\u0020\u0066\u0061i\u006c\u0065d\u0020\u002d\u0020\u0025\u0076",_fefg );return nil ,_fefg ;};return _egfb .parseXrefTable ();};
+
+// PdfObject is an interface which all primitive PDF objects must implement.
+type PdfObject interface{
+
+// String outputs a string representation of the primitive (for debugging).
+String ()string ;
+
+// Write outputs the PDF primitive as written to file as expected by the standard.
+Write ()[]byte ;};func (_eefd *PdfParser )parseNull ()(PdfObjectNull ,error ){_ ,_fbbf :=_eefd ._eece .Discard (4);return PdfObjectNull {},_fbbf ;};
+
+// Resolve resolves the reference and returns the indirect or stream object.
+// If the reference cannot be resolved, a *PdfObjectNull object is returned.
+func (_decg *PdfObjectReference )Resolve ()PdfObject {if _decg ._bgaa ==nil {return MakeNull ();};_ebbb ,_ ,_agege :=_decg ._bgaa .resolveReference (_decg );if _agege !=nil {_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0072\u0065\u0073\u006f\u006cv\u0069\u006e\u0067\u0020\u0072\u0065\u0066\u0065r\u0065n\u0063\u0065\u003a\u0020\u0025\u0076\u0020\u002d\u0020\u0072\u0065\u0074\u0075\u0072\u006e\u0069\u006e\u0067 \u006e\u0075\u006c\u006c\u0020\u006f\u0062\u006a\u0065\u0063\u0074",_agege );
+return MakeNull ();};if _ebbb ==nil {_be .Log .Debug ("\u0045R\u0052\u004f\u0052\u0020\u0072\u0065\u0073ol\u0076\u0069\u006e\u0067\u0020\u0072\u0065\u0066\u0065\u0072\u0065\u006e\u0063\u0065:\u0020\u006ei\u006c\u0020\u006fb\u006a\u0065\u0063\u0074\u0020\u002d\u0020\u0072\u0065\u0074\u0075\u0072\u006e\u0069\u006e\u0067 \u0061\u0020nu\u006c\u006c\u0020o\u0062\u006a\u0065\u0063\u0074");
+return MakeNull ();};return _ebbb ;};
+
+// GetNumberAsInt64 returns the contents of `obj` as an int64 if it is an integer or float, or an
+// error if it isn't. This is for cases where expecting an integer, but some implementations
+// actually store the number in a floating point format.
+func GetNumberAsInt64 (obj PdfObject )(int64 ,error ){switch _gaace :=obj .(type ){case *PdfObjectFloat :_be .Log .Debug ("\u004e\u0075m\u0062\u0065\u0072\u0020\u0065\u0078\u0070\u0065\u0063\u0074\u0065\u0064\u0020\u0061\u0073\u0020\u0069\u006e\u0074e\u0067\u0065\u0072\u0020\u0077\u0061s\u0020\u0073\u0074\u006f\u0072\u0065\u0064\u0020\u0061\u0073\u0020\u0066\u006c\u006fa\u0074\u0020(\u0074\u0079\u0070\u0065 \u0063\u0061\u0073\u0074\u0069n\u0067\u0020\u0075\u0073\u0065\u0064\u0029");
+return int64 (*_gaace ),nil ;case *PdfObjectInteger :return int64 (*_gaace ),nil ;case *PdfObjectReference :_adgdd :=TraceToDirectObject (obj );return GetNumberAsInt64 (_adgdd );case *PdfIndirectObject :return GetNumberAsInt64 (_gaace .PdfObject );};return 0,ErrNotANumber ;
+};var _ecaf =_c .MustCompile ("\u005e\\\u0073\u002a\u005b\u002d]\u002a\u0028\u005c\u0064\u002b)\u005cs\u002b(\u005c\u0064\u002b\u0029\u005c\u0073\u002bR");
+
+// UpdateParams updates the parameter values of the encoder.
+func (_fcgg *RunLengthEncoder )UpdateParams (params *PdfObjectDictionary ){};func (_eaf *PdfCrypt )loadCryptFilters (_dbe *PdfObjectDictionary )error {_eaf ._fege =cryptFilters {};_ggce :=_dbe .Get ("\u0043\u0046");_ggce =TraceToDirectObject (_ggce );if _gff ,_cbg :=_ggce .(*PdfObjectReference );
+_cbg {_ccdd ,_fca :=_eaf ._fcb .LookupByReference (*_gff );if _fca !=nil {_be .Log .Debug ("\u0045\u0072r\u006f\u0072\u0020\u006c\u006f\u006f\u006b\u0069\u006e\u0067\u0020\u0075\u0070\u0020\u0043\u0046\u0020\u0072\u0065\u0066\u0065\u0072en\u0063\u0065");
+return _fca ;};_ggce =TraceToDirectObject (_ccdd );};_egg ,_bga :=_ggce .(*PdfObjectDictionary );if !_bga {_be .Log .Debug ("I\u006ev\u0061\u006c\u0069\u0064\u0020\u0043\u0046\u002c \u0074\u0079\u0070\u0065: \u0025\u0054",_ggce );return _bc .New ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0043\u0046");
+};for _ ,_gbfb :=range _egg .Keys (){_eega :=_egg .Get (_gbfb );if _dfc ,_cga :=_eega .(*PdfObjectReference );_cga {_fag ,_dfd :=_eaf ._fcb .LookupByReference (*_dfc );if _dfd !=nil {_be .Log .Debug ("\u0045\u0072ro\u0072\u0020\u006co\u006f\u006b\u0075\u0070 up\u0020di\u0063\u0074\u0069\u006f\u006e\u0061\u0072y \u0072\u0065\u0066\u0065\u0072\u0065\u006ec\u0065");
+return _dfd ;};_eega =TraceToDirectObject (_fag );};_afce ,_ebbf :=_eega .(*PdfObjectDictionary );if !_ebbf {return _ebc .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0064\u0069\u0063\u0074\u0020\u0069\u006e \u0043\u0046\u0020\u0028\u006e\u0061\u006d\u0065\u0020\u0025\u0073\u0029\u0020-\u0020\u006e\u006f\u0074\u0020\u0061\u0020\u0064\u0069\u0063\u0074\u0069on\u0061\u0072\u0079\u0020\u0062\u0075\u0074\u0020\u0025\u0054",_gbfb ,_eega );
+};if _gbfb =="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079"{_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u002d\u0020\u0043\u0061\u006e\u006e\u006f\u0074\u0020\u006f\u0076\u0065\u0072\u0077r\u0069\u0074\u0065\u0020\u0074\u0068\u0065\u0020\u0069d\u0065\u006e\u0074\u0069\u0074\u0079\u0020\u0066\u0069\u006c\u0074\u0065\u0072 \u002d\u0020\u0054\u0072\u0079\u0069n\u0067\u0020\u006ee\u0078\u0074");
+continue ;};var _fcbd _bb .FilterDict ;if _fdda :=_fbbc (&_fcbd ,_afce );_fdda !=nil {return _fdda ;};_gcea ,_aad :=_bb .NewFilter (_fcbd );if _aad !=nil {return _aad ;};_eaf ._fege [string (_gbfb )]=_gcea ;};_eaf ._fege ["\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079"]=_bb .NewIdentity ();
+_eaf ._fbf ="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079";if _cdcc ,_abbe :=_dbe .Get ("\u0053\u0074\u0072\u0046").(*PdfObjectName );_abbe {if _ ,_ffed :=_eaf ._fege [string (*_cdcc )];!_ffed {return _ebc .Errorf ("\u0063\u0072\u0079\u0070t\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0020\u0066o\u0072\u0020\u0053\u0074\u0072\u0046\u0020\u006e\u006f\u0074\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069e\u0064\u0020\u0069\u006e\u0020C\u0046\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079\u0020\u0028\u0025\u0073\u0029",*_cdcc );
+};_eaf ._fbf =string (*_cdcc );};_eaf ._abc ="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079";if _gca ,_cfd :=_dbe .Get ("\u0053\u0074\u006d\u0046").(*PdfObjectName );_cfd {if _ ,_fdeb :=_eaf ._fege [string (*_gca )];!_fdeb {return _ebc .Errorf ("\u0063\u0072\u0079\u0070t\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0020\u0066o\u0072\u0020\u0053\u0074\u006d\u0046\u0020\u006e\u006f\u0074\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069e\u0064\u0020\u0069\u006e\u0020C\u0046\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079\u0020\u0028\u0025\u0073\u0029",*_gca );
+};_eaf ._abc =string (*_gca );};return nil ;};const _gde =6;
+
+// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
+func (_bgdd *RawEncoder )MakeStreamDict ()*PdfObjectDictionary {return MakeDict ()};
+
+// IsEncrypted checks if the document is encrypted. A bool flag is returned indicating the result.
+// First time when called, will check if the Encrypt dictionary is accessible through the trailer dictionary.
+// If encrypted, prepares a crypt datastructure which can be used to authenticate and decrypt the document.
+// On failure, an error is returned.
+func (_dfed *PdfParser )IsEncrypted ()(bool ,error ){if _dfed ._aebd !=nil {return true ,nil ;}else if _dfed ._gdfce ==nil {return false ,nil ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0043\u0068\u0065c\u006b\u0069\u006e\u0067 \u0065\u006e\u0063\u0072\u0079\u0070\u0074i\u006f\u006e\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079\u0021");
+};_cfda :=_dfed ._gdfce .Get ("\u0045n\u0063\u0072\u0079\u0070\u0074");if _cfda ==nil {return false ,nil ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0049\u0073\u0020\u0065\u006e\u0063\u0072\u0079\u0070\u0074\u0065\u0064\u0021");
+};var (_eeaee *PdfObjectDictionary ;);switch _cabbd :=_cfda .(type ){case *PdfObjectDictionary :_eeaee =_cabbd ;case *PdfObjectReference :if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0030\u003a\u0020\u004c\u006f\u006f\u006b\u0020\u0075\u0070\u0020\u0072e\u0066\u0020\u0025\u0071",_cabbd );
+};_cedaa ,_fegcf :=_dfed .LookupByReference (*_cabbd );if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0031\u003a\u0020%\u0071",_cedaa );};if _fegcf !=nil {return false ,_fegcf ;};_dbccg ,_efacg :=_cedaa .(*PdfIndirectObject );if !_efacg {_be .Log .Debug ("E\u006e\u0063\u0072\u0079\u0070\u0074\u0069\u006f\u006e\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u006eo\u0074\u0020\u0061\u006e\u0020\u0069\u006e\u0064\u0069\u0072ec\u0074\u0020\u006fb\u006ae\u0063\u0074");
+return false ,_bc .New ("\u0074\u0079p\u0065\u0020\u0063h\u0065\u0063\u006b\u0020\u0065\u0072\u0072\u006f\u0072");};_dbgbe ,_efacg :=_dbccg .PdfObject .(*PdfObjectDictionary );_dfed ._gbfg =_dbccg ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0032\u003a\u0020%\u0071",_dbgbe );
+};if !_efacg {return false ,_bc .New ("\u0074\u0072a\u0069\u006c\u0065\u0072 \u0045\u006ec\u0072\u0079\u0070\u0074\u0020\u006f\u0062\u006ae\u0063\u0074\u0020\u006e\u006f\u006e\u0020\u0064\u0069\u0063\u0074\u0069o\u006e\u0061\u0072\u0079");};_eeaee =_dbgbe ;
+case *PdfObjectNull :_be .Log .Debug ("\u0045\u006e\u0063\u0072\u0079\u0070\u0074 \u0069\u0073\u0020a\u0020\u006e\u0075l\u006c\u0020o\u0062\u006a\u0065\u0063\u0074\u002e \u0046il\u0065\u0020\u0073\u0068\u006f\u0075\u006c\u0064\u0020\u006e\u006f\u0074\u0020\u0062\u0065\u0020\u0065\u006e\u0063\u0072\u0079\u0070\u0074\u0065\u0064\u002e");
+return false ,nil ;default:return false ,_ebc .Errorf ("u\u006es\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064 \u0074\u0079\u0070\u0065: \u0025\u0054",_cabbd );};_efbfg ,_gfcg :=PdfCryptNewDecrypt (_dfed ,_eeaee ,_dfed ._gdfce );if _gfcg !=nil {return false ,_gfcg ;
+};for _ ,_ccea :=range []string {"\u0045n\u0063\u0072\u0079\u0070\u0074"}{_ggggg :=_dfed ._gdfce .Get (PdfObjectName (_ccea ));if _ggggg ==nil {continue ;};switch _dbed :=_ggggg .(type ){case *PdfObjectReference :_efbfg ._aea [int (_dbed .ObjectNumber )]=struct{}{};
+case *PdfIndirectObject :_efbfg ._gef [_dbed ]=true ;_efbfg ._aea [int (_dbed .ObjectNumber )]=struct{}{};};};_dfed ._aebd =_efbfg ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0043\u0072\u0079\u0070\u0074\u0065\u0072\u0020\u006f\u0062\u006a\u0065c\u0074\u0020\u0025\u0062",_efbfg );
+};return true ,nil ;};
+
+// DecodeReader returns a reader that ASCIIHex-decodes from r. Whitespace is
+// skipped, pairs of hex digits become one output byte, and decoding stops
+// at the '>' EOD marker. An odd trailing digit before '>' is padded with
+// '0' to match DecodeBytes. An input that ends without '>' surfaces as
+// io.ErrUnexpectedEOF, matching DecodeBytes' error return for that case.
+func (_abfc *ASCIIHexEncoder )DecodeReader (r _g .Reader )_g .Reader {return &asciiHexReader {_fffd :_gddf (r )};};
+
+// GetFileOffset returns the current file offset, accounting for buffered position.
+func (_aegb *PdfParser )GetFileOffset ()int64 {return _aegb ._eece .GetFileOffset ()};
+
+// PdfCryptNewDecrypt makes the document crypt handler based on the encryption dictionary
+// and trailer dictionary. Returns an error on failure to process.
+func PdfCryptNewDecrypt (parser *PdfParser ,ed ,trailer *PdfObjectDictionary )(*PdfCrypt ,error ){_gcd :=&PdfCrypt {_gge :false ,_gef :make (map[PdfObject ]bool ),_bba :make (map[PdfObject ]bool ),_aea :make (map[int ]struct{}),_fcb :parser };_deb ,_affa :=ed .Get ("\u0046\u0069\u006c\u0074\u0065\u0072").(*PdfObjectName );
+if !_affa {_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0043\u0072\u0079\u0070\u0074 \u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061r\u0079 \u006d\u0069\u0073\u0073\u0069\u006e\u0067\u0020\u0072\u0065\u0071\u0075\u0069\u0072\u0065\u0064\u0020\u0046i\u006c\u0074\u0065\u0072\u0020\u0066\u0069\u0065\u006c\u0064\u0021");
+return _gcd ,_bc .New ("r\u0065\u0071\u0075\u0069\u0072\u0065d\u0020\u0063\u0072\u0079\u0070\u0074 \u0066\u0069\u0065\u006c\u0064\u0020\u0046i\u006c\u0074\u0065\u0072\u0020\u006d\u0069\u0073\u0073\u0069n\u0067");};if *_deb !="\u0053\u0074\u0061\u006e\u0064\u0061\u0072\u0064"{_be .Log .Debug ("\u0045\u0052R\u004f\u0052\u0020\u0055\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0020(%\u0073\u0029",*_deb );
+return _gcd ,_bc .New ("\u0075n\u0073u\u0070\u0070\u006f\u0072\u0074e\u0064\u0020F\u0069\u006c\u0074\u0065\u0072");};_gcd ._cbc .Filter =string (*_deb );if _cff ,_dac :=ed .Get ("\u0053u\u0062\u0046\u0069\u006c\u0074\u0065r").(*PdfObjectString );_dac {_gcd ._cbc .SubFilter =_cff .Str ();
+_be .Log .Debug ("\u0055s\u0069n\u0067\u0020\u0073\u0075\u0062f\u0069\u006ct\u0065\u0072\u0020\u0025\u0073",_cff );};if L ,_cfb :=ed .Get ("\u004c\u0065\u006e\u0067\u0074\u0068").(*PdfObjectInteger );_cfb {if (*L %8)!=0{_be .Log .Debug ("\u0045\u0052\u0052O\u0052\u0020\u0049\u006ev\u0061\u006c\u0069\u0064\u0020\u0065\u006ec\u0072\u0079\u0070\u0074\u0069\u006f\u006e\u0020\u006c\u0065\u006e\u0067\u0074\u0068");
+return _gcd ,_bc .New ("\u0069n\u0076\u0061\u006c\u0069d\u0020\u0065\u006e\u0063\u0072y\u0070t\u0069o\u006e\u0020\u006c\u0065\u006e\u0067\u0074h");};_gcd ._cbc .Length =int (*L );}else {_gcd ._cbc .Length =40;};_gcd ._cbc .V =0;if _dbec ,_acg :=ed .Get ("\u0056").(*PdfObjectInteger );
+_acg {V :=int (*_dbec );_gcd ._cbc .V =V ;if V >=1&&V <=2{_gcd ._fege =_acad (_gcd ._cbc .Length );}else if V >=4&&V <=5{if _aec :=_gcd .loadCryptFilters (ed );_aec !=nil {return _gcd ,_aec ;};}else {_be .Log .Debug ("E\u0052\u0052\u004f\u0052\u0020\u0055\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0065n\u0063\u0072\u0079\u0070\u0074\u0069\u006f\u006e\u0020\u0061lg\u006f\u0020\u0056 \u003d \u0025\u0064",V );
+return _gcd ,_bc .New ("u\u006e\u0073\u0075\u0070po\u0072t\u0065\u0064\u0020\u0061\u006cg\u006f\u0072\u0069\u0074\u0068\u006d");};};if _eaca :=_fgf (&_gcd ._eeae ,ed );_eaca !=nil {return _gcd ,_eaca ;};_gdc :="";if _gdbb ,_gfd :=trailer .Get ("\u0049\u0044").(*PdfObjectArray );
+_gfd &&_gdbb .Len ()>=1{_abac ,_fdg :=GetString (_gdbb .Get (0));if !_fdg {return _gcd ,_bc .New ("\u0069n\u0076a\u006c\u0069\u0064\u0020\u0074r\u0061\u0069l\u0065\u0072\u0020\u0049\u0044");};_gdc =_abac .Str ();}else {_be .Log .Debug ("\u0054\u0072ai\u006c\u0065\u0072 \u0049\u0044\u0020\u0061rra\u0079 m\u0069\u0073\u0073\u0069\u006e\u0067\u0020or\u0020\u0069\u006e\u0076\u0061\u006c\u0069d\u0021");
+};_gcd ._bf =_gdc ;return _gcd ,nil ;};
+
+// HasInvalidSeparationAfterXRef implements core.ParserMetadata interface.
+func (_bad ParserMetadata )HasInvalidSeparationAfterXRef ()bool {return _bad ._cde };func (_aaaef *PdfParser )seekToEOFMarker (_fdcd int64 )error {var _ceee int64 ;var _ecea int64 =2048;for _ceee < _fdcd -4{if _fdcd <=(_ecea +_ceee ){_ecea =_fdcd -_ceee ;
+};_ ,_edgd :=_aaaef ._eece .Seek (_fdcd -_ceee -_ecea ,_g .SeekStart );if _edgd !=nil {return _edgd ;};_acffa :=make ([]byte ,_ecea );_aaaef ._eece .Read (_acffa );if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004c\u006f\u006f\u006bi\u006e\u0067\u0020\u0066\u006f\u0072\u0020\u0045\u004f\u0046 \u006da\u0072\u006b\u0065\u0072\u003a\u0020\u0022%\u0073\u0022",string (_acffa ));
+};_fegc :=_dbbg .FindAllStringIndex (string (_acffa ),-1);if _fegc !=nil {_fgeb :=_fegc [len (_fegc )-1];if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0049\u006e\u0064\u003a\u0020\u0025\u0020\u0064",_fegc );};_bfdg :=_fdcd -_ceee -_ecea +int64 (_fgeb [0]);
+_aaaef ._eece .Seek (_bfdg ,_g .SeekStart );return nil ;};_be .Log .Debug ("\u0057\u0061\u0072\u006e\u0069\u006eg\u003a\u0020\u0045\u004f\u0046\u0020\u006d\u0061\u0072\u006b\u0065\u0072\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075n\u0064\u0021\u0020\u002d\u0020\u0063\u006f\u006e\u0074\u0069\u006e\u0075\u0065\u0020s\u0065e\u006b\u0069\u006e\u0067");
+_ceee +=_ecea -4;};_be .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u003a\u0020\u0045\u004f\u0046\u0020\u006d\u0061\u0072\u006be\u0072 \u0077\u0061\u0073\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064\u002e");return _fffda ;};
+
+// GetBool returns the *PdfObjectBool object that is represented by a PdfObject directly or indirectly
+// within an indirect object. The bool flag indicates whether a match was found.
+func GetBool (obj PdfObject )(_dddgd *PdfObjectBool ,_bgfg bool ){_dddgd ,_bgfg =TraceToDirectObject (obj ).(*PdfObjectBool );return _dddgd ,_bgfg ;};
+
+// HeaderCommentBytes gets the header comment bytes.
+func (_beddg ParserMetadata )HeaderCommentBytes ()[4]byte {return _beddg ._dccdb };
 
 // MakeDecodeParams makes a new instance of an encoding dictionary based on
 // the current encoder settings.
-func (_cdcg *LZWEncoder )MakeDecodeParams ()PdfObject {if _cdcg .Predictor > 1{_cdee :=MakeDict ();_cdee .Set ("\u0050r\u0065\u0064\u0069\u0063\u0074\u006fr",MakeInteger (int64 (_cdcg .Predictor )));if _cdcg .BitsPerComponent !=8{_cdee .Set ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074",MakeInteger (int64 (_cdcg .BitsPerComponent )));
-};if _cdcg .Columns !=1{_cdee .Set ("\u0043o\u006c\u0075\u006d\u006e\u0073",MakeInteger (int64 (_cdcg .Columns )));};if _cdcg .Colors !=1{_cdee .Set ("\u0043\u006f\u006c\u006f\u0072\u0073",MakeInteger (int64 (_cdcg .Colors )));};return _cdee ;};return nil ;
-};
+func (_ddcgf *MultiEncoder )MakeDecodeParams ()PdfObject {if len (_ddcgf ._dfbf )==0{return nil ;};if len (_ddcgf ._dfbf )==1{return _ddcgf ._dfbf [0].MakeDecodeParams ();};_fbce :=MakeArray ();_cgfe :=true ;for _ ,_bbcc :=range _ddcgf ._dfbf {_fdgd :=_bbcc .MakeDecodeParams ();
+if _fdgd ==nil {_fbce .Append (MakeNull ());}else {_cgfe =false ;_fbce .Append (_fdgd );};};if _cgfe {return nil ;};return _fbce ;};
 
-// DecodeStream decodes a FlateEncoded stream object and give back decoded bytes.
-func (_agga *FlateEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0046l\u0061t\u0065\u0044\u0065\u0063\u006fd\u0065\u0020s\u0074\u0072\u0065\u0061\u006d");};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0050\u0072\u0065\u0064\u0069\u0063\u0074\u006f\u0072\u003a\u0020\u0025\u0064",_agga .Predictor );
-};if _agga .BitsPerComponent !=8{return nil ,_ee .Errorf ("\u0069\u006ev\u0061\u006c\u0069\u0064\u0020\u0042\u0069\u0074\u0073\u0050\u0065\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u003d\u0025\u0064\u0020\u0028\u006f\u006e\u006c\u0079\u0020\u0038\u0020\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0029",_agga .BitsPerComponent );
-};_dabb ,_ddgg :=_agga .DecodeBytes (streamObj .Stream );if _ddgg !=nil {return nil ,_ddgg ;};_dabb ,_ddgg =_agga .postDecodePredict (_dabb );if _ddgg !=nil {return nil ,_ddgg ;};return _dabb ,nil ;};var _facc =_fe .MustCompile ("\u005e\u005b\\\u002b\u002d\u002e\u005d*\u0028\u005b0\u002d\u0039\u002e\u005d\u002b\u0029\u005b\u0065E\u005d\u005b\u005c\u002b\u002d\u002e\u005d\u002a\u0028\u005b\u0030\u002d9\u002e\u005d\u002b\u0029");
+// DecodeBytes decodes a slice of JBIG2 encoded bytes and returns the results.
+func (_ggbc *JBIG2Encoder )DecodeBytes (encoded []byte )([]byte ,error ){return _ggf .DecodeBytes (encoded ,_ea .Parameters {},_ggbc .Globals );};type emptyReader struct{};
 
+// JBIG2Image is the image structure used by the jbig2 encoder. Its Data must be in a
+// 1 bit per component and 1 component per pixel (1bpp). In order to create binary image
+// use GoImageToJBIG2 function. If the image data contains the row bytes padding set the HasPadding to true.
+type JBIG2Image struct{
 
-// ToInt64Slice returns a slice of all array elements as an int64 slice. An error is returned if the
-// array non-integer objects. Each element can only be PdfObjectInteger.
-func (_fbedb *PdfObjectArray )ToInt64Slice ()([]int64 ,error ){var _gfeca []int64 ;for _ ,_abaag :=range _fbedb .Elements (){if _feea ,_abec :=_abaag .(*PdfObjectInteger );_abec {_gfeca =append (_gfeca ,int64 (*_feea ));}else {return nil ,ErrTypeError ;
-};};return _gfeca ,nil ;};
+// Width and Height defines the image boundaries.
+Width ,Height int ;
 
-// MakeEncodedString creates a PdfObjectString with encoded content, which can be either
-// UTF-16BE or PDFDocEncoding depending on whether `utf16BE` is true or false respectively.
-func MakeEncodedString (s string ,utf16BE bool )*PdfObjectString {if utf16BE {var _fgdbaa _f .Buffer ;_fgdbaa .Write ([]byte {0xFE,0xFF});_fgdbaa .WriteString (_cef .StringToUTF16 (s ));return &PdfObjectString {_fadd :_fgdbaa .String (),_gfedc :true };
-};return &PdfObjectString {_fadd :string (_cef .StringToPDFDocEncoding (s )),_gfedc :false };};func _agb (_cdb int )cryptFilters {return cryptFilters {_fcab :_bff .NewFilterV2 (_cdb )}};func (_beg *PdfCrypt )isDecrypted (_gee PdfObject )bool {_ ,_bgb :=_beg ._aae [_gee ];
-if _bgb {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0041\u006c\u0072\u0065\u0061\u0064\u0079\u0020\u0064\u0065\u0063\u0072y\u0070\u0074\u0065\u0064");};return true ;};switch _dfcf :=_gee .(type ){case *PdfObjectStream :if _beg ._dfb .R !=5{if _effa ,_cgec :=_dfcf .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );
-_cgec &&*_effa =="\u0058\u0052\u0065\u0066"{return true ;};};case *PdfIndirectObject :if _ ,_bgb =_beg ._afea [int (_dfcf .ObjectNumber )];_bgb {return true ;};switch _bca :=_dfcf .PdfObject .(type ){case *PdfObjectDictionary :_faa :=true ;for _ ,_fbed :=range _dfbd {if _bca .Get (_fbed )==nil {_faa =false ;
-break ;};};if _faa {return true ;};};};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004e\u006f\u0074\u0020\u0064\u0065\u0063\u0072\u0079\u0070\u0074\u0065d\u0020\u0079\u0065\u0074");};return false ;};
+// Data is the byte slice data for the input image
+Data []byte ;
 
-// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
-func (_bage *MultiEncoder )MakeStreamDict ()*PdfObjectDictionary {_gfgg :=MakeDict ();_gfgg .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",_bage .GetFilterArray ());for _ ,_dcaa :=range _bage ._gdgb {_afef :=_dcaa .MakeStreamDict ();for _ ,_agcd :=range _afef .Keys (){_geaf :=_afef .Get (_agcd );
-if _agcd !="\u0046\u0069\u006c\u0074\u0065\u0072"&&_agcd !="D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073"{_gfgg .Set (_agcd ,_geaf );};};};_baeg :=_bage .MakeDecodeParams ();if _baeg !=nil {_gfgg .Set ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073",_baeg );
-};return _gfgg ;};
-
-// Close closes the bufferedReadSeeker.
-func (_gfg *bufferedReadSeeker )Close ()error {if _fc ,_fdgc :=_gfg ._dbe .(_ce .Closer );_fdgc {return _fc .Close ();};return nil ;};
+// HasPadding is the attribute that defines if the last byte of the data in the row contains
+// 0 bits padding.
+HasPadding bool ;};var _cefd =_c .MustCompile ("\u005c\u0073\u002a\u0078\u0072\u0065\u0066\u005c\u0073\u002a");
 
 // MakeArray creates an PdfObjectArray from a list of PdfObjects.
-func MakeArray (objects ...PdfObject )*PdfObjectArray {return &PdfObjectArray {_bgegc :objects }};
+func MakeArray (objects ...PdfObject )*PdfObjectArray {return &PdfObjectArray {_dccdc :objects }};
 
-// ParserMetadata is the parser based metadata information about document.
-// The data here could be used on document verification.
-type ParserMetadata struct{_bfbg int ;_bac bool ;_ddea [4]byte ;_gda bool ;_dfca bool ;_bbbf bool ;_gbacd bool ;_ddef bool ;_cfdb bool ;};
+// EncodeBytes encodes data into ASCII85 encoded format.
+func (_ggee *ASCII85Encoder )EncodeBytes (data []byte )([]byte ,error ){var _beb _ad .Buffer ;for _cebg :=0;_cebg < len (data );_cebg +=4{_abba :=data [_cebg ];_aeag :=1;_cdad :=byte (0);if _cebg +1< len (data ){_cdad =data [_cebg +1];_aeag ++;};_acef :=byte (0);
+if _cebg +2< len (data ){_acef =data [_cebg +2];_aeag ++;};_cfed :=byte (0);if _cebg +3< len (data ){_cfed =data [_cebg +3];_aeag ++;};_dfec :=(uint32 (_abba )<<24)|(uint32 (_cdad )<<16)|(uint32 (_acef )<<8)|uint32 (_cfed );if _dfec ==0{_beb .WriteByte ('z');
+}else {_gdgg :=_ggee .base256Tobase85 (_dfec );for _ ,_geg :=range _gdgg [:_aeag +1]{_beb .WriteByte (_geg +'!');};};};_beb .WriteString ("\u007e\u003e");return _beb .Bytes (),nil ;};
 
-// AddEncoder adds the passed in encoder to the underlying encoder slice.
-func (_fbac *MultiEncoder )AddEncoder (encoder StreamEncoder ){_fbac ._gdgb =append (_fbac ._gdgb ,encoder );};
+// Seek sets the offset for the next Read to offset, interpreted according to whence:
+// 0 means relative to the start of the file,
+// 1 means relative to the current offset, and 2 means relative to the end.
+func (_dff *bufferedReadSeeker )Seek (offset int64 ,whence int )(int64 ,error ){_eg ,_aaf :=_dff ._eac .Seek (offset ,whence );if _aaf !=nil {return _eg ,_aaf ;};_dff ._df =_ecd .NewReader (_dff ._eac );return _eg ,nil ;};
 
-// HasOddLengthHexStrings checks if the document has odd length hexadecimal strings.
-func (_cecd ParserMetadata )HasOddLengthHexStrings ()bool {return _cecd ._dfca };
+// ASCII85Encoder implements ASCII85 encoder/decoder.
+type ASCII85Encoder struct{};
+
+// GetXrefOffset returns the offset of the xref table.
+func (_aaeab *PdfParser )GetXrefOffset ()int64 {return _aaeab ._gggf };func (_afgb errorReader )Read ([]byte )(int ,error ){return 0,_afgb ._cabe };
+
+// FlateEncoder represents Flate encoding.
+type FlateEncoder struct{Predictor int ;BitsPerComponent int ;
+
+// For predictors
+Columns int ;Rows int ;Colors int ;_dgcb *_bg .ImageBase ;};
+
+// GetRevision returns PdfParser for the specific version of the Pdf document.
+func (_geeb *PdfParser )GetRevision (revisionNumber int )(*PdfParser ,error ){_gcdg :=_geeb ._fcaf ;if _gcdg ==revisionNumber {return _geeb ,nil ;};if _gcdg < revisionNumber {return nil ,_bc .New ("\u0075\u006e\u0064\u0065\u0066\u0069\u006e\u0065\u0064\u0020\u0072\u0065\u0076\u0069\u0073i\u006fn\u004e\u0075\u006d\u0062\u0065\u0072\u0020\u0076\u0065\u0072\u0073\u0069\u006f\u006e");
+};if _geeb ._bbcfb [revisionNumber ]!=nil {return _geeb ._bbcfb [revisionNumber ],nil ;};_bbccg :=_geeb ;for ;_gcdg > revisionNumber ;_gcdg --{_defg ,_cfbbe :=_bbccg .GetPreviousRevisionParser ();if _cfbbe !=nil {return nil ,_cfbbe ;};_geeb ._bbcfb [_gcdg -1]=_defg ;
+_geeb ._ceggf [_bbccg ]=_defg ;_bbccg =_defg ;};return _bbccg ,nil ;};
+
+// JPXEncoder implements JPX encoder/decoder (dummy, for now)
+// FIXME: implement
+type JPXEncoder struct{};var _dbbg =_c .MustCompile ("\u0025\u0025\u0045\u004f\u0046\u003f");func (_cbag *PdfParser )readComment ()(string ,error ){var _bfbe _ad .Buffer ;_ ,_baadb :=_cbag .skipSpaces ();if _baadb !=nil {return _bfbe .String (),_baadb ;
+};_dafg :=true ;for {_bdcf ,_acefc :=_cbag ._eece .Peek (1);if _acefc !=nil {_be .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u0020\u0025\u0073",_acefc .Error ());return _bfbe .String (),_acefc ;};if _dafg &&_bdcf [0]!='%'{return _bfbe .String (),_bc .New ("c\u006f\u006d\u006d\u0065\u006e\u0074 \u0073\u0068\u006f\u0075\u006c\u0064\u0020\u0073\u0074a\u0072\u0074\u0020w\u0069t\u0068\u0020\u0025");
+};_dafg =false ;if (_bdcf [0]!='\r')&&(_bdcf [0]!='\n'){_ecaa ,_ :=_cbag ._eece .ReadByte ();_bfbe .WriteByte (_ecaa );}else {break ;};};return _bfbe .String (),nil ;};
+
+// ParserMetadata gets the pdf parser metadata.
+func (_faae *PdfParser )ParserMetadata ()(ParserMetadata ,error ){if !_faae ._dbdc {return ParserMetadata {},_ebc .Errorf ("\u0070\u0061\u0072\u0073\u0065r\u0020\u0077\u0061\u0073\u0020\u006e\u006f\u0074\u0020\u006d\u0061\u0072\u006be\u0064\u0020\u0066\u006f\u0072\u0020\u0067\u0065\u0074\u0074\u0069\u006e\u0067\u0020\u0064\u0065\u0074\u0061\u0069\u006c\u0065\u0064\u0020\u006d\u0065\u0074\u0061\u0064\u0061\u0074a");
+};return _faae ._deaa ,nil ;};func (_agg *PdfCrypt )isEncrypted (_faad PdfObject )bool {_ ,_fcf :=_agg ._bba [_faad ];if _fcf {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0041\u006c\u0072\u0065\u0061\u0064\u0079\u0020\u0065\u006e\u0063\u0072y\u0070\u0074\u0065\u0064");
+};return true ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004e\u006f\u0074\u0020\u0065\u006e\u0063\u0072\u0079\u0070\u0074\u0065d\u0020\u0079\u0065\u0074");};return false ;};func _gggb (_aaafb _g .ReadSeeker ,_eacef int64 )(*limitedReadSeeker ,error ){_ ,_edae :=_aaafb .Seek (0,_g .SeekStart );
+if _edae !=nil {return nil ,_edae ;};return &limitedReadSeeker {_dcdd :_aaafb ,_gacb :_eacef },nil ;};
+
+// String returns a string describing `array`.
+func (_aedc *PdfObjectArray )String ()string {_bbbf :="\u005b";for _agaef ,_agcgf :=range _aedc .Elements (){_bbbf +=_agcgf .String ();if _agaef < (_aedc .Len ()-1){_bbbf +="\u002c\u0020";};};_bbbf +="\u005d";return _bbbf ;};type objectCache map[int ]PdfObject ;
+func _fcgea (_fgfb PdfObject )(*float64 ,error ){switch _afdg :=_fgfb .(type ){case *PdfObjectFloat :_faffb :=float64 (*_afdg );return &_faffb ,nil ;case *PdfObjectInteger :_aaee :=float64 (*_afdg );return &_aaee ,nil ;case *PdfObjectNull :return nil ,nil ;
+};return nil ,ErrNotANumber ;};func (_gec *PdfCrypt )authenticate (_aab []byte )(bool ,error ){_gec ._gge =false ;_fgec :=_gec .securityHandler ();_dcg ,_cdg ,_ffdb :=_fgec .Authenticate (&_gec ._eeae ,_aab );if _ffdb !=nil {return false ,_ffdb ;}else if _cdg ==0||len (_dcg )==0{return false ,nil ;
+};_gec ._gge =true ;_gec ._gdf =_dcg ;return true ,nil ;};
+
+// CCITTFaxEncoder implements Group3 and Group4 facsimile (fax) encoder/decoder.
+type CCITTFaxEncoder struct{K int ;EndOfLine bool ;EncodedByteAlign bool ;Columns int ;Rows int ;EndOfBlock bool ;BlackIs1 bool ;DamagedRowsBeforeError int ;};
+
+// GoImageToJBIG2 creates a binary image on the base of 'i' golang image.Image.
+// If the image is not a black/white image then the function converts provided input into
+// JBIG2Image with 1bpp. For non grayscale images the function performs the conversion to the grayscale temp image.
+// Then it checks the value of the gray image value if it's within bounds of the black white threshold.
+// This 'bwThreshold' value should be in range (0.0, 1.0). The threshold checks if the grayscale pixel (uint) value
+// is greater or smaller than 'bwThreshold' * 255. Pixels inside the range will be white, and the others will be black.
+// If the 'bwThreshold' is equal to -1.0 - JB2ImageAutoThreshold then it's value would be set on the base of
+// it's histogram using Triangle method. For more information go to:
+//
+//	https://www.mathworks.com/matlabcentral/fileexchange/28047-gray-image-thresholding-using-the-triangle-method
+func GoImageToJBIG2 (i _ed .Image ,bwThreshold float64 )(*JBIG2Image ,error ){const _fgdae ="\u0047\u006f\u0049\u006d\u0061\u0067\u0065\u0054\u006fJ\u0042\u0049\u0047\u0032";if i ==nil {return nil ,_fb .Error (_fgdae ,"i\u006d\u0061\u0067\u0065 '\u0069'\u0020\u006e\u006f\u0074\u0020d\u0065\u0066\u0069\u006e\u0065\u0064");
+};var (_cbggf uint8 ;_dead _bg .Image ;_ddcb error ;);if bwThreshold ==JB2ImageAutoThreshold {_dead ,_ddcb =_bg .MonochromeConverter .Convert (i );}else if bwThreshold > 1.0||bwThreshold < 0.0{return nil ,_fb .Error (_fgdae ,"p\u0072\u006f\u0076\u0069\u0064\u0065\u0064\u0020\u0074h\u0072\u0065\u0073\u0068\u006f\u006c\u0064 i\u0073\u0020\u006e\u006ft\u0020\u0069\u006e\u0020\u0061\u0020\u0072\u0061\u006ege\u0020\u007b0\u002e\u0030\u002c\u0020\u0031\u002e\u0030\u007d");
+}else {_cbggf =uint8 (255*bwThreshold );_dead ,_ddcb =_bg .MonochromeThresholdConverter (_cbggf ).Convert (i );};if _ddcb !=nil {return nil ,_ddcb ;};return _ffee (_dead ),nil ;};
+
+// GetXrefTable returns the PDFs xref table.
+func (_dedda *PdfParser )GetXrefTable ()XrefTable {return _dedda ._dggd };
+
+// Keys returns the list of keys in the dictionary.
+// If `d` is nil returns a nil slice.
+func (_fcaac *PdfObjectDictionary )Keys ()[]PdfObjectName {if _fcaac ==nil {return nil ;};_fcaac ._egfe .RLock ();defer _fcaac ._egfe .RUnlock ();_bgec :=make ([]PdfObjectName ,len (_fcaac ._gaga ));copy (_bgec ,_fcaac ._gaga );return _bgec ;};
+
+// GetFilterName returns the name of the encoding filter.
+func (_ffce *RawEncoder )GetFilterName ()string {return StreamEncodingFilterNameRaw };
+
+// UpdateParams updates the parameter values of the encoder.
+func (_feb *JPXEncoder )UpdateParams (params *PdfObjectDictionary ){};func (_fda *PdfCrypt )saveCryptFilters (_gbfbf *PdfObjectDictionary )error {if _fda ._cbc .V < 4{return _bc .New ("\u0063\u0061\u006e\u0020\u006f\u006e\u006c\u0079\u0020\u0062\u0065 \u0075\u0073\u0065\u0064\u0020\u0077\u0069\u0074\u0068\u0020V\u003e\u003d\u0034");
+};_aef :=MakeDict ();_gbfbf .Set ("\u0043\u0046",_aef );for _efc ,_ageb :=range _fda ._fege {if _efc =="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079"{continue ;};_efca :=_bce (_ageb ,"");_aef .Set (PdfObjectName (_efc ),_efca );};_gbfbf .Set ("\u0053\u0074\u0072\u0046",MakeName (_fda ._fbf ));
+_gbfbf .Set ("\u0053\u0074\u006d\u0046",MakeName (_fda ._abc ));return nil ;};
+
+// Bytes returns the PdfObjectString content as a []byte array.
+func (_cgacd *PdfObjectString )Bytes ()[]byte {return []byte (_cgacd ._babb )};
+
+// SetFileOffset sets the file to an offset position and resets buffer.
+func (_fdbce *PdfParser )SetFileOffset (offset int64 ){_fdbce ._eece .SetFileOffset (offset )};
+
+// EncodeBytes ASCII encodes the passed in slice of bytes.
+func (_ebed *ASCIIHexEncoder )EncodeBytes (data []byte )([]byte ,error ){var _cbe _ad .Buffer ;for _ ,_cecbg :=range data {_cbe .WriteString (_ebc .Sprintf ("\u0025\u002e\u0032X\u0020",_cecbg ));};_cbe .WriteByte ('>');return _cbe .Bytes (),nil ;};
+
+// DecodeStream decodes a JPX encoded stream and returns the result as a
+// slice of bytes.
+func (_cbdf *JPXEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){_be .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u003a\u0020\u0041t\u0074\u0065\u006dpt\u0069\u006e\u0067\u0020\u0074\u006f \u0075\u0073\u0065\u0020\u0075\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064 \u0065\u006e\u0063\u006f\u0064\u0069\u006e\u0067 \u0025\u0073",_cbdf .GetFilterName ());
+return streamObj .Stream ,ErrNoJPXDecode ;};func (_dcdfc *PdfParser )parseName ()(PdfObjectName ,error ){_bbcg :=_bae ();defer _ac (_bbcg );_eegdd :=false ;for {_ggcgf ,_cedf :=_dcdfc ._eece .Peek (1);if _cedf ==_g .EOF {break ;};if _cedf !=nil {return PdfObjectName (_bbcg .String ()),_cedf ;
+};if !_eegdd {switch _ggcgf [0]{case '/':_eegdd =true ;_dcdfc ._eece .ReadByte ();case '%':_dcdfc .readComment ();_dcdfc .skipSpaces ();default:_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020N\u0061\u006d\u0065\u0020\u0073\u0074\u0061\u0072\u0074\u0069\u006e\u0067\u0020w\u0069\u0074\u0068\u0020\u0025\u0073\u0020(\u0025\u0020\u0078\u0029",_ggcgf ,_ggcgf );
+return PdfObjectName (_bbcg .String ()),_ebc .Errorf ("\u0069n\u0076a\u006c\u0069\u0064\u0020\u006ea\u006d\u0065:\u0020\u0028\u0025\u0063\u0029",_ggcgf [0]);};}else {if IsWhiteSpace (_ggcgf [0]){break ;}else if (_ggcgf [0]=='/')||(_ggcgf [0]=='[')||(_ggcgf [0]=='(')||(_ggcgf [0]==']')||(_ggcgf [0]=='<')||(_ggcgf [0]=='>'){break ;
+}else if _ggcgf [0]=='#'{_bdfe ,_ccfad :=_dcdfc ._eece .Peek (3);if _ccfad !=nil {return PdfObjectName (_bbcg .String ()),_ccfad ;};var _ffbc [1]byte ;_ ,_ccfad =_ee .Decode (_ffbc [:],_bdfe [1:3]);if _ccfad !=nil {_be .Log .Debug ("\u0045\u0052\u0052\u004fR\u003a\u0020\u0049\u006ev\u0061\u006c\u0069d\u0020\u0068\u0065\u0078\u0020\u0066o\u006c\u006co\u0077\u0069\u006e\u0067 \u0027\u0023\u0027\u002c \u0063\u006f\u006e\u0074\u0069n\u0075\u0069\u006e\u0067\u0020\u0075\u0073i\u006e\u0067\u0020\u006c\u0069t\u0065\u0072\u0061\u006c\u0020\u002d\u0020\u004f\u0075t\u0070\u0075\u0074\u0020\u006d\u0061\u0079\u0020\u0062\u0065\u0020\u0069\u006e\u0063\u006f\u0072\u0072\u0065\u0063\u0074");
+_bbcg .WriteByte ('#');_dcdfc ._eece .Discard (1);continue ;};_dcdfc ._eece .Discard (3);_bbcg .WriteByte (_ffbc [0]);}else {_gacd ,_ :=_dcdfc ._eece .ReadByte ();_bbcg .WriteByte (_gacd );};};};return PdfObjectName (_bbcg .String ()),nil ;};
+
+// LookupByNumber looks up a PdfObject by object number.  Returns an error on failure.
+func (_eda *PdfParser )LookupByNumber (objNumber int )(PdfObject ,error ){_bed ,_ ,_def :=_eda .lookupByNumberWrapper (objNumber ,true );return _bed ,_def ;};
+
+// NewParserWithOpts creates and initializes a new PdfParser using the provided options.
+// It creates a parser that tolerates certain non-critical PDF errors.
+// Returns a PdfParser or an error if initialization fails.
+func NewParserWithOpts (rs _g .ReadSeeker ,opts ParserOpts )(*PdfParser ,error ){_fade :=&PdfParser {_eece :_fee (rs ),ObjCache :make (objectCache ),_cacd :map[int64 ]bool {},_bceb :make ([]int64 ,0),_ceggf :make (map[*PdfParser ]*PdfParser ),Opts :&opts };
+_bdee :=_fade .initParser ();if _bdee !=nil {return nil ,_bdee ;};return _fade ,nil ;};
+
+// Version represents a version of a PDF standard.
+type Version struct{Major int ;Minor int ;};
+
+// PdfObjectNull represents the primitive PDF null object.
+type PdfObjectNull struct{};func (_gffc *PdfParser )getNumbersOfUpdatedObjects (_gdcc *PdfParser )([]int ,error ){if _gdcc ==nil {return nil ,_bc .New ("\u0070\u0072e\u0076\u0069\u006f\u0075\u0073\u0020\u0070\u0061\u0072\u0073\u0065\u0072\u0020\u0063\u0061\u006e\u0027\u0074\u0020\u0062\u0065\u0020nu\u006c\u006c");
+};_afcff :=_gdcc ._fafe ;_gdffa :=make ([]int ,0);_gfcc :=make (map[int ]interface{});_daage :=make (map[int ]int64 );for _bfef ,_eebed :=range _gffc ._dggd .ObjectMap {if _eebed .Offset ==0{if _eebed .OsObjNumber !=0{if _gdaf ,_gegeb :=_gffc ._dggd .ObjectMap [_eebed .OsObjNumber ];
+_gegeb {_gfcc [_eebed .OsObjNumber ]=struct{}{};_daage [_bfef ]=_gdaf .Offset ;}else {return nil ,_bc .New ("u\u006ed\u0065\u0066\u0069\u006e\u0065\u0064\u0020\u0078r\u0065\u0066\u0020\u0074ab\u006c\u0065");};};}else {_daage [_bfef ]=_eebed .Offset ;};
+};for _aedb ,_bfgb :=range _daage {if _ ,_dbcf :=_gfcc [_aedb ];_dbcf {continue ;};if _bfgb > _afcff {_gdffa =append (_gdffa ,_aedb );};};return _gdffa ,nil ;};func (_ega *PdfCrypt )generateParams (_daadc ,_bbaa []byte )error {_ggbg :=_ega .securityHandler ();
+_eeca ,_bfde :=_ggbg .GenerateParams (&_ega ._eeae ,_bbaa ,_daadc );if _bfde !=nil {return _bfde ;};_ega ._gdf =_eeca ;return nil ;};
+
+// MultiEncoder supports serial encoding.
+type MultiEncoder struct{_dfbf []StreamEncoder };func (_bcga *PdfParser )seekPdfVersionTopDown ()(int ,int ,error ){_bcga ._eece .Seek (0,_g .SeekStart );_cbgef :=20;_ebbbe :=make ([]byte ,_cbgef );for {_bggf ,_efge :=_bcga ._eece .ReadByte ();if _efge !=nil {if _efge ==_g .EOF {break ;
+}else {return 0,0,_efge ;};};if IsDecimalDigit (_bggf )&&_ebbbe [_cbgef -1]=='.'&&IsDecimalDigit (_ebbbe [_cbgef -2])&&_ebbbe [_cbgef -3]=='-'&&_ebbbe [_cbgef -4]=='F'&&_ebbbe [_cbgef -5]=='D'&&_ebbbe [_cbgef -6]=='P'{_dgge :=int (_ebbbe [_cbgef -2]-'0');
+_eeace :=int (_bggf -'0');return _dgge ,_eeace ,nil ;};_ebbbe =append (_ebbbe [1:_cbgef ],_bggf );};return 0,0,_bc .New ("\u0076\u0065\u0072\u0073\u0069\u006f\u006e\u0020\u006e\u006f\u0074\u0020f\u006f\u0075\u006e\u0064");};
+
+// AcquireBytes returns a []byte with cap at least size, drawn from a pooled
+// size-class bucket. The returned slice has len == size. If size exceeds the
+// largest bucket, a plain make([]byte, size) is returned instead; that buffer
+// is still safe to pass to ReleaseBytes (it is dropped because its cap does
+// not match a bucket). If size <= 0, returns nil.
+func AcquireBytes (size int )[]byte {if size <=0{return nil ;};_adf :=_gbc (size );if _adf < 0{return make ([]byte ,size );};_ccf :=_feg [_adf ].Get ().(*[]byte );return (*_ccf )[:size ];};
+
+// PdfCryptNewEncrypt makes the document crypt handler based on a specified crypt filter.
+func PdfCryptNewEncrypt (cf _bb .Filter ,userPass ,ownerPass []byte ,perm _ce .Permissions )(*PdfCrypt ,*EncryptInfo ,error ){_agb :=&PdfCrypt {_bba :make (map[PdfObject ]bool ),_fege :make (cryptFilters ),_eeae :_ce .StdEncryptDict {P :perm ,EncryptMetadata :true }};
+var _gce Version ;if cf !=nil {_dccc :=cf .PDFVersion ();_gce .Major ,_gce .Minor =_dccc [0],_dccc [1];V ,R :=cf .HandlerVersion ();_agb ._cbc .V =V ;_agb ._eeae .R =R ;_agb ._cbc .Length =cf .KeyLength ()*8;};const (_cg =_ede ;);_agb ._fege [_cg ]=cf ;
+if _agb ._cbc .V >=4{_agb ._abc =_cg ;_agb ._fbf =_cg ;};_dcf :=_agb .newEncryptDict ();_cfa :=_cag .Sum ([]byte (_fe .Now ().Format (_fe .RFC850 )));_dd :=string (_cfa [:]);_egc :=make ([]byte ,100);_ba .Read (_egc );_cfa =_cag .Sum (_egc );_cdb :=string (_cfa [:]);
+if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0052\u0061\u006e\u0064\u006f\u006d\u0020\u0062\u003a\u0020\u0025\u0020\u0078",_egc );};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0047\u0065\u006e\u0020\u0049\u0064\u0020\u0030\u003a\u0020\u0025\u0020\u0078",_dd );
+};_agb ._bf =_dd ;_gbdc :=_agb .generateParams (userPass ,ownerPass );if _gbdc !=nil {return nil ,nil ,_gbdc ;};_ccg (&_agb ._eeae ,_dcf );if _agb ._cbc .V >=4{if _fde :=_agb .saveCryptFilters (_dcf );_fde !=nil {return nil ,nil ,_fde ;};};return _agb ,&EncryptInfo {Version :_gce ,Encrypt :_dcf ,ID0 :_dd ,ID1 :_cdb },nil ;
+};
+
+// MakeString creates an PdfObjectString from a string.
+// NOTE: PDF does not use utf-8 string encoding like Go so `s` will often not be a utf-8 encoded
+// string.
+func MakeString (s string )*PdfObjectString {_ccgd :=PdfObjectString {_babb :s };return &_ccgd };func _eaac (_gcge string )(PdfObjectReference ,error ){_eeeb :=PdfObjectReference {};_dacdf :=_ecaf .FindStringSubmatch (_gcge );if len (_dacdf )< 3{_be .Log .Debug ("\u0045\u0072\u0072or\u0020\u0070\u0061\u0072\u0073\u0069\u006e\u0067\u0020\u0072\u0065\u0066\u0065\u0072\u0065\u006e\u0063\u0065");
+return _eeeb ,_bc .New ("\u0075n\u0061\u0062\u006c\u0065 \u0074\u006f\u0020\u0070\u0061r\u0073e\u0020r\u0065\u0066\u0065\u0072\u0065\u006e\u0063e");};_decdf ,_ :=_d .Atoi (_dacdf [1]);_bfcc ,_ :=_d .Atoi (_dacdf [2]);_eeeb .ObjectNumber =int64 (_decdf );
+_eeeb .GenerationNumber =int64 (_bfcc );return _eeeb ,nil ;};
+
+// DecodeStream decodes RunLengthEncoded stream object and give back decoded bytes.
+func (_daf *RunLengthEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return _daf .DecodeBytes (streamObj .Stream );};
+
+// DecodeReader returns a reader that RunLength-decodes from r. A length byte
+// in [0,127] introduces length+1 literal bytes; a length byte in [129,255]
+// repeats the next byte 257-length times; a length byte of 128 marks EOD.
+func (_gbcf *RunLengthEncoder )DecodeReader (r _g .Reader )_g .Reader {return &runLengthReader {_afd :_gddf (r )};};func (_ggg *PdfParser )parseDetailedHeader ()(_bcab error ){_ggg ._eece .Seek (0,_g .SeekStart );_cfc :=20;_bfdb :=make ([]byte ,_cfc );
+var (_fgad bool ;_bea int ;);for {_ecdf ,_ggbd :=_ggg ._eece .ReadByte ();if _ggbd !=nil {if _ggbd ==_g .EOF {break ;}else {return _ggbd ;};};if IsDecimalDigit (_ecdf )&&_bfdb [_cfc -1]=='.'&&IsDecimalDigit (_bfdb [_cfc -2])&&_bfdb [_cfc -3]=='-'&&_bfdb [_cfc -4]=='F'&&_bfdb [_cfc -5]=='D'&&_bfdb [_cfc -6]=='P'&&_bfdb [_cfc -7]=='%'{_ggg ._ebff =Version {Major :int (_bfdb [_cfc -2]-'0'),Minor :int (_ecdf -'0')};
+_ggg ._deaa ._ggcf =_bea -7;_fgad =true ;break ;};_bea ++;_bfdb =append (_bfdb [1:_cfc ],_ecdf );};if !_fgad {return _ebc .Errorf ("n\u006f \u0066\u0069\u006c\u0065\u0020\u0068\u0065\u0061d\u0065\u0072\u0020\u0066ou\u006e\u0064");};_dedb ,_bcab :=_ggg ._eece .ReadByte ();
+if _bcab ==_g .EOF {return _ebc .Errorf ("\u006eo\u0074\u0020\u0061\u0020\u0076\u0061\u006c\u0069\u0064\u0020\u0050d\u0066\u0020\u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074");};if _bcab !=nil {return _bcab ;};_ggg ._deaa ._gbef =_dedb =='\n';_dedb ,_bcab =_ggg ._eece .ReadByte ();
+if _bcab !=nil {return _ebc .Errorf ("\u006e\u006f\u0074\u0020a\u0020\u0076\u0061\u006c\u0069\u0064\u0020\u0070\u0064\u0066 \u0064o\u0063\u0075\u006d\u0065\u006e\u0074\u003a \u0025\u0077",_bcab );};if _dedb !='%'{return nil ;};_eegg :=make ([]byte ,4);
+_ ,_bcab =_ggg ._eece .Read (_eegg );if _bcab !=nil {return _ebc .Errorf ("\u006e\u006f\u0074\u0020a\u0020\u0076\u0061\u006c\u0069\u0064\u0020\u0070\u0064\u0066 \u0064o\u0063\u0075\u006d\u0065\u006e\u0074\u003a \u0025\u0077",_bcab );};_ggg ._deaa ._dccdb =[4]byte {_eegg [0],_eegg [1],_eegg [2],_eegg [3]};
+return nil ;};
+
+// MakeDecodeParams makes a new instance of an encoding dictionary based on
+// the current encoder settings.
+func (_gebd *RunLengthEncoder )MakeDecodeParams ()PdfObject {return nil };
+
+// GetFilterArray returns the names of the underlying encoding filters in an array that
+// can be used as /Filter entry.
+func (_dadb *MultiEncoder )GetFilterArray ()*PdfObjectArray {_abgc :=make ([]PdfObject ,len (_dadb ._dfbf ));for _fedcf ,_eedd :=range _dadb ._dfbf {_abgc [_fedcf ]=MakeName (_eedd .GetFilterName ());};return MakeArray (_abgc ...);};func (_fdec *ascii85Reader )fillGroup ()error {var _cgge [5]byte ;
+_dceb :=0;_eege :=false ;for _dceb < 5{_cbfd ,_aeb :=_fdec ._egbcb .ReadByte ();if _aeb !=nil {if _aeb ==_g .EOF {if _dceb ==0{return _g .EOF ;};_eege =true ;break ;};return _aeb ;};if IsWhiteSpace (_cbfd ){continue ;};if _cbfd =='~'{_dfgd ,_eaaea :=_fdec ._egbcb .ReadByte ();
+if _eaaea !=nil ||_dfgd !='>'{return _bc .New ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0063\u006f\u0064\u0065\u0020e\u006e\u0063\u006f\u0075\u006e\u0074\u0065\u0072\u0065\u0064");};_eege =true ;break ;};if _cbfd =='z'&&_dceb ==0{_fdec ._addc =[4]byte {0,0,0,0};
+_fdec ._fabcb =4;_fdec ._efea =0;return nil ;};if _cbfd >='!'&&_cbfd <='u'{_cgge [_dceb ]=_cbfd -'!';_dceb ++;continue ;};return _bc .New ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0063\u006f\u0064\u0065\u0020e\u006e\u0063\u006f\u0075\u006e\u0074\u0065\u0072\u0065\u0064");
+};_gbaf :=4;if _eege {_gbaf =_dceb -1;if _gbaf < 0{_gbaf =0;};};for _fafa :=_dceb ;_fafa < 5;_fafa ++{_cgge [_fafa ]=84;};_gadf :=uint32 (_cgge [0])*85*85*85*85+uint32 (_cgge [1])*85*85*85+uint32 (_cgge [2])*85*85+uint32 (_cgge [3])*85+uint32 (_cgge [4]);
+_fdec ._addc [0]=byte (_gadf >>24);_fdec ._addc [1]=byte (_gadf >>16);_fdec ._addc [2]=byte (_gadf >>8);_fdec ._addc [3]=byte (_gadf );_fdec ._fabcb =_gbaf ;_fdec ._efea =0;if _eege {return _g .EOF ;};return nil ;};
+
+// PdfObjectFloat represents the primitive PDF floating point numerical object.
+type PdfObjectFloat float64 ;
+
+// Merge merges in key/values from another dictionary. Overwriting if has same keys.
+// The mutated dictionary (d) is returned in order to allow method chaining.
+func (_accg *PdfObjectDictionary )Merge (another *PdfObjectDictionary )*PdfObjectDictionary {if another !=nil {for _ ,_dage :=range another .Keys (){_gfbcb :=another .Get (_dage );_accg .Set (_dage ,_gfbcb );};};return _accg ;};func (_facfb *JBIG2Encoder )encodeImage (_aeaa _ed .Image )([]byte ,error ){const _bbcbd ="e\u006e\u0063\u006f\u0064\u0065\u0049\u006d\u0061\u0067\u0065";
+_dgcc ,_ggad :=GoImageToJBIG2 (_aeaa ,JB2ImageAutoThreshold );if _ggad !=nil {return nil ,_fb .Wrap (_ggad ,_bbcbd ,"\u0063\u006f\u006e\u0076\u0065\u0072\u0074\u0020\u0069\u006e\u0070\u0075\u0074\u0020\u0069m\u0061g\u0065\u0020\u0074\u006f\u0020\u006a\u0062\u0069\u0067\u0032\u0020\u0069\u006d\u0067");
+};if _ggad =_facfb .AddPageImage (_dgcc ,&_facfb .DefaultPageSettings );_ggad !=nil {return nil ,_fb .Wrap (_ggad ,_bbcbd ,"");};return _facfb .Encode ();};
+
+// NewLZWEncoder makes a new LZW encoder with default parameters.
+func NewLZWEncoder ()*LZWEncoder {_eaa :=&LZWEncoder {};_eaa .Predictor =1;_eaa .BitsPerComponent =8;_eaa .Colors =1;_eaa .Columns =1;_eaa .EarlyChange =1;return _eaa ;};
+
+// Write outputs the object as it is to be written to file.
+func (_gddfc *PdfObjectDictionary )Write ()[]byte {_gddfc ._egfe .RLock ();defer _gddfc ._egfe .RUnlock ();var _eeac _ad .Buffer ;_eeac .WriteString ("\u003c\u003c");for _ ,_cfdc :=range _gddfc ._gaga {_bddd :=_gddfc ._dbcd [_cfdc ];_eeac .Write (_cfdc .Write ());
+_eeac .WriteString ("\u0020");_eeac .Write (_bddd .Write ());};_eeac .WriteString ("\u003e\u003e");return _eeac .Bytes ();};func (_adda *PdfParser )parseXrefTable ()(*PdfObjectDictionary ,error ){var _gaaf *PdfObjectDictionary ;_cbbec ,_aafg :=_adda .readTextLine ();
+if _aafg !=nil {return nil ,_aafg ;};if _adda ._dbdc &&_ff .Count (_ff .TrimPrefix (_cbbec ,"\u0078\u0072\u0065\u0066"),"\u0020")> 0{_adda ._deaa ._cde =true ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0078\u0072\u0065\u0066 f\u0069\u0072\u0073\u0074\u0020\u006c\u0069\u006e\u0065\u003a\u0020\u0025\u0073",_cbbec );
+};_gcba :=-1;_efdd :=0;_dbaa :=false ;_ebgb :="";for {_adda .skipSpaces ();_ ,_eecf :=_adda ._eece .Peek (1);if _eecf !=nil {return nil ,_eecf ;};_cbbec ,_eecf =_adda .readTextLine ();if _eecf !=nil {return nil ,_eecf ;};_afcdc :=_gega .FindStringSubmatch (_cbbec );
+if len (_afcdc )==0{_afee :=len (_ebgb )> 0;_ebgb +=_cbbec +"\u000a";if _afee {_afcdc =_gega .FindStringSubmatch (_ebgb );};};if len (_afcdc )==3{if _adda ._dbdc &&!_adda ._deaa ._egddd {var (_eabb bool ;_ggbfb int ;);for _ ,_agfc :=range _cbbec {if _eb .IsDigit (_agfc ){if _eabb {break ;
+};continue ;};if !_eabb {_eabb =true ;};_ggbfb ++;};if _ggbfb > 1{_adda ._deaa ._egddd =true ;};};_gbbf ,_ :=_d .Atoi (_afcdc [1]);_dffbg ,_ :=_d .Atoi (_afcdc [2]);_gcba =_gbbf ;_efdd =_dffbg ;_dbaa =true ;_ebgb ="";if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0078r\u0065\u0066 \u0073\u0075\u0062s\u0065\u0063\u0074\u0069\u006f\u006e\u003a \u0066\u0069\u0072\u0073\u0074\u0020o\u0062\u006a\u0065\u0063\u0074\u003a\u0020\u0025\u0064\u0020\u006fb\u006a\u0065\u0063\u0074\u0073\u003a\u0020\u0025\u0064",_gcba ,_efdd );
+};continue ;};_edegc :=_gadac .FindStringSubmatch (_cbbec );if len (_edegc )==4{if !_dbaa {_be .Log .Debug ("E\u0052\u0052\u004f\u0052\u0020\u0058r\u0065\u0066\u0020\u0069\u006e\u0076\u0061\u006c\u0069d\u0020\u0066\u006fr\u006da\u0074\u0021\u000a");return nil ,_bc .New ("\u0078\u0072\u0065\u0066 i\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0066\u006f\u0072\u006d\u0061\u0074");
+};_dbdd ,_ :=_d .ParseInt (_edegc [1],10,64);_ebbe ,_ :=_d .Atoi (_edegc [2]);_fedee :=_edegc [3];_ebgb ="";if _ff .ToLower (_fedee )=="\u006e"&&_dbdd > 1{_dbeb ,_gfcd :=_adda ._dggd .ObjectMap [_gcba ];if !_gfcd ||_ebbe > _dbeb .Generation {_febfc :=XrefObject {ObjectNumber :_gcba ,XType :XrefTypeTableEntry ,Offset :_dbdd ,Generation :_ebbe };
+_adda ._dggd .ObjectMap [_gcba ]=_febfc ;};};_gcba ++;continue ;};if (len (_cbbec )> 6)&&(_cbbec [:7]=="\u0074r\u0061\u0069\u006c\u0065\u0072"){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0046o\u0075n\u0064\u0020\u0074\u0072\u0061i\u006c\u0065r\u0020\u002d\u0020\u0025\u0073",_cbbec );
+};if len (_cbbec )> 9{_agcca :=_adda .GetFileOffset ();_adda .SetFileOffset (_agcca -int64 (len (_cbbec ))+7);};_adda .skipSpaces ();_adda .skipComments ();if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("R\u0065\u0061\u0064\u0069ng\u0020t\u0072\u0061\u0069\u006c\u0065r\u0020\u0064\u0069\u0063\u0074\u0021");
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0070\u0065\u0065\u006b\u003a\u0020\u0022\u0025\u0073\u0022",_cbbec );};_gaaf ,_eecf =_adda .ParseDict ();if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0045O\u0046\u0020\u0072\u0065a\u0064\u0069\u006e\u0067\u0020t\u0072a\u0069l\u0065\u0072\u0020\u0064\u0069\u0063\u0074!");
+};if _eecf !=nil {_be .Log .Debug ("\u0045\u0072\u0072o\u0072\u0020\u0070\u0061r\u0073\u0069\u006e\u0067\u0020\u0074\u0072a\u0069\u006c\u0065\u0072\u0020\u0064\u0069\u0063\u0074\u0020\u0028\u0025\u0073\u0029",_eecf );return nil ,_eecf ;};break ;};if _cbbec =="\u0025\u0025\u0045O\u0046"{_be .Log .Debug ("E\u0052\u0052\u004f\u0052\u003a\u0020\u0065\u006e\u0064 \u006f\u0066\u0020\u0066\u0069\u006c\u0065 -\u0020\u0074\u0072\u0061i\u006c\u0065\u0072\u0020\u006e\u006f\u0074\u0020\u0066ou\u006e\u0064 \u002d\u0020\u0065\u0072\u0072\u006f\u0072\u0021");
+return nil ,_bc .New ("\u0065\u006e\u0064 \u006f\u0066\u0020\u0066i\u006c\u0065\u0020\u002d\u0020\u0074\u0072a\u0069\u006c\u0065\u0072\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064");};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0078\u0072\u0065\u0066\u0020\u006d\u006f\u0072\u0065 \u003a\u0020\u0025\u0073",_cbbec );
+};};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0045\u004f\u0046 p\u0061\u0072\u0073\u0069\u006e\u0067\u0020\u0078\u0072\u0065\u0066\u0020\u0074\u0061\u0062\u006c\u0065\u0021");};if _adda ._dgef ==nil {_edbee :=XrefTypeTableEntry ;
+_adda ._dgef =&_edbee ;};return _gaaf ,nil ;};
+
+// DrawableImage is same as golang image/draw's Image interface that allow drawing images.
+type DrawableImage interface{ColorModel ()_ca .Model ;Bounds ()_ed .Rectangle ;At (_cfbe ,_cdag int )_ca .Color ;Set (_acada ,_edabc int ,_gcdc _ca .Color );};
+
+// ReadAtLeast reads at least n bytes into slice p.
+// Returns the number of bytes read (should always be == n), and an error on failure.
+func (_adgf *PdfParser )ReadAtLeast (p []byte ,n int )(int ,error ){_cccdf :=n ;_ccgea :=0;_cecd :=0;for _cccdf > 0{_ggcgd ,_eaeef :=_adgf ._eece .Read (p [_ccgea :]);if _eaeef !=nil {_be .Log .Debug ("\u0045\u0052\u0052O\u0052\u0020\u0046\u0061i\u006c\u0065\u0064\u0020\u0072\u0065\u0061d\u0069\u006e\u0067\u0020\u0028\u0025\u0064\u003b\u0025\u0064\u0029\u0020\u0025\u0073",_ggcgd ,_cecd ,_eaeef .Error ());
+return _ccgea ,_bc .New ("\u0066\u0061\u0069\u006c\u0065\u0064\u0020\u0072\u0065a\u0064\u0069\u006e\u0067");};_cecd ++;_ccgea +=_ggcgd ;_cccdf -=_ggcgd ;};return _ccgea ,nil ;};type runLengthReader struct{_afd byteReader ;_dcda error ;_ecgb [128]byte ;
+_bbaaa int ;_cdagg int ;};const (_cb =16<<10;_aace =64<<10;_agd =256<<10;_ebb =1<<20;_bag =4<<20;_ebe =16<<20;);
+
+// SetIfNotNil sets the dictionary's key -> val mapping entry -IF- val is not nil.
+// Note that we take care to perform a type switch.  Otherwise if we would supply a nil value
+// of another type, e.g. (PdfObjectArray*)(nil), then it would not be a PdfObject(nil) and thus
+// would get set.
+func (_gccc *PdfObjectDictionary )SetIfNotNil (key PdfObjectName ,val PdfObject ){if val !=nil {switch _fafd :=val .(type ){case *PdfObjectName :if _fafd !=nil {_gccc .Set (key ,val );};case *PdfObjectDictionary :if _fafd !=nil {_gccc .Set (key ,val );
+};case *PdfObjectStream :if _fafd !=nil {_gccc .Set (key ,val );};case *PdfObjectString :if _fafd !=nil {_gccc .Set (key ,val );};case *PdfObjectNull :if _fafd !=nil {_gccc .Set (key ,val );};case *PdfObjectInteger :if _fafd !=nil {_gccc .Set (key ,val );
+};case *PdfObjectArray :if _fafd !=nil {_gccc .Set (key ,val );};case *PdfObjectBool :if _fafd !=nil {_gccc .Set (key ,val );};case *PdfObjectFloat :if _fafd !=nil {_gccc .Set (key ,val );};case *PdfObjectReference :if _fafd !=nil {_gccc .Set (key ,val );
+};case *PdfIndirectObject :if _fafd !=nil {_gccc .Set (key ,val );};default:_be .Log .Error ("\u0045\u0052R\u004f\u0052\u003a\u0020\u0055\u006e\u006b\u006e\u006f\u0077\u006e\u0020\u0074\u0079\u0070\u0065\u003a\u0020\u0025\u0054\u0020\u002d\u0020\u0073\u0068\u006f\u0075\u006c\u0064\u0020\u006e\u0065\u0076\u0065\u0072\u0020\u0068\u0061\u0070\u0070\u0065\u006e\u0021",val );
+};};};
+
+// EncodeBytes encodes the image data using either Group3 or Group4 CCITT facsimile (fax) encoding.
+// `data` is expected to be 1 color component, 1 bit per component. It is also valid to provide 8 BPC, 1 CC image like
+// a standard go image Gray data.
+func (_ccgge *CCITTFaxEncoder )EncodeBytes (data []byte )([]byte ,error ){var _dbbc _bg .Gray ;switch len (data ){case _ccgge .Rows *_ccgge .Columns :_gdbcc ,_cef :=_bg .NewImage (_ccgge .Columns ,_ccgge .Rows ,8,1,data ,nil ,nil );if _cef !=nil {return nil ,_cef ;
+};_dbbc =_gdbcc .(_bg .Gray );case (_ccgge .Columns *_ccgge .Rows )+7>>3:_cffb ,_ccee :=_bg .NewImage (_ccgge .Columns ,_ccgge .Rows ,1,1,data ,nil ,nil );if _ccee !=nil {return nil ,_ccee ;};_dacd :=_cffb .(*_bg .Monochrome );if _ccee =_dacd .AddPadding ();
+_ccee !=nil {return nil ,_ccee ;};_dbbc =_dacd ;default:if len (data )< _bg .BytesPerLine (_ccgge .Columns ,1,1)*_ccgge .Rows {return nil ,_bc .New ("p\u0072\u006f\u0076\u0069\u0064\u0065d\u0020\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020i\u006e\u0070\u0075t\u0020d\u0061\u0074\u0061");
+};_acde ,_bgbb :=_bg .NewImage (_ccgge .Columns ,_ccgge .Rows ,1,1,data ,nil ,nil );if _bgbb !=nil {return nil ,_bgbb ;};_bgae :=_acde .(*_bg .Monochrome );_dbbc =_bgae ;};_ecab :=make ([][]byte ,_ccgge .Rows );for _agba :=0;_agba < _ccgge .Rows ;_agba ++{_dccce :=make ([]byte ,_ccgge .Columns );
+for _agdfg :=0;_agdfg < _ccgge .Columns ;_agdfg ++{_bedcf :=_dbbc .GrayAt (_agdfg ,_agba );_dccce [_agdfg ]=_bedcf .Y >>7;};_ecab [_agba ]=_dccce ;};_cgac :=&_cc .Encoder {K :_ccgge .K ,Columns :_ccgge .Columns ,EndOfLine :_ccgge .EndOfLine ,EndOfBlock :_ccgge .EndOfBlock ,BlackIs1 :_ccgge .BlackIs1 ,DamagedRowsBeforeError :_ccgge .DamagedRowsBeforeError ,Rows :_ccgge .Rows ,EncodedByteAlign :_ccgge .EncodedByteAlign };
+return _cgac .Encode (_ecab ),nil ;};
+
+// LookupByReference looks up a PdfObject by a reference.
+func (_ggc *PdfParser )LookupByReference (ref PdfObjectReference )(PdfObject ,error ){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004c\u006f\u006fki\u006e\u0067\u0020\u0075\u0070\u0020\u0072\u0065\u0066\u0065\u0072\u0065\u006e\u0063\u0065\u0020\u0025\u0073",ref .String ());
+};return _ggc .LookupByNumber (int (ref .ObjectNumber ));};func (_gacba *limitedReadSeeker )getError (_fdcff int64 )error {switch {case _fdcff < 0:return _ebc .Errorf ("\u0075\u006e\u0065\u0078\u0070\u0065\u0063\u0074\u0065\u0064 \u006e\u0065\u0067\u0061\u0074\u0069\u0076e\u0020\u006f\u0066\u0066\u0073\u0065\u0074\u003a\u0020\u0025\u0064",_fdcff );
+case _fdcff > _gacba ._gacb :return _ebc .Errorf ("u\u006e\u0065\u0078\u0070ec\u0074e\u0064\u0020\u006f\u0066\u0066s\u0065\u0074\u003a\u0020\u0025\u0064",_fdcff );};return nil ;};
+
+// AddPageImage adds the page with the image 'img' to the encoder context in order to encode it jbig2 document.
+// The 'settings' defines what encoding type should be used by the encoder.
+func (_cdba *JBIG2Encoder )AddPageImage (img *JBIG2Image ,settings *JBIG2EncoderSettings )(_gfda error ){const _cbed ="\u004a\u0042\u0049\u0047\u0032\u0044\u006f\u0063\u0075\u006d\u0065n\u0074\u002e\u0041\u0064\u0064\u0050\u0061\u0067\u0065\u0049m\u0061\u0067\u0065";
+if _cdba ==nil {return _fb .Error (_cbed ,"J\u0042I\u0047\u0032\u0044\u006f\u0063\u0075\u006d\u0065n\u0074\u0020\u0069\u0073 n\u0069\u006c");};if settings ==nil {settings =&_cdba .DefaultPageSettings ;};if _cdba ._ceef ==nil {_cdba ._ceef =_dg .InitEncodeDocument (settings .FileMode );
+};if _gfda =settings .Validate ();_gfda !=nil {return _fb .Wrap (_gfda ,_cbed ,"");};_fdbf ,_gfda :=img .toBitmap ();if _gfda !=nil {return _fb .Wrap (_gfda ,_cbed ,"");};switch settings .Compression {case JB2Generic :if _gfda =_cdba ._ceef .AddGenericPage (_fdbf ,settings .DuplicatedLinesRemoval );
+_gfda !=nil {return _fb .Wrap (_gfda ,_cbed ,"");};case JB2SymbolCorrelation :return _fb .Error (_cbed ,"s\u0079\u006d\u0062\u006f\u006c\u0020\u0063\u006f\u0072r\u0065\u006c\u0061\u0074\u0069\u006f\u006e e\u006e\u0063\u006f\u0064i\u006e\u0067\u0020\u006e\u006f\u0074\u0020\u0069\u006dpl\u0065\u006de\u006e\u0074\u0065\u0064\u0020\u0079\u0065\u0074");
+case JB2SymbolRankHaus :return _fb .Error (_cbed ,"\u0073y\u006d\u0062o\u006c\u0020\u0072a\u006e\u006b\u0020\u0068\u0061\u0075\u0073 \u0065\u006e\u0063\u006f\u0064\u0069n\u0067\u0020\u006e\u006f\u0074\u0020\u0069\u006d\u0070\u006c\u0065m\u0065\u006e\u0074\u0065\u0064\u0020\u0079\u0065\u0074");
+default:return _fb .Error (_cbed ,"\u0070\u0072\u006f\u0076i\u0064\u0065\u0064\u0020\u0069\u006e\u0076\u0061\u006c\u0069d\u0020c\u006f\u006d\u0070\u0072\u0065\u0073\u0073i\u006f\u006e");};return nil ;};func (_faggf *ascii85Reader )Read (p []byte )(int ,error ){_dacac :=0;
+for _dacac < len (p ){if _faggf ._efea < _faggf ._fabcb {_eggef :=copy (p [_dacac :],_faggf ._addc [_faggf ._efea :_faggf ._fabcb ]);_dacac +=_eggef ;_faggf ._efea +=_eggef ;continue ;};if _faggf ._eeaf !=nil {if _dacac > 0{return _dacac ,nil ;};return 0,_faggf ._eeaf ;
+};_faggf ._eeaf =_faggf .fillGroup ();};return _dacac ,nil ;};
+
+// NewCCITTFaxEncoder makes a new CCITTFax encoder.
+func NewCCITTFaxEncoder ()*CCITTFaxEncoder {return &CCITTFaxEncoder {Columns :1728,EndOfBlock :true }};
+
+// DecodeStream decodes the stream data and returns the decoded data.
+// An error is returned upon failure.
+func DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0044\u0065\u0063\u006f\u0064\u0065\u0020\u0073\u0074\u0072\u0065\u0061\u006d");};_gegb ,_dfaad :=NewEncoderFromStream (streamObj );
+if _dfaad !=nil {_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0053\u0074\u0072\u0065\u0061\u006d\u0020\u0064\u0065\u0063\u006f\u0064\u0069n\u0067\u0020\u0066\u0061\u0069\u006c\u0065d\u003a\u0020\u0025\u0076",_dfaad );return nil ,_dfaad ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0045\u006e\u0063\u006f\u0064\u0065\u0072\u003a\u0020\u0025\u0023\u0076\u000a",_gegb );
+};_babc ,_dfaad :=_gegb .DecodeStream (streamObj );if _dfaad !=nil {_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0053\u0074\u0072\u0065\u0061\u006d\u0020\u0064\u0065\u0063\u006f\u0064\u0069n\u0067\u0020\u0066\u0061\u0069\u006c\u0065d\u003a\u0020\u0025\u0076",_dfaad );
+return nil ,_dfaad ;};return _babc ,nil ;};type bufferedReadSeeker struct{_eac _g .ReadSeeker ;_df *_ecd .Reader ;};func _ccg (_bfd *_ce .StdEncryptDict ,_daad *PdfObjectDictionary ){_daad .Set ("\u0052",MakeInteger (int64 (_bfd .R )));_daad .Set ("\u0050",MakeInteger (int64 (_bfd .P )));
+_daad .Set ("\u004f",MakeStringFromBytes (_bfd .O ));_daad .Set ("\u0055",MakeStringFromBytes (_bfd .U ));if _bfd .R >=5{_daad .Set ("\u004f\u0045",MakeStringFromBytes (_bfd .OE ));_daad .Set ("\u0055\u0045",MakeStringFromBytes (_bfd .UE ));_daad .Set ("\u0045n\u0063r\u0079\u0070\u0074\u004d\u0065\u0074\u0061\u0064\u0061\u0074\u0061",MakeBool (_bfd .EncryptMetadata ));
+if _bfd .R > 5{_daad .Set ("\u0050\u0065\u0072m\u0073",MakeStringFromBytes (_bfd .Perms ));};};};func _ffee (_fbcd _bg .Image )*JBIG2Image {_fddb :=_fbcd .Base ();return &JBIG2Image {Data :_fddb .Data ,Width :_fddb .Width ,Height :_fddb .Height ,HasPadding :true };
+};
+
+// Write outputs the object as it is to be written to file.
+func (_fabcg *PdfObjectFloat )Write ()[]byte {return []byte (_d .FormatFloat (float64 (*_fabcg ),'f',-1,64));};
+
+// NewJBIG2Encoder creates a new JBIG2Encoder.
+func NewJBIG2Encoder ()*JBIG2Encoder {return &JBIG2Encoder {_ceef :_dg .InitEncodeDocument (false )}};func (_agbg *PdfParser )inspect ()(map[string ]int ,error ){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u0049\u004e\u0053P\u0045\u0043\u0054\u0020\u002d\u002d\u002d\u002d\u002d\u002d-\u002d\u002d\u002d");
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("X\u0072\u0065\u0066\u0020\u0074\u0061\u0062\u006c\u0065\u003a");};_bbceb :=map[string ]int {};_fdfbg :=0;_dfdf :=0;var _cafgda []int ;for _edafe :=range _agbg ._dggd .ObjectMap {_cafgda =append (_cafgda ,_edafe );
+};_ec .Ints (_cafgda );_dbcdf :=0;for _ ,_eafa :=range _cafgda {_gdbd :=_agbg ._dggd .ObjectMap [_eafa ];if _gdbd .ObjectNumber ==0{continue ;};_fdfbg ++;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d");
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004c\u006f\u006f\u006bi\u006e\u0067\u0020\u0075\u0070\u0020\u006f\u0062\u006a\u0065c\u0074 \u006e\u0075\u006d\u0062\u0065\u0072\u003a \u0025\u0064",_gdbd .ObjectNumber );};_dagce ,_gdcb :=_agbg .LookupByNumber (_gdbd .ObjectNumber );
+if _gdcb !=nil {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0045\u0052\u0052\u004f\u0052\u003a \u0046\u0061\u0069\u006c\u0020\u0074\u006f\u0020\u006c\u006f\u006f\u006b\u0075p\u0020\u006f\u0062\u006a\u0020\u0025\u0064 \u0028\u0025\u0073\u0029",_gdbd .ObjectNumber ,_gdcb );
+};_dfdf ++;continue ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u006fb\u006a\u003a\u0020\u0025\u0073",_dagce );};_ceba ,_agde :=_dagce .(*PdfIndirectObject );if _agde {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0049N\u0044 \u004f\u004f\u0042\u004a\u0020\u0025\u0064\u003a\u0020\u0025\u0073",_gdbd .ObjectNumber ,_ceba );
+};_dbdca ,_dcfga :=_ceba .PdfObject .(*PdfObjectDictionary );if _dcfga {if _ecde ,_bfad :=_dbdca .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );_bfad {_bcad :=string (*_ecde );if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d\u002d\u002d\u003e\u0020\u004f\u0062\u006a\u0020\u0074\u0079\u0070e\u003a\u0020\u0025\u0073",_bcad );
+};_ ,_aecbe :=_bbceb [_bcad ];if _aecbe {_bbceb [_bcad ]++;}else {_bbceb [_bcad ]=1;};}else if _befd ,_bfcbc :=_dbdca .Get ("\u0053u\u0062\u0074\u0079\u0070\u0065").(*PdfObjectName );_bfcbc {_bbac :=string (*_befd );if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("-\u002d-\u003e\u0020\u004f\u0062\u006a\u0020\u0073\u0075b\u0074\u0079\u0070\u0065: \u0025\u0073",_bbac );
+};_ ,_cggb :=_bbceb [_bbac ];if _cggb {_bbceb [_bbac ]++;}else {_bbceb [_bbac ]=1;};};if _ggggd ,_babg :=_dbdca .Get ("\u0053").(*PdfObjectName );_babg &&*_ggggd =="\u004a\u0061\u0076\u0061\u0053\u0063\u0072\u0069\u0070\u0074"{_ ,_dfgec :=_bbceb ["\u004a\u0061\u0076\u0061\u0053\u0063\u0072\u0069\u0070\u0074"];
+if _dfgec {_bbceb ["\u004a\u0061\u0076\u0061\u0053\u0063\u0072\u0069\u0070\u0074"]++;}else {_bbceb ["\u004a\u0061\u0076\u0061\u0053\u0063\u0072\u0069\u0070\u0074"]=1;};};};}else if _gfadb ,_bgadc :=_dagce .(*PdfObjectStream );_bgadc {if _cebgf ,_dcfbe :=_gfadb .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );
+_dcfbe {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d\u002d\u003e\u0020\u0053\u0074\u0072\u0065\u0061\u006d\u0020o\u0062\u006a\u0065\u0063\u0074\u0020\u0074\u0079\u0070\u0065:\u0020\u0025\u0073",*_cebgf );};_beggg :=string (*_cebgf );
+_bbceb [_beggg ]++;};}else {_abdf ,_fbaf :=_dagce .(*PdfObjectDictionary );if _fbaf {_dgeae ,_cadfg :=_abdf .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );if _cadfg {_bcce :=string (*_dgeae );if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d-\u002d \u006f\u0062\u006a\u0020\u0074\u0079\u0070\u0065\u0020\u0025\u0073",_bcce );
+};_bbceb [_bcce ]++;};};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0044\u0049\u0052\u0045\u0043\u0054\u0020\u004f\u0042\u004a\u0020\u0025d\u003a\u0020\u0025\u0073",_gdbd .ObjectNumber ,_dagce );};};_dbcdf ++;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u0045\u004fF\u0020\u0049\u004e\u0053\u0050\u0045\u0043T\u0020\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u002d");
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u003d=\u003d\u003d\u003d\u003d\u003d");};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004f\u0062j\u0065\u0063\u0074 \u0063\u006f\u0075\u006e\u0074\u003a\u0020\u0025\u0064",_fdfbg );
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0046\u0061\u0069\u006c\u0065\u0064\u0020\u006c\u006f\u006f\u006b\u0075p\u003a\u0020\u0025\u0064",_dfdf );};for _ecgf ,_fbda :=range _bbceb {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0025\u0073\u003a\u0020\u0025\u0064",_ecgf ,_fbda );
+};};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u003d=\u003d\u003d\u003d\u003d\u003d");};if len (_agbg ._dggd .ObjectMap )< 1{_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0054\u0068\u0069\u0073 \u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074 \u0069s\u0020\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0028\u0078\u0072\u0065\u0066\u0020\u0074\u0061\u0062l\u0065\u0020\u006d\u0069\u0073\u0073\u0069\u006e\u0067\u0021\u0029");
+return nil ,_ebc .Errorf ("\u0069\u006ev\u0061\u006c\u0069\u0064 \u0064\u006fc\u0075\u006d\u0065\u006e\u0074\u0020\u0028\u0078r\u0065\u0066\u0020\u0074\u0061\u0062\u006c\u0065\u0020\u006d\u0069\u0073s\u0069\u006e\u0067\u0029");};_gbed ,_daeg :=_bbceb ["\u0046\u006f\u006e\u0074"];
+if !_daeg ||_gbed < 2{if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0054\u0068\u0069s \u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u0020i\u0073 \u0070r\u006fb\u0061\u0062\u006c\u0079\u0020\u0073\u0063\u0061\u006e\u006e\u0065\u0064\u0021");
+};}else {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0054\u0068\u0069\u0073\u0020\u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u0020\u0069\u0073\u0020\u0076\u0061\u006c\u0069\u0064\u0020\u0066o\u0072\u0020\u0065\u0078\u0074r\u0061\u0063t\u0069\u006f\u006e\u0021");
+};};return _bbceb ,nil ;};
+
+// MakeDictMap creates a PdfObjectDictionary initialized from a map of keys to values.
+func MakeDictMap (objmap map[string ]PdfObject )*PdfObjectDictionary {_befg :=MakeDict ();return _befg .Update (objmap );};
+
+// GetName returns the *PdfObjectName represented by the PdfObject directly or indirectly within an indirect
+// object. On type mismatch the found bool flag is false and a nil pointer is returned.
+func GetName (obj PdfObject )(_eefgd *PdfObjectName ,_beae bool ){_eefgd ,_beae =TraceToDirectObject (obj ).(*PdfObjectName );return _eefgd ,_beae ;};func (_gfbde *PdfParser )parsePdfVersion ()(int ,int ,error ){var _dffc int64 =20;_eade :=make ([]byte ,_dffc );
+_gfbde ._eece .Seek (0,_g .SeekStart );_gfbde ._eece .Read (_eade );var _bbbd error ;var _geefb ,_abddc int ;if _bgag :=_ccba .FindStringSubmatch (string (_eade ));len (_bgag )< 3{if _geefb ,_abddc ,_bbbd =_gfbde .seekPdfVersionTopDown ();_bbbd !=nil {_be .Log .Debug ("F\u0061\u0069\u006c\u0065\u0064\u0020\u0072\u0065\u0063\u006f\u0076\u0065\u0072\u0079\u0020\u002d\u0020\u0075n\u0061\u0062\u006c\u0065\u0020\u0074\u006f\u0020\u0066\u0069nd\u0020\u0076\u0065r\u0073i\u006f\u006e");
+return 0,0,_bbbd ;};_gfbde ._eece ._eac ,_bbbd =_eecb (_gfbde ._eece ._eac ,_gfbde .GetFileOffset ()-8);if _bbbd !=nil {return 0,0,_bbbd ;};}else {if _geefb ,_bbbd =_d .Atoi (_bgag [1]);_bbbd !=nil {return 0,0,_bbbd ;};if _abddc ,_bbbd =_d .Atoi (_bgag [2]);
+_bbbd !=nil {return 0,0,_bbbd ;};_gfbde .SetFileOffset (0);};_gfbde ._eece ._df =_ecd .NewReader (_gfbde ._eece ._eac );_be .Log .Debug ("\u0050\u0064\u0066\u0020\u0076\u0065\u0072\u0073\u0069\u006f\u006e\u0020%\u0064\u002e\u0025\u0064",_geefb ,_abddc );
+return _geefb ,_abddc ,nil ;};
+
+// PdfVersion returns version of the PDF file.
+func (_gdffe *PdfParser )PdfVersion ()Version {return _gdffe ._ebff };var (ErrUnsupportedEncodingParameters =_bc .New ("\u0075\u006e\u0073u\u0070\u0070\u006f\u0072t\u0065\u0064\u0020\u0065\u006e\u0063\u006fd\u0069\u006e\u0067\u0020\u0070\u0061\u0072\u0061\u006d\u0065\u0074\u0065\u0072\u0073");
+ErrNoCCITTFaxDecode =_bc .New ("\u0043\u0043I\u0054\u0054\u0046\u0061\u0078\u0044\u0065\u0063\u006f\u0064\u0065\u0020\u0065\u006e\u0063\u006f\u0064\u0069\u006e\u0067\u0020\u0069\u0073\u0020\u006e\u006f\u0074\u0020\u0079\u0065\u0074\u0020\u0069\u006d\u0070\u006c\u0065\u006d\u0065\u006e\u0074\u0065\u0064");
+ErrNoJBIG2Decode =_bc .New ("\u004a\u0042\u0049\u0047\u0032\u0044\u0065c\u006f\u0064\u0065 \u0065\u006e\u0063\u006fd\u0069\u006e\u0067\u0020\u0069\u0073\u0020\u006e\u006f\u0074\u0020\u0079\u0065\u0074\u0020\u0069\u006d\u0070\u006c\u0065\u006d\u0065\u006e\u0074\u0065\u0064");
+ErrNoJPXDecode =_bc .New ("\u004a\u0050\u0058\u0044\u0065c\u006f\u0064\u0065\u0020\u0065\u006e\u0063\u006f\u0064\u0069\u006e\u0067\u0020i\u0073\u0020\u006e\u006f\u0074\u0020\u0079\u0065\u0074\u0020\u0069\u006d\u0070\u006c\u0065\u006d\u0065\u006e\u0074\u0065\u0064");
+ErrNoPdfVersion =_bc .New ("\u0076\u0065\u0072\u0073\u0069\u006f\u006e\u0020\u006e\u006f\u0074\u0020f\u006f\u0075\u006e\u0064");ErrTypeError =_bc .New ("\u0074\u0079p\u0065\u0020\u0063h\u0065\u0063\u006b\u0020\u0065\u0072\u0072\u006f\u0072");ErrRangeError =_bc .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");
+ErrNotSupported =_aa .New ("\u0066\u0065\u0061t\u0075\u0072\u0065\u0020n\u006f\u0074\u0020\u0063\u0075\u0072\u0072e\u006e\u0074\u006c\u0079\u0020\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064");ErrNotANumber =_bc .New ("\u006e\u006f\u0074 \u0061\u0020\u006e\u0075\u006d\u0062\u0065\u0072");
+);func (_cgcec *PdfParser )repairSeekXrefMarker ()error {_cebd ,_dabf :=_cgcec ._eece .Seek (0,_g .SeekEnd );if _dabf !=nil {return _dabf ;};_cfaa :=_c .MustCompile ("\u005cs\u0078\u0072\u0065\u0066\u005c\u0073*");var _fbbgf int64 ;var _gfdf int64 =1000;
+for _fbbgf < _cebd {if _cebd <=(_gfdf +_fbbgf ){_gfdf =_cebd -_fbbgf ;};_ ,_cacg :=_cgcec ._eece .Seek (-_fbbgf -_gfdf ,_g .SeekEnd );if _cacg !=nil {return _cacg ;};_fbeg :=make ([]byte ,_gfdf );_cgcec ._eece .Read (_fbeg );if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004c\u006f\u006fki\u006e\u0067\u0020\u0066\u006f\u0072\u0020\u0078\u0072\u0065\u0066\u0020\u003a\u0020\u0022\u0025\u0073\u0022",string (_fbeg ));
+};_fdcfg :=_cfaa .FindAllStringIndex (string (_fbeg ),-1);if _fdcfg !=nil {_bfdbe :=_fdcfg [len (_fdcfg )-1];if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0049\u006e\u0064\u003a\u0020\u0025\u0020\u0064",_fdcfg );};_cgcec ._eece .Seek (-_fbbgf -_gfdf +int64 (_bfdbe [0]),_g .SeekEnd );
+for {_gbafb ,_abfa :=_cgcec ._eece .Peek (1);if _abfa !=nil {return _abfa ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0042\u003a\u0020\u0025\u0064\u0020\u0025\u0063",_gbafb [0],_gbafb [0]);};if !IsWhiteSpace (_gbafb [0]){break ;
+};_cgcec ._eece .Discard (1);};return nil ;};_be .Log .Debug ("\u0057\u0061\u0072\u006e\u0069\u006eg\u003a\u0020\u0045\u004f\u0046\u0020\u006d\u0061\u0072\u006b\u0065\u0072\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075n\u0064\u0021\u0020\u002d\u0020\u0063\u006f\u006e\u0074\u0069\u006e\u0075\u0065\u0020s\u0065e\u006b\u0069\u006e\u0067");
+_fbbgf +=_gfdf ;};_be .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u003a\u0020\u0058\u0072\u0065\u0066\u0020\u0074a\u0062\u006c\u0065\u0020\u006d\u0061r\u006b\u0065\u0072\u0020\u0077\u0061\u0073\u0020\u006e\u006f\u0074\u0020\u0066o\u0075\u006e\u0064\u002e");
+return _bc .New ("\u0078r\u0065f\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064\u0020");};
+
+// Remove removes an element specified by key.
+func (_gaca *PdfObjectDictionary )Remove (key PdfObjectName ){_gaca ._egfe .Lock ();defer _gaca ._egfe .Unlock ();_fgbf :=-1;for _ebbdd ,_bcbfd :=range _gaca ._gaga {if _bcbfd ==key {_fgbf =_ebbdd ;break ;};};if _fgbf >=0{_gaca ._gaga =append (_gaca ._gaga [:_fgbf ],_gaca ._gaga [_fgbf +1:]...);
+delete (_gaca ._dbcd ,key );};};
+
+// DecodeGlobals decodes 'encoded' byte stream and returns their Globally defined segments ('Globals').
+func (_cbfb *JBIG2Encoder )DecodeGlobals (encoded []byte )(_ggf .Globals ,error ){return _ggf .DecodeGlobals (encoded );};
+
+// EncodeBytes returns the passed in slice of bytes.
+// The purpose of the method is to satisfy the StreamEncoder interface.
+func (_aaea *RawEncoder )EncodeBytes (data []byte )([]byte ,error ){return data ,nil };
+
+// NewASCII85Encoder makes a new ASCII85 encoder.
+func NewASCII85Encoder ()*ASCII85Encoder {_affb :=&ASCII85Encoder {};return _affb };func _bfeda (_bfdd PdfObject ,_abdda int ,_acgdd map[PdfObject ]struct{})error {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0054\u0072\u0061\u0076\u0065\u0072s\u0065\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0064\u0061\u0074\u0061 \u0028\u0064\u0065\u0070\u0074\u0068\u0020=\u0020\u0025\u0064\u0029",_abdda );
+};if _ ,_ceeec :=_acgdd [_bfdd ];_ceeec {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("-\u0041\u006c\u0072\u0065ad\u0079 \u0074\u0072\u0061\u0076\u0065r\u0073\u0065\u0064\u002e\u002e\u002e");};return nil ;};_acgdd [_bfdd ]=struct{}{};
+switch _gded :=_bfdd .(type ){case *PdfIndirectObject :_bgdef :=_gded ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0069\u006f\u003a\u0020\u0025\u0073",_bgdef );};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d\u0020\u0025\u0073",_bgdef .PdfObject );
+};return _bfeda (_bgdef .PdfObject ,_abdda +1,_acgdd );case *PdfObjectStream :_edfb :=_gded ;return _bfeda (_edfb .PdfObjectDictionary ,_abdda +1,_acgdd );case *PdfObjectDictionary :_eeegf :=_gded ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d\u0020\u0064\u0069\u0063\u0074\u003a\u0020\u0025\u0073",_eeegf );
+};for _ ,_fcea :=range _eeegf .Keys (){_eefcb :=_eeegf .Get (_fcea );if _badc ,_ceebb :=_eefcb .(*PdfObjectReference );_ceebb {_baeb :=_badc .Resolve ();_eeegf .Set (_fcea ,_baeb );_fcfea :=_bfeda (_baeb ,_abdda +1,_acgdd );if _fcfea !=nil {return _fcfea ;
+};}else {_feeba :=_bfeda (_eefcb ,_abdda +1,_acgdd );if _feeba !=nil {return _feeba ;};};};return nil ;case *PdfObjectArray :_cdbda :=_gded ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("-\u0020\u0061\u0072\u0072\u0061\u0079\u003a\u0020\u0025\u0073",_cdbda );
+};for _deagb ,_cgbe :=range _cdbda .Elements (){if _ffba ,_eccf :=_cgbe .(*PdfObjectReference );_eccf {_eaeg :=_ffba .Resolve ();_cdbda .Set (_deagb ,_eaeg );_ffegb :=_bfeda (_eaeg ,_abdda +1,_acgdd );if _ffegb !=nil {return _ffegb ;};}else {_ebgdd :=_bfeda (_cgbe ,_abdda +1,_acgdd );
+if _ebgdd !=nil {return _ebgdd ;};};};return nil ;case *PdfObjectReference :_be .Log .Debug ("E\u0052\u0052\u004f\u0052\u003a\u0020T\u0072\u0061\u0063\u0069\u006e\u0067\u0020\u0061\u0020r\u0065\u0066\u0065r\u0065n\u0063\u0065\u0021");return _bc .New ("\u0065r\u0072\u006f\u0072\u0020t\u0072\u0061\u0063\u0069\u006eg\u0020a\u0020r\u0065\u0066\u0065\u0072\u0065\u006e\u0063e");
+};return nil ;};func (_bfga *runLengthReader )Read (p []byte )(int ,error ){_fdggc :=0;for _fdggc < len (p ){if _bfga ._cdagg < _bfga ._bbaaa {_bbdb :=copy (p [_fdggc :],_bfga ._ecgb [_bfga ._cdagg :_bfga ._bbaaa ]);_fdggc +=_bbdb ;_bfga ._cdagg +=_bbdb ;
+continue ;};if _bfga ._dcda !=nil {if _fdggc > 0{return _fdggc ,nil ;};return 0,_bfga ._dcda ;};_bfga ._dcda =_bfga .fillRun ();};return _fdggc ,nil ;};func (_deg *PdfParser )lookupObjectViaOS (_cce int ,_ffcf int )(PdfObject ,error ){var _ceg *_ad .Reader ;
+var _bgga objectStream ;var _bdf bool ;_bgga ,_bdf =_deg ._fgbgc [_cce ];if !_bdf {_ecb ,_fcd :=_deg .LookupByNumber (_cce );if _fcd !=nil {_be .Log .Debug ("\u004d\u0069ss\u0069\u006e\u0067 \u006f\u0062\u006a\u0065ct \u0073tr\u0065\u0061\u006d\u0020\u0077\u0069\u0074h \u006e\u0075\u006d\u0062\u0065\u0072\u0020%\u0064",_cce );
+return nil ,_fcd ;};_bdfb ,_fdd :=_ecb .(*PdfObjectStream );if !_fdd {return nil ,_bc .New ("i\u006e\u0076\u0061\u006cid\u0020o\u0062\u006a\u0065\u0063\u0074 \u0073\u0074\u0072\u0065\u0061\u006d");};if _deg ._aebd !=nil &&!_deg ._aebd .isDecrypted (_bdfb ){return nil ,_bc .New ("\u006e\u0065\u0065\u0064\u0020\u0074\u006f\u0020\u0064\u0065\u0063r\u0079\u0070\u0074\u0020\u0074\u0068\u0065\u0020\u0073\u0074r\u0065\u0061\u006d");
+};_cee :=_bdfb .PdfObjectDictionary ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0073o\u0020\u0064\u003a\u0020\u0025\u0073\n",_cee .String ());};_eff ,_fdd :=_cee .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );if !_fdd {_be .Log .Debug ("\u0045\u0052R\u004f\u0052\u003a\u0020\u004f\u0062\u006a\u0065\u0063\u0074\u0020\u0073\u0074\u0072\u0065\u0061\u006d\u0020\u0073\u0068\u006f\u0075\u006c\u0064\u0020\u0061\u006c\u0077\u0061\u0079\u0073\u0020\u0068\u0061\u0076\u0065\u0020\u0061\u0020\u0054\u0079\u0070\u0065");
+return nil ,_bc .New ("\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0073\u0074\u0072\u0065a\u006d\u0020\u006d\u0069\u0073\u0073\u0069\u006e\u0067\u0020T\u0079\u0070\u0065");};if _ff .ToLower (string (*_eff ))!="\u006f\u0062\u006a\u0073\u0074\u006d"{_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u004f\u0062\u006a\u0065\u0063\u0074\u0020\u0073\u0074\u0072\u0065a\u006d\u0020\u0074\u0079\u0070\u0065\u0020s\u0068\u0061\u006c\u006c\u0020\u0061\u006c\u0077\u0061\u0079\u0073 \u0062\u0065\u0020\u004f\u0062\u006a\u0053\u0074\u006d\u0020\u0021");
+return nil ,_bc .New ("\u006f\u0062\u006a\u0065c\u0074\u0020\u0073\u0074\u0072\u0065\u0061\u006d\u0020\u0074y\u0070e\u0020\u0021\u003d\u0020\u004f\u0062\u006aS\u0074\u006d");};N ,_fdd :=_cee .Get ("\u004e").(*PdfObjectInteger );if !_fdd {return nil ,_bc .New ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u004e\u0020i\u006e\u0020\u0073\u0074\u0072\u0065\u0061m\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079");
+};_ebgc ,_fdd :=_cee .Get ("\u0046\u0069\u0072s\u0074").(*PdfObjectInteger );if !_fdd {return nil ,_bc .New ("\u0069\u006e\u0076al\u0069\u0064\u0020\u0046\u0069\u0072\u0073\u0074\u0020i\u006e \u0073t\u0072e\u0061\u006d\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079");
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0074\u0079\u0070\u0065\u003a\u0020\u0025\u0073\u0020\u006eu\u006d\u0062\u0065\u0072\u0020\u006f\u0066 \u006f\u0062\u006a\u0065\u0063\u0074\u0073\u003a\u0020\u0025\u0064",_eff ,*N );};_fge ,_fcd :=DecodeStream (_bdfb );
+if _fcd !=nil {return nil ,_fcd ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("D\u0065\u0063\u006f\u0064\u0065\u0064\u003a\u0020\u0025\u0073",_fge );};_ace :=_deg .GetFileOffset ();defer func (){_deg .SetFileOffset (_ace )}();_ceg =_ad .NewReader (_fge );
+_deg ._eece ._df =_ecd .NewReader (_ceg );if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0050a\u0072s\u0069\u006e\u0067\u0020\u006ff\u0066\u0073e\u0074\u0020\u006d\u0061\u0070");};_adb :=map[int ]int64 {};for _fdb :=0;_fdb < int (*N );
+_fdb ++{_deg .skipSpaces ();_eab ,_fbe :=_deg .parseNumber ();if _fbe !=nil {return nil ,_fbe ;};_egb ,_dgf :=_eab .(*PdfObjectInteger );if !_dgf {return nil ,_bc .New ("\u0069\u006e\u0076al\u0069\u0064\u0020\u006f\u0062\u006a\u0065\u0063\u0074 \u0073t\u0072e\u0061m\u0020\u006f\u0066\u0066\u0073\u0065\u0074\u0020\u0074\u0061\u0062\u006c\u0065");
+};_deg .skipSpaces ();_eab ,_fbe =_deg .parseNumber ();if _fbe !=nil {return nil ,_fbe ;};_dag ,_dgf :=_eab .(*PdfObjectInteger );if !_dgf {return nil ,_bc .New ("\u0069\u006e\u0076al\u0069\u0064\u0020\u006f\u0062\u006a\u0065\u0063\u0074 \u0073t\u0072e\u0061m\u0020\u006f\u0066\u0066\u0073\u0065\u0074\u0020\u0074\u0061\u0062\u006c\u0065");
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u006f\u0062j\u0020\u0025\u0064 \u006f\u0066\u0066\u0073\u0065\u0074\u0020\u0025\u0064",*_egb ,*_dag );};_adb [int (*_egb )]=int64 (*_ebgc +*_dag );};_bgga =objectStream {N :int (*N ),_edc :_fge ,_ffd :_adb };
+_deg ._fgbgc [_cce ]=_bgga ;}else {_gd :=_deg .GetFileOffset ();defer func (){_deg .SetFileOffset (_gd )}();_ceg =_ad .NewReader (_bgga ._edc );_deg ._eece ._df =_ecd .NewReader (_ceg );};_fce :=_bgga ._ffd [_ffcf ];if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0041\u0043\u0054\u0055AL\u0020\u006f\u0066\u0066\u0073\u0065\u0074\u005b\u0025\u0064\u005d\u0020\u003d\u0020%\u0064",_ffcf ,_fce );
+};_ceg .Seek (_fce ,_g .SeekStart );_deg ._eece ._df =_ecd .NewReader (_ceg );_dfg ,_ :=_deg ._eece ._df .Peek (100);if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004f\u0042\u004a\u0020\u0070\u0065\u0065\u006b\u0020\u0022\u0025\u0073\u0022",string (_dfg ));
+};_bgd ,_aacc :=_deg .parseObject ();if _aacc !=nil {_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0046\u0061\u0069\u006c \u0074\u006f\u0020\u0072\u0065\u0061\u0064 \u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0028\u0025\u0073\u0029",_aacc );return nil ,_aacc ;
+};if _bgd ==nil {return nil ,_bc .New ("o\u0062\u006a\u0065\u0063t \u0063a\u006e\u006e\u006f\u0074\u0020b\u0065\u0020\u006e\u0075\u006c\u006c");};_dge :=PdfIndirectObject {};_dge .ObjectNumber =int64 (_ffcf );_dge .PdfObject =_bgd ;_dge ._bgaa =_deg ;return &_dge ,nil ;
+};
+
+// GetFloat returns the *PdfObjectFloat represented by the PdfObject directly or indirectly within an indirect
+// object. On type mismatch the found bool flag is false and a nil pointer is returned.
+func GetFloat (obj PdfObject )(_cebgd *PdfObjectFloat ,_gffd bool ){_cebgd ,_gffd =TraceToDirectObject (obj ).(*PdfObjectFloat );return _cebgd ,_gffd ;};
+
+// Inspect analyzes the document object structure. Returns a map of object types (by name) with the instance count
+// as value.
+func (_agbea *PdfParser )Inspect ()(map[string ]int ,error ){return _agbea .inspect ()};
+
+// Close closes the bufferedReadSeeker.
+func (_bbc *bufferedReadSeeker )Close ()error {if _de ,_ffc :=_bbc ._eac .(_g .Closer );_ffc {return _de .Close ();};return nil ;};
+
+// EncodeBytes encodes a bytes array and return the encoded value based on the encoder parameters.
+func (_ggaa *RunLengthEncoder )EncodeBytes (data []byte )([]byte ,error ){_fcee :=_ad .NewReader (data );var _acff []byte ;var _afg []byte ;_fcbdg ,_acfg :=_fcee .ReadByte ();if _acfg ==_g .EOF {return []byte {},nil ;}else if _acfg !=nil {return nil ,_acfg ;
+};_aagd :=1;for {_agcf ,_dgfae :=_fcee .ReadByte ();if _dgfae ==_g .EOF {break ;}else if _dgfae !=nil {return nil ,_dgfae ;};if _agcf ==_fcbdg {if len (_afg )> 0{_afg =_afg [:len (_afg )-1];if len (_afg )> 0{_acff =append (_acff ,byte (len (_afg )-1));
+_acff =append (_acff ,_afg ...);};_aagd =1;_afg =[]byte {};};_aagd ++;if _aagd >=127{_acff =append (_acff ,byte (257-_aagd ),_fcbdg );_aagd =0;};}else {if _aagd > 0{if _aagd ==1{_afg =[]byte {_fcbdg };}else {_acff =append (_acff ,byte (257-_aagd ),_fcbdg );
+};_aagd =0;};_afg =append (_afg ,_agcf );if len (_afg )>=127{_acff =append (_acff ,byte (len (_afg )-1));_acff =append (_acff ,_afg ...);_afg =[]byte {};};};_fcbdg =_agcf ;};if len (_afg )> 0{_acff =append (_acff ,byte (len (_afg )-1));_acff =append (_acff ,_afg ...);
+}else if _aagd > 0{_acff =append (_acff ,byte (257-_aagd ),_fcbdg );};_acff =append (_acff ,128);return _acff ,nil ;};type limitedReadSeeker struct{_dcdd _g .ReadSeeker ;_gacb int64 ;};
+
+// HasInvalidSubsectionHeader implements core.ParserMetadata interface.
+func (_bef ParserMetadata )HasInvalidSubsectionHeader ()bool {return _bef ._egddd };type multiFallbackReader struct{_eagff _g .Reader ;_ffdbd []StreamEncoder ;_agbf bool ;_fgcad error ;_dgb []byte ;_aeacc int ;};func _gdg (_bcfb *PdfObjectStream ,_cdae *PdfObjectDictionary )(*LZWEncoder ,error ){_degf :=NewLZWEncoder ();
+_agee :=_bcfb .PdfObjectDictionary ;if _agee ==nil {return _degf ,nil ;};if _cdae ==nil {_agdf :=TraceToDirectObject (_agee .Get ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073"));if _agdf !=nil {if _gaae ,_cdd :=_agdf .(*PdfObjectDictionary );
+_cdd {_cdae =_gaae ;}else if _dgd ,_abda :=_agdf .(*PdfObjectArray );_abda {if _dgd .Len ()==1{if _dacc ,_aadd :=GetDict (_dgd .Get (0));_aadd {_cdae =_dacc ;};};};if _cdae ==nil {_be .Log .Error ("\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073\u0020\u006e\u006f\u0074 \u0061 \u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079\u0020\u0025\u0023\u0076",_agdf );
+return nil ,_ebc .Errorf ("\u0069\u006e\u0076\u0061li\u0064\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073");};};};_dfdcg :=_agee .Get ("E\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065");if _dfdcg !=nil {_aeca ,_dgea :=_dfdcg .(*PdfObjectInteger );
+if !_dgea {_be .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u003a \u0045\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069\u0065d\u0020\u0062\u0075\u0074\u0020\u006e\u006f\u0074\u0020\u006e\u0075\u006d\u0065\u0072i\u0063 \u0028\u0025\u0054\u0029",_dfdcg );
+return nil ,_ebc .Errorf ("\u0069\u006e\u0076\u0061li\u0064\u0020\u0045\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065");};if *_aeca !=0&&*_aeca !=1{return nil ,_ebc .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0045\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065\u0020\u0076\u0061\u006c\u0075e\u0020\u0028\u006e\u006f\u0074 \u0030\u0020o\u0072\u0020\u0031\u0029");
+};_degf .EarlyChange =int (*_aeca );}else {_degf .EarlyChange =1;};if _cdae ==nil {return _degf ,nil ;};if _bcfa ,_gcef :=GetIntVal (_cdae .Get ("E\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065"));_gcef {if _bcfa ==0||_bcfa ==1{_degf .EarlyChange =_bcfa ;
+}else {_be .Log .Debug ("W\u0041\u0052\u004e\u003a\u0020\u0069n\u0076\u0061\u006c\u0069\u0064\u0020E\u0061\u0072\u006c\u0079\u0043\u0068\u0061n\u0067\u0065\u0020\u0076\u0061\u006c\u0075\u0065\u003a\u0020%\u0064",_bcfa );};};_dfdcg =_cdae .Get ("\u0050r\u0065\u0064\u0069\u0063\u0074\u006fr");
+if _dfdcg !=nil {_fgae ,_ccgg :=_dfdcg .(*PdfObjectInteger );if !_ccgg {_be .Log .Debug ("E\u0072\u0072\u006f\u0072\u003a\u0020\u0050\u0072\u0065d\u0069\u0063\u0074\u006f\u0072\u0020\u0073pe\u0063\u0069\u0066\u0069e\u0064\u0020\u0062\u0075\u0074\u0020\u006e\u006f\u0074 n\u0075\u006de\u0072\u0069\u0063\u0020\u0028\u0025\u0054\u0029",_dfdcg );
+return nil ,_ebc .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0050\u0072\u0065\u0064i\u0063\u0074\u006f\u0072");};_degf .Predictor =int (*_fgae );};_dfdcg =_cdae .Get ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074");
+if _dfdcg !=nil {_ccdec ,_egfa :=_dfdcg .(*PdfObjectInteger );if !_egfa {_be .Log .Debug ("\u0045\u0052\u0052O\u0052\u003a\u0020\u0049n\u0076\u0061\u006c\u0069\u0064\u0020\u0042i\u0074\u0073\u0050\u0065\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074");
+return nil ,_ebc .Errorf ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0042\u0069\u0074\u0073\u0050e\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074");};_degf .BitsPerComponent =int (*_ccdec );};if _degf .Predictor > 1{_degf .Columns =1;_dfdcg =_cdae .Get ("\u0043o\u006c\u0075\u006d\u006e\u0073");
+if _dfdcg !=nil {_dfef ,_abaf :=_dfdcg .(*PdfObjectInteger );if !_abaf {return nil ,_ebc .Errorf ("\u0070r\u0065\u0064\u0069\u0063\u0074\u006f\u0072\u0020\u0063\u006f\u006cu\u006d\u006e\u0020\u0069\u006e\u0076\u0061\u006c\u0069\u0064");};_degf .Columns =int (*_dfef );
+};_degf .Colors =1;_dfdcg =_cdae .Get ("\u0043\u006f\u006c\u006f\u0072\u0073");if _dfdcg !=nil {_ccddd ,_baee :=_dfdcg .(*PdfObjectInteger );if !_baee {return nil ,_ebc .Errorf ("\u0070\u0072\u0065d\u0069\u0063\u0074\u006fr\u0020\u0063\u006f\u006c\u006f\u0072\u0073 \u006e\u006f\u0074\u0020\u0061\u006e\u0020\u0069\u006e\u0074\u0065\u0067\u0065\u0072");
+};_degf .Colors =int (*_ccddd );};};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0064\u0065\u0063\u006f\u0064\u0065\u0020\u0070\u0061\u0072\u0061\u006ds\u003a\u0020\u0025\u0073",_cdae .String ());};return _degf ,nil ;};
+
+// Write outputs the object as it is to be written to file.
+func (_bfed *PdfObjectNull )Write ()[]byte {return []byte ("\u006e\u0075\u006c\u006c")};
+
+// SetPredictor sets the predictor function.  Specify the number of columns per row.
+// The columns indicates the number of samples per row.
+// Used for grouping data together for compression.
+func (_cffa *FlateEncoder )SetPredictor (columns int ){_cffa .Predictor =11;_cffa .Columns =columns };func _gbc (_bca int )int {if _bca < _bd {return -1;};for _cda ,_egd :=range _aacee {if _bca <=_egd {return _cda ;};};return -1;};
+
+// ParseIndirectObject parses an indirect object from the input stream. Can also be an object stream.
+// Returns the indirect object (*PdfIndirectObject) or the stream object (*PdfObjectStream).
+func (_afcag *PdfParser )ParseIndirectObject ()(PdfObject ,error ){_fcgee :=PdfIndirectObject {};_fcgee ._bgaa =_afcag ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002dR\u0065a\u0064\u0020\u0069\u006e\u0064i\u0072\u0065c\u0074\u0020\u006f\u0062\u006a");
+};_ccggf ,_gbfda :=_afcag ._eece .Peek (20);if _gbfda !=nil {if _gbfda !=_g .EOF {_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0046\u0061\u0069\u006c\u0020\u0074\u006f\u0020r\u0065a\u0064\u0020\u0069\u006e\u0064\u0069\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a");
+return &_fcgee ,_gbfda ;};};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0028\u0069\u006edi\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a\u0020\u0070\u0065\u0065\u006b\u0020\u0022\u0025\u0073\u0022",string (_ccggf ));};_gagf :=_eecd .FindStringSubmatchIndex (string (_ccggf ));
+if len (_gagf )< 6{if _gbfda ==_g .EOF {return nil ,_gbfda ;};_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020U\u006e\u0061\u0062l\u0065\u0020\u0074\u006f \u0066\u0069\u006e\u0064\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0073\u0069\u0067\u006e\u0061\u0074\u0075\u0072\u0065\u0020\u0028\u0025\u0073\u0029",string (_ccggf ));
+return &_fcgee ,_bc .New ("\u0075\u006e\u0061b\u006c\u0065\u0020\u0074\u006f\u0020\u0064\u0065\u0074\u0065\u0063\u0074\u0020\u0069\u006e\u0064\u0069\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020s\u0069\u0067\u006e\u0061\u0074\u0075\u0072\u0065");
+};_afcag ._eece .Discard (_gagf [0]);if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("O\u0066\u0066\u0073\u0065\u0074\u0073\u0020\u0025\u0020\u0064",_gagf );};_fabf :=_gagf [1]-_gagf [0];_fedg :=make ([]byte ,_fabf );_ ,_gbfda =_afcag .ReadAtLeast (_fedg ,_fabf );
+if _gbfda !=nil {_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0075\u006e\u0061\u0062l\u0065\u0020\u0074\u006f\u0020\u0072\u0065\u0061\u0064\u0020-\u0020\u0025\u0073",_gbfda );return nil ,_gbfda ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0074\u0065\u0078t\u006c\u0069\u006e\u0065\u003a\u0020\u0025\u0073",_fedg );
+};_bdfbf :=_eecd .FindStringSubmatch (string (_fedg ));if len (_bdfbf )< 3{_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020U\u006e\u0061\u0062l\u0065\u0020\u0074\u006f \u0066\u0069\u006e\u0064\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0073\u0069\u0067\u006e\u0061\u0074\u0075\u0072\u0065\u0020\u0028\u0025\u0073\u0029",string (_fedg ));
+return &_fcgee ,_bc .New ("\u0075\u006e\u0061b\u006c\u0065\u0020\u0074\u006f\u0020\u0064\u0065\u0074\u0065\u0063\u0074\u0020\u0069\u006e\u0064\u0069\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020s\u0069\u0067\u006e\u0061\u0074\u0075\u0072\u0065");
+};_daadd ,_ :=_d .Atoi (_bdfbf [1]);_gbdcf ,_ :=_d .Atoi (_bdfbf [2]);_fcgee .ObjectNumber =int64 (_daadd );_fcgee .GenerationNumber =int64 (_gbdcf );for {_cddc ,_dggf :=_afcag ._eece .Peek (2);if _dggf !=nil {return &_fcgee ,_dggf ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("I\u006ed\u002e\u0020\u0070\u0065\u0065\u006b\u003a\u0020%\u0073\u0020\u0028\u0025 x\u0029\u0021",string (_cddc ),string (_cddc ));
+};if IsWhiteSpace (_cddc [0]){_afcag .skipSpaces ();}else if _cddc [0]=='%'{_afcag .skipComments ();}else if (_cddc [0]=='<')&&(_cddc [1]=='<'){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0043\u0061\u006c\u006c\u0020\u0050\u0061\u0072\u0073e\u0044\u0069\u0063\u0074");
+};_fcgee .PdfObject ,_dggf =_afcag .ParseDict ();if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0045\u004f\u0046\u0020Ca\u006c\u006c\u0020\u0050\u0061\u0072\u0073\u0065\u0044\u0069\u0063\u0074\u003a\u0020%\u0076",_dggf );};if _dggf !=nil {return &_fcgee ,_dggf ;
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0050\u0061\u0072\u0073\u0065\u0064\u0020\u0064\u0069\u0063t\u0069\u006f\u006e\u0061\u0072\u0079\u002e.\u002e\u0020\u0066\u0069\u006e\u0069\u0073\u0068\u0065\u0064\u002e");};}else if (_cddc [0]=='/')||(_cddc [0]=='(')||(_cddc [0]=='[')||(_cddc [0]=='<'){_fcgee .PdfObject ,_dggf =_afcag .parseObject ();
+if _dggf !=nil {return &_fcgee ,_dggf ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("P\u0061\u0072\u0073\u0065\u0064\u0020o\u0062\u006a\u0065\u0063\u0074\u0020\u002e\u002e\u002e \u0066\u0069\u006ei\u0073h\u0065\u0064\u002e");};}else if _cddc [0]==']'{_be .Log .Debug ("\u0057\u0041\u0052\u004e\u0049N\u0047\u003a\u0020\u0027\u005d\u0027 \u0063\u0068\u0061\u0072\u0061\u0063\u0074e\u0072\u0020\u006eo\u0074\u0020\u0062\u0065i\u006e\u0067\u0020\u0075\u0073\u0065d\u0020\u0061\u0073\u0020\u0061\u006e\u0020\u0061\u0072\u0072\u0061\u0079\u0020\u0065\u006e\u0064\u0069n\u0067\u0020\u006d\u0061\u0072\u006b\u0065\u0072\u002e\u0020\u0053\u006b\u0069\u0070\u0070\u0069\u006e\u0067\u002e");
+_afcag ._eece .Discard (1);}else {if _cddc [0]=='e'{_gadcg ,_cbeab :=_afcag .readTextLine ();if _cbeab !=nil {return nil ,_cbeab ;};if len (_gadcg )>=6&&_gadcg [0:6]=="\u0065\u006e\u0064\u006f\u0062\u006a"{break ;};}else if _cddc [0]=='s'{_cddc ,_ =_afcag ._eece .Peek (10);
+if string (_cddc [:6])=="\u0073\u0074\u0072\u0065\u0061\u006d"{_agab :=6;if len (_cddc )> 6{if IsWhiteSpace (_cddc [_agab ])&&_cddc [_agab ]!='\r'&&_cddc [_agab ]!='\n'{_be .Log .Debug ("\u004e\u006fn\u002d\u0063\u006f\u006e\u0066\u006f\u0072\u006d\u0061\u006e\u0074\u0020\u0050\u0044\u0046\u0020\u006e\u006f\u0074 \u0065\u006e\u0064\u0069\u006e\u0067 \u0073\u0074\u0072\u0065\u0061\u006d\u0020\u006c\u0069\u006e\u0065\u0020\u0070\u0072o\u0070\u0065r\u006c\u0079\u0020\u0077i\u0074\u0068\u0020\u0045\u004fL\u0020\u006d\u0061\u0072\u006b\u0065\u0072");
+_afcag ._deaa ._dfdc =true ;_agab ++;};switch _cddc [_agab ]{case '\r':_agab ++;if _cddc [_agab ]=='\n'{_agab ++;};case '\n':_agab ++;default:_afcag ._deaa ._dfdc =true ;};};_afcag ._eece .Discard (_agab );_gcde ,_dbgc :=_fcgee .PdfObject .(*PdfObjectDictionary );
+if !_dbgc {return nil ,_bc .New ("\u0073\u0074\u0072\u0065\u0061\u006d\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u006di\u0073s\u0069\u006e\u0067\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079");};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0053\u0074\u0072\u0065\u0061\u006d\u0020\u0064\u0069c\u0074\u0020\u0025\u0073",_gcde );
+};_fbage ,_bdggg :=_afcag .traceStreamLength (_gcde .Get ("\u004c\u0065\u006e\u0067\u0074\u0068"));if _bdggg !=nil {_be .Log .Debug ("\u0046\u0061\u0069l\u0020\u0074\u006f\u0020t\u0072\u0061\u0063\u0065\u0020\u0073\u0074r\u0065\u0061\u006d\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u003a\u0020\u0025\u0076",_bdggg );
+return nil ,_bdggg ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0053\u0074\u0072\u0065\u0061\u006d\u0020\u006c\u0065\u006e\u0067\u0074h\u003f\u0020\u0025\u0073",_fbage );};_gcaf ,_bgff :=_fbage .(*PdfObjectInteger );if !_bgff {return nil ,_bc .New ("\u0073\u0074re\u0061\u006d\u0020l\u0065\u006e\u0067\u0074h n\u0065ed\u0073\u0020\u0074\u006f\u0020\u0062\u0065 a\u006e\u0020\u0069\u006e\u0074\u0065\u0067e\u0072");
+};_dbcc :=*_gcaf ;if _dbcc < 0{return nil ,_bc .New ("\u0073\u0074\u0072\u0065\u0061\u006d\u0020\u006e\u0065\u0065\u0064\u0073\u0020\u0074\u006f \u0062e\u0020\u006c\u006f\u006e\u0067\u0065\u0072\u0020\u0074\u0068\u0061\u006e\u0020\u0030");};_effca :=_afcag .GetFileOffset ();
+_aceg :=_afcag .xrefNextObjectOffset (_effca );if _effca +int64 (_dbcc )> _aceg &&_aceg > _effca {_be .Log .Debug ("E\u0078\u0070\u0065\u0063te\u0064 \u0065\u006e\u0064\u0069\u006eg\u0020\u0061\u0074\u0020\u0025\u0064",_effca +int64 (_dbcc ));_be .Log .Debug ("\u004e\u0065\u0078\u0074\u0020\u006f\u0062\u006a\u0065\u0063\u0074 \u0073\u0074\u0061\u0072\u0074\u0069\u006e\u0067\u0020\u0061t\u0020\u0025\u0064",_aceg );
+_cdbd :=_aceg -_effca -17;if _cdbd < 0{return nil ,_bc .New ("\u0069n\u0076\u0061l\u0069\u0064\u0020\u0073t\u0072\u0065\u0061m\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u002c\u0020go\u0069\u006e\u0067 \u0070\u0061s\u0074\u0020\u0062\u006f\u0075\u006ed\u0061\u0072i\u0065\u0073");
+};_be .Log .Debug ("\u0041\u0074\u0074\u0065\u006d\u0070\u0074\u0069\u006e\u0067\u0020\u0061\u0020l\u0065\u006e\u0067\u0074\u0068\u0020c\u006f\u0072\u0072\u0065\u0063\u0074\u0069\u006f\u006e\u0020\u0074\u006f\u0020%\u0064\u002e\u002e\u002e",_cdbd );_dbcc =PdfObjectInteger (_cdbd );
+_gcde .Set ("\u004c\u0065\u006e\u0067\u0074\u0068",MakeInteger (_cdbd ));};if int64 (_dbcc )> _afcag ._fafe {_be .Log .Debug ("\u0045\u0052R\u004f\u0052\u003a\u0020\u0053t\u0072\u0065\u0061\u006d\u0020l\u0065\u006e\u0067\u0074\u0068\u0020\u0063\u0061\u006e\u006e\u006f\u0074\u0020\u0062\u0065\u0020\u006c\u0061\u0072\u0067\u0065\u0072\u0020\u0074\u0068\u0061\u006e\u0020\u0066\u0069\u006c\u0065\u0020\u0073\u0069\u007a\u0065");
+return nil ,_bc .New ("\u0069n\u0076\u0061l\u0069\u0064\u0020\u0073t\u0072\u0065\u0061m\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u002c\u0020la\u0072\u0067\u0065r\u0020\u0074h\u0061\u006e\u0020\u0066\u0069\u006ce\u0020\u0073i\u007a\u0065");};_dfffg :=make ([]byte ,_dbcc );
+_ ,_bdggg =_afcag .ReadAtLeast (_dfffg ,int (_dbcc ));if _bdggg !=nil {_be .Log .Debug ("E\u0052\u0052\u004f\u0052 s\u0074r\u0065\u0061\u006d\u0020\u0028%\u0064\u0029\u003a\u0020\u0025\u0058",len (_dfffg ),_dfffg );_be .Log .Debug ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_bdggg );
+return nil ,_bdggg ;};_cbef :=PdfObjectStream {};_cbef .Stream =_dfffg ;_cbef .PdfObjectDictionary =_fcgee .PdfObject .(*PdfObjectDictionary );_cbef .ObjectNumber =_fcgee .ObjectNumber ;_cbef .GenerationNumber =_fcgee .GenerationNumber ;_cbef .PdfObjectReference ._bgaa =_afcag ;
+_afcag .skipSpaces ();_afcag ._eece .Discard (9);_afcag .skipSpaces ();return &_cbef ,nil ;};};if _fcgee .PdfObject !=nil &&_cddc [0]>='0'&&_cddc [0]<='9'{_fegb :=_cddc ;if len (_cddc )< 20{_fegb ,_ =_afcag ._eece .Peek (20);};if _eecd .Match (_fegb ){_be .Log .Debug ("WA\u0052\u004eI\u004e\u0047\u003a\u0020\u004d\u0069\u0073\u0073\u0069n\u0067\u0020\u0065\u006e\u0064\u006f\u0062\u006a\u0020\u006d\u0061\u0072\u006b\u0065\u0072\u002c\u0020\u0064\u0065\u0074\u0065\u0063\u0074\u0065\u0064\u0020\u006e\u0065w\u0020o\u0062\u006a\u0065\u0063\u0074\u0020\u0073\u0074a\u0072t\u0069\u006eg");
+break ;};};_fcgee .PdfObject ,_dggf =_afcag .parseObject ();if _fcgee .PdfObject ==nil {_be .Log .Debug ("\u0049N\u0043\u004f\u004dP\u0041\u0054\u0049B\u0049LI\u0054\u0059\u003a\u0020\u0049\u006e\u0064i\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u006e\u006f\u0074\u0020\u0063\u006f\u006e\u0074\u0061\u0069\u006e\u0069\u006e\u0067\u0020\u0061n \u006fb\u006a\u0065\u0063\u0074\u0020\u002d \u0061\u0073\u0073\u0075\u006di\u006e\u0067\u0020\u006e\u0075\u006c\u006c\u0020\u006f\u0062\u006ae\u0063\u0074");
+_fcgee .PdfObject =MakeNull ();};return &_fcgee ,_dggf ;};};if _fcgee .PdfObject ==nil {_be .Log .Debug ("\u0049N\u0043\u004f\u004dP\u0041\u0054\u0049B\u0049LI\u0054\u0059\u003a\u0020\u0049\u006e\u0064i\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u006e\u006f\u0074\u0020\u0063\u006f\u006e\u0074\u0061\u0069\u006e\u0069\u006e\u0067\u0020\u0061n \u006fb\u006a\u0065\u0063\u0074\u0020\u002d \u0061\u0073\u0073\u0075\u006di\u006e\u0067\u0020\u006e\u0075\u006c\u006c\u0020\u006f\u0062\u006ae\u0063\u0074");
+_fcgee .PdfObject =MakeNull ();};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0052\u0065\u0074\u0075rn\u0069\u006e\u0067\u0020\u0069\u006e\u0064\u0069\u0072\u0065\u0063\u0074\u0021");};return &_fcgee ,nil ;};
+
+// PdfObjectBool represents the primitive PDF boolean object.
+type PdfObjectBool bool ;
+
+// DecodeImages decodes the page images from the jbig2 'encoded' data input.
+// The jbig2 document may contain multiple pages, thus the function can return multiple
+// images. The images order corresponds to the page number.
+func (_ggcgb *JBIG2Encoder )DecodeImages (encoded []byte )([]_ed .Image ,error ){const _cafge ="\u004aB\u0049\u0047\u0032\u0045n\u0063\u006f\u0064\u0065\u0072.\u0044e\u0063o\u0064\u0065\u0049\u006d\u0061\u0067\u0065s";_feccg ,_eagc :=_ea .Decode (encoded ,_ea .Parameters {},_ggcgb .Globals .ToDocumentGlobals ());
+if _eagc !=nil {return nil ,_fb .Wrap (_eagc ,_cafge ,"");};_egbdd ,_eagc :=_feccg .PageNumber ();if _eagc !=nil {return nil ,_fb .Wrap (_eagc ,_cafge ,"");};_cgdf :=[]_ed .Image {};var _eegf _ed .Image ;for _ccge :=1;_ccge <=_egbdd ;_ccge ++{_eegf ,_eagc =_feccg .DecodePageImage (_ccge );
+if _eagc !=nil {return nil ,_fb .Wrapf (_eagc ,_cafge ,"\u0070\u0061\u0067\u0065\u003a\u0020\u0027\u0025\u0064\u0027",_ccge );};_cgdf =append (_cgdf ,_eegf );};return _cgdf ,nil ;};func (_faaf *PdfParser )parseLinearizedDictionary ()(*PdfObjectDictionary ,error ){_accf ,_dggaf :=_faaf ._eece .Seek (0,_g .SeekEnd );
+if _dggaf !=nil {return nil ,_dggaf ;};var _ebgf int64 ;var _ccgff int64 =2048;for _ebgf < _accf -4{if _accf <=(_ccgff +_ebgf ){_ccgff =_accf -_ebgf ;};_ ,_dbgga :=_faaf ._eece .Seek (_ebgf ,_g .SeekStart );if _dbgga !=nil {return nil ,_dbgga ;};_baecb :=make ([]byte ,_ccgff );
+_ ,_dbgga =_faaf ._eece .Read (_baecb );if _dbgga !=nil {return nil ,_dbgga ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004c\u006f\u006f\u006b\u0069\u006e\u0067\u0020\u0066\u006f\u0072\u0020\u0066i\u0072\u0073\u0074\u0020\u0069\u006ed\u0069\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u003a \u0022\u0025\u0073\u0022",string (_baecb ));
+};_dbfb :=_eecd .FindAllStringIndex (string (_baecb ),-1);if _dbfb !=nil {_adcc :=_dbfb [0];if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0049\u006e\u0064\u003a\u0020\u0025\u0020\u0064",_dbfb );};_ ,_eeec :=_faaf ._eece .Seek (int64 (_adcc [0]),_g .SeekStart );
+if _eeec !=nil {return nil ,_eeec ;};_faaf ._eece ._df =_ecd .NewReader (_faaf ._eece ._eac );_eecbg ,_eeec :=_faaf .ParseIndirectObject ();if _eeec !=nil {return nil ,nil ;};if _cdde ,_acdeb :=GetIndirect (_eecbg );_acdeb {if _eacf ,_dgcg :=GetDict (_cdde .PdfObject );
+_dgcg {if _bbfa :=_eacf .Get ("\u004c\u0069\u006e\u0065\u0061\u0072\u0069\u007a\u0065\u0064");_bbfa !=nil {return _eacf ,nil ;};return nil ,nil ;};};return nil ,nil ;};_ebgf +=_ccgff -4;};return nil ,_bc .New ("\u0074\u0068\u0065\u0020\u0066\u0069\u0072\u0073\u0074\u0020\u006fb\u006a\u0065\u0063\u0074\u0020\u006e\u006f\u0074\u0020\u0066o\u0075\u006e\u0064");
+};func (_gba *PdfParser )checkPostEOFData ()error {const _daaf ="\u0025\u0025\u0045O\u0046";_ ,_dbf :=_gba ._eece .Seek (-int64 (len ([]byte (_daaf )))-1,_g .SeekEnd );if _dbf !=nil {return _dbf ;};_dbbb :=make ([]byte ,len ([]byte (_daaf ))+1);_ ,_dbf =_gba ._eece .Read (_dbbb );
+if _dbf !=nil {if _dbf !=_g .EOF {return _dbf ;};};if string (_dbbb )==_daaf ||string (_dbbb )==_daaf +"\u000a"{_gba ._deaa ._eaga =true ;};return nil ;};
+
+// MakeDecodeParams makes a new instance of an encoding dictionary based on
+// the current encoder settings.
+func (_fbcg *CCITTFaxEncoder )MakeDecodeParams ()PdfObject {_dfgc :=MakeDict ();_dfgc .Set ("\u004b",MakeInteger (int64 (_fbcg .K )));_dfgc .Set ("\u0043o\u006c\u0075\u006d\u006e\u0073",MakeInteger (int64 (_fbcg .Columns )));if _fbcg .BlackIs1 {_dfgc .Set ("\u0042\u006c\u0061\u0063\u006b\u0049\u0073\u0031",MakeBool (_fbcg .BlackIs1 ));
+};if _fbcg .EncodedByteAlign {_dfgc .Set ("\u0045\u006ec\u006f\u0064\u0065d\u0042\u0079\u0074\u0065\u0041\u006c\u0069\u0067\u006e",MakeBool (_fbcg .EncodedByteAlign ));};if _fbcg .EndOfLine &&_fbcg .K >=0{_dfgc .Set ("\u0045n\u0064\u004f\u0066\u004c\u0069\u006ee",MakeBool (_fbcg .EndOfLine ));
+};if _fbcg .Rows !=0&&!_fbcg .EndOfBlock {_dfgc .Set ("\u0052\u006f\u0077\u0073",MakeInteger (int64 (_fbcg .Rows )));};if !_fbcg .EndOfBlock {_dfgc .Set ("\u0045\u006e\u0064\u004f\u0066\u0042\u006c\u006f\u0063\u006b",MakeBool (_fbcg .EndOfBlock ));};if _fbcg .DamagedRowsBeforeError !=0{_dfgc .Set ("\u0044\u0061\u006d\u0061ge\u0064\u0052\u006f\u0077\u0073\u0042\u0065\u0066\u006f\u0072\u0065\u0045\u0072\u0072o\u0072",MakeInteger (int64 (_fbcg .DamagedRowsBeforeError )));
+};return _dfgc ;};
+
+// PdfObjectName represents the primitive PDF name object.
+type PdfObjectName string ;
+
+// MakeObjectStreams creates an PdfObjectStreams from a list of PdfObjects.
+func MakeObjectStreams (objects ...PdfObject )*PdfObjectStreams {return &PdfObjectStreams {_fefge :objects };};
+
+// Len returns the number of elements in the array.
+func (_geec *PdfObjectArray )Len ()int {if _geec ==nil {return 0;};return len (_geec ._dccdc );};func (_cgg *PdfCrypt )isDecrypted (_dbb PdfObject )bool {_ ,_bcc :=_cgg ._gef [_dbb ];if _bcc {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0041\u006c\u0072\u0065\u0061\u0064\u0079\u0020\u0064\u0065\u0063\u0072y\u0070\u0074\u0065\u0064");
+};return true ;};switch _agaf :=_dbb .(type ){case *PdfObjectStream :if _cgg ._eeae .R !=5{if _gdff ,_dde :=_agaf .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );_dde &&*_gdff =="\u0058\u0052\u0065\u0066"{return true ;};};case *PdfIndirectObject :if _ ,_bcc =_cgg ._aea [int (_agaf .ObjectNumber )];
+_bcc {return true ;};switch _fgd :=_agaf .PdfObject .(type ){case *PdfObjectDictionary :_aag :=true ;for _ ,_fgc :=range _cegd {if _fgd .Get (_fgc )==nil {_aag =false ;break ;};};if _aag {return true ;};};};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004e\u006f\u0074\u0020\u0064\u0065\u0063\u0072\u0079\u0070\u0074\u0065d\u0020\u0079\u0065\u0074");
+};return false ;};
+
+// Write outputs the object as it is to be written to file.
+func (_cgcae *PdfObjectInteger )Write ()[]byte {return []byte (_d .FormatInt (int64 (*_cgcae ),10))};const _ede ="\u0053\u0074\u0064C\u0046";
+
+// UpdateParams updates the parameter values of the encoder.
+// Implements StreamEncoder interface.
+func (_acadf *JBIG2Encoder )UpdateParams (params *PdfObjectDictionary ){_fdcc ,_ffeb :=GetNumberAsInt64 (params .Get ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074"));if _ffeb ==nil {_acadf .BitsPerComponent =int (_fdcc );
+};_gfbc ,_ffeb :=GetNumberAsInt64 (params .Get ("\u0057\u0069\u0064t\u0068"));if _ffeb ==nil {_acadf .Width =int (_gfbc );};_cddg ,_ffeb :=GetNumberAsInt64 (params .Get ("\u0048\u0065\u0069\u0067\u0068\u0074"));if _ffeb ==nil {_acadf .Height =int (_cddg );
+};_aegd ,_ffeb :=GetNumberAsInt64 (params .Get ("\u0043o\u006co\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u0073"));if _ffeb ==nil {_acadf .ColorComponents =int (_aegd );};};
+
+// EncodeBytes DCT encodes the passed in slice of bytes.
+func (_fadf *DCTEncoder )EncodeBytes (data []byte )([]byte ,error ){var _ccfa _ed .Image ;if _fadf .ColorComponents ==1&&_fadf .BitsPerComponent ==8{_ccfa =&_ed .Gray {Rect :_ed .Rect (0,0,_fadf .Width ,_fadf .Height ),Pix :data ,Stride :_bg .BytesPerLine (_fadf .Width ,_fadf .BitsPerComponent ,_fadf .ColorComponents )};
+}else {var _fbcb error ;_ccfa ,_fbcb =_bg .NewImage (_fadf .Width ,_fadf .Height ,_fadf .BitsPerComponent ,_fadf .ColorComponents ,data ,nil ,nil );if _fbcb !=nil {return nil ,_fbcb ;};};_dedd :=_af .Options {};_dedd .Quality =_fadf .Quality ;var _ecgc _ad .Buffer ;
+if _fgca :=_af .Encode (&_ecgc ,_ccfa ,&_dedd );_fgca !=nil {return nil ,_fgca ;};return _ecgc .Bytes (),nil ;};
+
+// RawEncoder implements Raw encoder/decoder (no encoding, pass through)
+type RawEncoder struct{};
+
+// GetFileOffset returns the current file offset, accounting for buffered position.
+func (_ebcc *bufferedReadSeeker )GetFileOffset ()int64 {_ae ,_ :=_ebcc ._eac .Seek (0,_g .SeekCurrent );_ae -=int64 (_ebcc ._df .Buffered ());return _ae ;};var _eecg =map[byte ][]byte {'\n':[]byte ("\u005c\u006e"),'\r':[]byte ("\u005c\u0072"),'\t':[]byte ("\u005c\u0074"),'\b':[]byte ("\u005c\u0062"),'\f':[]byte ("\u005c\u0066"),'(':[]byte ("\u005c\u0028"),')':[]byte ("\u005c\u0029"),'\\':[]byte ("\u005c\u005c")};
+
+
+// DecodeReader returns a reader that LZW-decodes from r. EarlyChange selects
+// which LZW variant (one-code-early vs postponed code-length increase),
+// matching DecodeBytes. The predictor is NOT applied — see FlateEncoder's
+// DecodeReader for rationale.
+func (_bafg *LZWEncoder )DecodeReader (r _g .Reader )_g .Reader {if _bafg .EarlyChange ==1{return _ag .NewReader (r ,_ag .MSB ,8);};return _caa .NewReader (r ,_caa .MSB ,8);};
+
+// MakeDict creates and returns an empty PdfObjectDictionary.
+func MakeDict ()*PdfObjectDictionary {_dab :=&PdfObjectDictionary {};_dab ._dbcd =map[PdfObjectName ]PdfObject {};_dab ._gaga =[]PdfObjectName {};return _dab ;};func _fee (_dc _g .ReadSeeker )*bufferedReadSeeker {return &bufferedReadSeeker {_eac :_dc ,_df :_ecd .NewReader (_dc )};
+};
+
+// ASCIIHexEncoder implements ASCII hex encoder/decoder.
+type ASCIIHexEncoder struct{};
+
+// IsTextWriteDirectionLTR returns `true` if string write direction Left To Right.
+// detect string write direction using golang.org/x/text/unicode/bidi library.
+func IsTextWriteDirectionLTR (str string )bool {_caga :=func (_eaead rune )bool {return _eaead =='\u000A'};_edef :=_ff .TrimFunc (str ,_caga );_bfade :=_gb .Paragraph {};_ ,_caaga :=_bfade .SetString (_edef );if _caaga !=nil {return true ;};_dacad ,_caaga :=_bfade .Order ();
+if _caaga !=nil {return true ;};if _dacad .NumRuns ()< 1{return true ;};return _bfade .IsLeftToRight ();};
+
+// GetPreviousRevisionReadSeeker returns ReadSeeker for the previous version of the Pdf document.
+func (_deab *PdfParser )GetPreviousRevisionReadSeeker ()(_g .ReadSeeker ,error ){if _fdfb :=_deab .seekToEOFMarker (_deab ._fafe -_gde );_fdfb !=nil {return nil ,_fdfb ;};_agbff ,_gfagb :=_deab ._eece .Seek (0,_g .SeekCurrent );if _gfagb !=nil {return nil ,_gfagb ;
+};_agbff +=_gde ;return _gggb (_deab ._eece ,_agbff );};
+
+// Clear resets the dictionary to an empty state.
+func (_ebgba *PdfObjectDictionary )Clear (){_ebgba ._egfe .Lock ();defer _ebgba ._egfe .Unlock ();_ebgba ._gaga =[]PdfObjectName {};_ebgba ._dbcd =map[PdfObjectName ]PdfObject {};};func _cbca (_deaba string )(int ,int ,error ){_cadf :=_eecd .FindStringSubmatch (_deaba );
+if len (_cadf )< 3{return 0,0,_bc .New ("\u0075\u006e\u0061b\u006c\u0065\u0020\u0074\u006f\u0020\u0064\u0065\u0074\u0065\u0063\u0074\u0020\u0069\u006e\u0064\u0069\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020s\u0069\u0067\u006e\u0061\u0074\u0075\u0072\u0065");
+};_ggcde ,_ :=_d .Atoi (_cadf [1]);_dacag ,_ :=_d .Atoi (_cadf [2]);return _ggcde ,_dacag ,nil ;};
+
+// Buffered returns the number of bytes currently buffered.
+func (_ab *bufferedReadSeeker )Buffered ()int {return _ab ._df .Buffered ()};
+
+// GetFilterName returns the name of the encoding filter.
+func (_fbac *JBIG2Encoder )GetFilterName ()string {return StreamEncodingFilterNameJBIG2 };
+
+// IsFloatDigit checks if a character can be a part of a float number string.
+func IsFloatDigit (c byte )bool {return ('0'<=c &&c <='9')||c =='.'};
+
+// DecodeBytes decodes a slice of DCT encoded bytes and returns the result.
+func (_dbda *DCTEncoder )DecodeBytes (encoded []byte )(_fcfe []byte ,_caaf error ){_cacfd :=_ad .NewReader (encoded );_dgeb ,_caaf :=_af .Decode (_cacfd );if _caaf !=nil {_be .Log .Debug ("\u0045r\u0072\u006f\u0072\u0020\u0064\u0065\u0063\u006f\u0064\u0069\u006eg\u0020\u0069\u006d\u0061\u0067\u0065\u003a\u0020\u0025\u0073",_caaf );
+return nil ,_caaf ;};_edb :=_dgeb .Bounds ();_fgadb :=AcquireBytes (_edb .Dx ()*_edb .Dy ()*_dbda .ColorComponents *_dbda .BitsPerComponent /8);defer func (){if _caaf !=nil {ReleaseBytes (_fgadb );};}();_dfgb :=0;switch _dbda .ColorComponents {case 1:_abec :=[]float64 {_dbda .Decode [0],_dbda .Decode [1]};
+for _bdfab :=_edb .Min .Y ;_bdfab < _edb .Max .Y ;_bdfab ++{for _efa :=_edb .Min .X ;_efa < _edb .Max .X ;_efa ++{_egdb :=_dgeb .At (_efa ,_bdfab );if _dbda .BitsPerComponent ==16{_ddcg ,_agcd :=_egdb .(_ca .Gray16 );if !_agcd {return nil ,_bc .New ("\u0063\u006fl\u006f\u0072\u0020t\u0079\u0070\u0065\u0020\u0065\u0072\u0072\u006f\u0072");
+};_fbdb :=_gafc (uint (_ddcg .Y >>8),_abec [0],_abec [1]);_bggb :=_gafc (uint (_ddcg .Y ),_abec [0],_abec [1]);_fgadb [_dfgb ]=byte (_fbdb );_dfgb ++;_fgadb [_dfgb ]=byte (_bggb );_dfgb ++;}else {_ggde ,_gcdd :=_egdb .(_ca .Gray );if !_gcdd {return nil ,_bc .New ("\u0063\u006fl\u006f\u0072\u0020t\u0079\u0070\u0065\u0020\u0065\u0072\u0072\u006f\u0072");
+};_fgadb [_dfgb ]=byte (_gafc (uint (_ggde .Y ),_abec [0],_abec [1]));_dfgb ++;};};};case 3:_gdbc :=[]float64 {_dbda .Decode [0],_dbda .Decode [1]};_ggac :=[]float64 {_dbda .Decode [2],_dbda .Decode [3]};_bbd :=[]float64 {_dbda .Decode [4],_dbda .Decode [5]};
+for _gdcdd :=_edb .Min .Y ;_gdcdd < _edb .Max .Y ;_gdcdd ++{for _bgef :=_edb .Min .X ;_bgef < _edb .Max .X ;_bgef ++{_fgfc :=_dgeb .At (_bgef ,_gdcdd );if _dbda .BitsPerComponent ==16{_gab ,_fggb :=_fgfc .(_ca .RGBA64 );if !_fggb {return nil ,_bc .New ("\u0063\u006fl\u006f\u0072\u0020t\u0079\u0070\u0065\u0020\u0065\u0072\u0072\u006f\u0072");
+};_efff :=_gafc (uint (_gab .R >>8),_gdbc [0],_gdbc [1]);_aada :=_gafc (uint (_gab .R ),_gdbc [0],_gdbc [1]);_cdda :=_gafc (uint (_gab .G >>8),_ggac [0],_ggac [1]);_fdea :=_gafc (uint (_gab .G ),_ggac [0],_ggac [1]);_eggg :=_gafc (uint (_gab .B >>8),_bbd [0],_bbd [1]);
+_cafg :=_gafc (uint (_gab .B ),_bbd [0],_bbd [1]);_fgadb [_dfgb ]=byte (_efff );_dfgb ++;_fgadb [_dfgb ]=byte (_aada );_dfgb ++;_fgadb [_dfgb ]=byte (_cdda );_dfgb ++;_fgadb [_dfgb ]=byte (_fdea );_dfgb ++;_fgadb [_dfgb ]=byte (_eggg );_dfgb ++;_fgadb [_dfgb ]=byte (_cafg );
+_dfgb ++;}else {_bedf ,_gfdc :=_fgfc .(_ca .RGBA );if _gfdc {_aegg :=_gafc (uint (_bedf .R ),_gdbc [0],_gdbc [1]);_ecee :=_gafc (uint (_bedf .G ),_ggac [0],_ggac [1]);_gccg :=_gafc (uint (_bedf .B ),_bbd [0],_bbd [1]);_fgadb [_dfgb ]=byte (_aegg );_dfgb ++;
+_fgadb [_dfgb ]=byte (_ecee );_dfgb ++;_fgadb [_dfgb ]=byte (_gccg );_dfgb ++;}else {_ffcd ,_acec :=_fgfc .(_ca .YCbCr );if !_acec {return nil ,_bc .New ("\u0063\u006fl\u006f\u0072\u0020t\u0079\u0070\u0065\u0020\u0065\u0072\u0072\u006f\u0072");};_dbg ,_cgca ,_baea ,_ :=_ffcd .RGBA ();
+_egbce :=_gafc (uint (_dbg >>8),_gdbc [0],_gdbc [1]);_becg :=_gafc (uint (_cgca >>8),_ggac [0],_ggac [1]);_baag :=_gafc (uint (_baea >>8),_bbd [0],_bbd [1]);_fgadb [_dfgb ]=byte (_egbce );_dfgb ++;_fgadb [_dfgb ]=byte (_becg );_dfgb ++;_fgadb [_dfgb ]=byte (_baag );
+_dfgb ++;};};};};case 4:_bggag :=[]float64 {_dbda .Decode [0],_dbda .Decode [1]};_ddcc :=[]float64 {_dbda .Decode [2],_dbda .Decode [3]};_abbd :=[]float64 {_dbda .Decode [4],_dbda .Decode [5]};_ddca :=[]float64 {_dbda .Decode [6],_dbda .Decode [7]};for _bbcb :=_edb .Min .Y ;
+_bbcb < _edb .Max .Y ;_bbcb ++{for _ege :=_edb .Min .X ;_ege < _edb .Max .X ;_ege ++{_bcb :=_dgeb .At (_ege ,_bbcb );_eagf ,_faaa :=_bcb .(_ca .CMYK );if !_faaa {return nil ,_bc .New ("\u0063\u006fl\u006f\u0072\u0020t\u0079\u0070\u0065\u0020\u0065\u0072\u0072\u006f\u0072");
+};_eabd :=255-_gafc (uint (_eagf .C ),_bggag [0],_bggag [1]);_aced :=255-_gafc (uint (_eagf .M ),_ddcc [0],_ddcc [1]);_eaed :=255-_gafc (uint (_eagf .Y ),_abbd [0],_abbd [1]);_cafgd :=255-_gafc (uint (_eagf .K ),_ddca [0],_ddca [1]);_fgadb [_dfgb ]=byte (_eabd );
+_dfgb ++;_fgadb [_dfgb ]=byte (_aced );_dfgb ++;_fgadb [_dfgb ]=byte (_eaed );_dfgb ++;_fgadb [_dfgb ]=byte (_cafgd );_dfgb ++;};};};return _fgadb ,nil ;};
+
+// MakeStream creates an PdfObjectStream with specified contents and encoding. If encoding is nil, then raw encoding
+// will be used (i.e. no encoding applied).
+func MakeStream (contents []byte ,encoder StreamEncoder )(*PdfObjectStream ,error ){_gabe :=&PdfObjectStream {};if encoder ==nil {encoder =NewRawEncoder ();};_gabe .PdfObjectDictionary =encoder .MakeStreamDict ();_beaa ,_dcfdf :=encoder .EncodeBytes (contents );
+if _dcfdf !=nil {return nil ,_dcfdf ;};_gabe .Set ("\u004c\u0065\u006e\u0067\u0074\u0068",MakeInteger (int64 (len (_beaa ))));_gabe .Stream =_beaa ;return _gabe ,nil ;};type encryptDict struct{Filter string ;V int ;SubFilter string ;Length int ;StmF string ;
+StrF string ;EFF string ;CF map[string ]_bb .FilterDict ;};
+
+// NewParserFromString is used for testing purposes.
+func NewParserFromString (txt string )*PdfParser {_gbae :=_ad .NewReader ([]byte (txt ));_bgeb :=&PdfParser {ObjCache :objectCache {},_eece :_fee (_gbae ),_fafe :int64 (len (txt )),_cacd :map[int64 ]bool {},_ceggf :make (map[*PdfParser ]*PdfParser )};_bgeb ._dggd .ObjectMap =make (map[int ]XrefObject );
+return _bgeb ;};
+
+// String returns a string representation of `name`.
+func (_gdcaf *PdfObjectName )String ()string {return string (*_gdcaf )};func (_geda *PdfParser )rebuildXrefTable ()error {_debfb :=XrefTable {};_debfb .ObjectMap =map[int ]XrefObject {};_dbcbe :=make ([]int ,0,len (_geda ._dggd .ObjectMap ));for _gaaceg :=range _geda ._dggd .ObjectMap {_dbcbe =append (_dbcbe ,_gaaceg );
+};_ec .Ints (_dbcbe );for _ ,_ggfed :=range _dbcbe {_fdeba :=_geda ._dggd .ObjectMap [_ggfed ];_efabg ,_ ,_efae :=_geda .lookupByNumberWrapper (_ggfed ,false );if _efae !=nil {_be .Log .Debug ("\u0045\u0052RO\u0052\u003a\u0020U\u006e\u0061\u0062\u006ce t\u006f l\u006f\u006f\u006b\u0020\u0075\u0070\u0020ob\u006a\u0065\u0063\u0074\u0020\u0028\u0025s\u0029",_efae );
+_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0058\u0072\u0065\u0066\u0020\u0074\u0061\u0062\u006c\u0065\u0020\u0063\u006fm\u0070\u006c\u0065\u0074\u0065\u006c\u0079\u0020\u0062\u0072\u006f\u006b\u0065\u006e\u0020\u002d\u0020\u0061\u0074\u0074\u0065\u006d\u0070\u0074\u0069\u006e\u0067\u0020\u0074\u006f \u0072\u0065\u0070\u0061\u0069r\u0020");
+_cbede ,_dbbag :=_geda .repairRebuildXrefsTopDown ();if _dbbag !=nil {_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0046\u0061\u0069\u006c\u0065\u0064\u0020\u0078\u0072\u0065\u0066\u0020\u0072\u0065\u0062\u0075\u0069l\u0064\u0020\u0072\u0065\u0070a\u0069\u0072 \u0028\u0025\u0073\u0029",_dbbag );
+return _dbbag ;};_geda ._dggd =*_cbede ;_be .Log .Debug ("\u0052e\u0070\u0061\u0069\u0072e\u0064\u0020\u0078\u0072\u0065f\u0020t\u0061b\u006c\u0065\u0020\u0062\u0075\u0069\u006ct");return nil ;};_cbged ,_abge ,_efae :=_cdf (_efabg );if _efae !=nil {return _efae ;
+};_fdeba .ObjectNumber =int (_cbged );_fdeba .Generation =int (_abge );_debfb .ObjectMap [int (_cbged )]=_fdeba ;};_geda ._dggd =_debfb ;_be .Log .Debug ("N\u0065w\u0020\u0078\u0072\u0065\u0066\u0020\u0074\u0061b\u006c\u0065\u0020\u0062ui\u006c\u0074");
+_aff (_geda ._dggd );return nil ;};
+
+// GetFilterName returns the name of the encoding filter.
+func (_fad *LZWEncoder )GetFilterName ()string {return StreamEncodingFilterNameLZW };
+
+// DecodeBytes decodes byte array with ASCII85. 5 ASCII characters -> 4 raw binary bytes
+func (_egce *ASCII85Encoder )DecodeBytes (encoded []byte )([]byte ,error ){var _aaeg []byte ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0041\u0053\u0043\u0049\u0049\u0038\u0035\u0020\u0044e\u0063\u006f\u0064\u0065");};_ecage :=0;
+_ccded :=false ;for _ecage < len (encoded )&&!_ccded {_cbgg :=[5]byte {0,0,0,0,0};_cdagd :=0;_dafa :=0;_dgac :=4;for _dafa < 5+_cdagd {if _ecage +_dafa ==len (encoded ){break ;};_ccdg :=encoded [_ecage +_dafa ];if IsWhiteSpace (_ccdg ){_cdagd ++;_dafa ++;
+continue ;}else if _ccdg =='~'&&_ecage +_dafa +1< len (encoded )&&encoded [_ecage +_dafa +1]=='>'{_dgac =(_dafa -_cdagd )-1;if _dgac < 0{_dgac =0;};_ccded =true ;break ;}else if _ccdg >='!'&&_ccdg <='u'{_ccdg -='!';}else if _ccdg =='z'&&_dafa -_cdagd ==0{_dgac =4;
+_dafa ++;break ;}else {_be .Log .Error ("\u0046\u0061i\u006c\u0065\u0064\u0020\u0064\u0065\u0063\u006f\u0064\u0069\u006e\u0067\u002c\u0020\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020co\u0064\u0065");return nil ,_bc .New ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0063\u006f\u0064\u0065\u0020e\u006e\u0063\u006f\u0075\u006e\u0074\u0065\u0072\u0065\u0064");
+};_cbgg [_dafa -_cdagd ]=_ccdg ;_dafa ++;};_ecage +=_dafa ;for _gcgg :=_dgac +1;_gcgg < 5;_gcgg ++{_cbgg [_gcgg ]=84;};_aecd :=uint32 (_cbgg [0])*85*85*85*85+uint32 (_cbgg [1])*85*85*85+uint32 (_cbgg [2])*85*85+uint32 (_cbgg [3])*85+uint32 (_cbgg [4]);
+_cegg :=[]byte {byte ((_aecd >>24)&0xff),byte ((_aecd >>16)&0xff),byte ((_aecd >>8)&0xff),byte (_aecd &0xff)};_aaeg =append (_aaeg ,_cegg [:_dgac ]...);};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("A\u0053\u0043\u0049\u004985\u002c \u0065\u006e\u0063\u006f\u0064e\u0064\u003a\u0020\u0025\u0020\u0058",encoded );
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("A\u0053\u0043\u0049\u004985\u002c \u0064\u0065\u0063\u006f\u0064e\u0064\u003a\u0020\u0025\u0020\u0058",_aaeg );};return _aaeg ,nil ;};func (_bdef *PdfParser )checkLinearizedInformation (_afff *PdfObjectDictionary )(bool ,error ){var _ceab error ;
+_bdef ._cgda ,_ceab =GetNumberAsInt64 (_afff .Get ("\u004c"));if _ceab !=nil {return false ,_ceab ;};_ceab =_bdef .seekToEOFMarker (_bdef ._cgda );switch _ceab {case nil :return true ,nil ;case _fffda :return false ,nil ;default:return false ,_ceab ;};
+};
+
+// EncodeImage encodes 'img' golang image.Image into jbig2 encoded bytes document using default encoder settings.
+func (_afbg *JBIG2Encoder )EncodeImage (img _ed .Image )([]byte ,error ){return _afbg .encodeImage (img )};
+
+// DCTEncoder provides a DCT (JPG) encoding/decoding functionality for images.
+type DCTEncoder struct{ColorComponents int ;BitsPerComponent int ;Width int ;Height int ;Quality int ;Decode []float64 ;};const (XrefTypeTableEntry xrefType =iota ;XrefTypeObjectStream xrefType =iota ;);
+
+// ToFloat64Array returns a slice of all elements in the array as a float64 slice.  An error is
+// returned if the array contains non-numeric objects (each element can be either PdfObjectInteger
+// or PdfObjectFloat).
+func (_fcdg *PdfObjectArray )ToFloat64Array ()([]float64 ,error ){var _ecfge []float64 ;for _ ,_bcdg :=range _fcdg .Elements (){switch _fddcf :=_bcdg .(type ){case *PdfObjectInteger :_ecfge =append (_ecfge ,float64 (*_fddcf ));case *PdfObjectFloat :_ecfge =append (_ecfge ,float64 (*_fddcf ));
+default:return nil ,ErrTypeError ;};};return _ecfge ,nil ;};
+
+// GetInt returns the *PdfObjectBool object that is represented by a PdfObject either directly or indirectly
+// within an indirect object. The bool flag indicates whether a match was found.
+func GetInt (obj PdfObject )(_cebgb *PdfObjectInteger ,_aeaea bool ){_cebgb ,_aeaea =TraceToDirectObject (obj ).(*PdfObjectInteger );return _cebgb ,_aeaea ;};
+
+// Implement the Read and Seek methods.
+func (_gf *bufferedReadSeeker )Read (p []byte )(int ,error ){return _gf ._df .Read (p )};
+
+// MakeNull creates an PdfObjectNull.
+func MakeNull ()*PdfObjectNull {_efbge :=PdfObjectNull {};return &_efbge };
+
+// NewParser creates a new parser for a PDF file via ReadSeeker. Loads the cross reference stream and trailer.
+// An error is returned on failure.
+func NewParser (rs _g .ReadSeeker )(*PdfParser ,error ){_bdcb :=&PdfParser {_eece :_fee (rs ),ObjCache :make (objectCache ),_cacd :map[int64 ]bool {},_bceb :make ([]int64 ,0),_ceggf :make (map[*PdfParser ]*PdfParser )};_fabcf :=_bdcb .initParser ();if _fabcf !=nil {return nil ,_fabcf ;
+};return _bdcb ,nil ;};var _cbba =[]byte ("\u0030\u0031\u0032\u003345\u0036\u0037\u0038\u0039\u0061\u0062\u0063\u0064\u0065\u0066\u0041\u0042\u0043\u0044E\u0046");
+
+// String returns a descriptive information string about the encryption method used.
+func (_egbc *PdfCrypt )String ()string {if _egbc ==nil {return "";};_agae :=_egbc ._cbc .Filter +"\u0020\u002d\u0020";if _egbc ._cbc .V ==0{_agae +="\u0055\u006e\u0064\u006fcu\u006d\u0065\u006e\u0074\u0065\u0064\u0020\u0061\u006c\u0067\u006f\u0072\u0069\u0074h\u006d";
+}else if _egbc ._cbc .V ==1{_agae +="\u0052\u0043\u0034:\u0020\u0034\u0030\u0020\u0062\u0069\u0074\u0073";}else if _egbc ._cbc .V ==2{_agae +=_ebc .Sprintf ("\u0052\u0043\u0034:\u0020\u0025\u0064\u0020\u0062\u0069\u0074\u0073",_egbc ._cbc .Length );}else if _egbc ._cbc .V ==3{_agae +="U\u006e\u0070\u0075\u0062li\u0073h\u0065\u0064\u0020\u0061\u006cg\u006f\u0072\u0069\u0074\u0068\u006d";
+}else if _egbc ._cbc .V >=4{_agae +=_ebc .Sprintf ("\u0053\u0074r\u0065\u0061\u006d\u0020f\u0069\u006ct\u0065\u0072\u003a\u0020\u0025\u0073\u0020\u002d \u0053\u0074\u0072\u0069\u006e\u0067\u0020\u0066\u0069\u006c\u0074\u0065r\u003a\u0020\u0025\u0073",_egbc ._abc ,_egbc ._fbf );
+_agae +="\u003b\u0020C\u0072\u0079\u0070t\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0073\u003a";for _efd ,_gfb :=range _egbc ._fege {_agae +=_ebc .Sprintf ("\u0020\u002d\u0020\u0025\u0073\u003a\u0020\u0025\u0073 \u0028\u0025\u0064\u0029",_efd ,_gfb .Name (),_gfb .KeyLength ());
+};};_cac :=_egbc .GetAccessPermissions ();_agae +=_ebc .Sprintf ("\u0020\u002d\u0020\u0025\u0023\u0076",_cac );return _agae ;};
+
+// GetBoolVal returns the bool value within a *PdObjectBool represented by an PdfObject interface directly or indirectly.
+// If the PdfObject does not represent a bool value, a default value of false is returned (found = false also).
+func GetBoolVal (obj PdfObject )(_dbebd bool ,_ebegd bool ){_cgagf ,_ebegd :=TraceToDirectObject (obj ).(*PdfObjectBool );if _ebegd {return bool (*_cgagf ),true ;};return false ,false ;};func _aff (_gcf XrefTable ){_be .Log .Debug ("\u003dX\u003d\u0058\u003d\u0058\u003d");
+_be .Log .Debug ("X\u0072\u0065\u0066\u0020\u0074\u0061\u0062\u006c\u0065\u003a");_add :=0;for _ ,_dfb :=range _gcf .ObjectMap {_be .Log .Debug ("i\u002b\u0031\u003a\u0020\u0025\u0064 \u0028\u006f\u0062\u006a\u0020\u006eu\u006d\u003a\u0020\u0025\u0064\u0020\u0067e\u006e\u003a\u0020\u0025\u0064\u0029\u0020\u002d\u003e\u0020%\u0064",_add +1,_dfb .ObjectNumber ,_dfb .Generation ,_dfb .Offset );
+_add ++;};};var _feg =[len (_aacee )]_cd .Pool {{New :func ()any {_aacb :=make ([]byte ,_cb );return &_aacb }},{New :func ()any {_dcc :=make ([]byte ,_aace );return &_dcc }},{New :func ()any {_eea :=make ([]byte ,_agd );return &_eea }},{New :func ()any {_da :=make ([]byte ,_ebb );
+return &_da }},{New :func ()any {_fg :=make ([]byte ,_bag );return &_fg }},{New :func ()any {_eddc :=make ([]byte ,_ebe );return &_eddc }}};
+
+// StreamEncoder represents the interface for all PDF stream encoders.
+type StreamEncoder interface{GetFilterName ()string ;MakeDecodeParams ()PdfObject ;MakeStreamDict ()*PdfObjectDictionary ;UpdateParams (_cabb *PdfObjectDictionary );EncodeBytes (_fdff []byte )([]byte ,error );DecodeBytes (_aege []byte )([]byte ,error );
+DecodeStream (_cdgg *PdfObjectStream )([]byte ,error );};
+
+// GetDict returns the *PdfObjectDictionary represented by the PdfObject directly or indirectly within an indirect
+// object. On type mismatch the found bool flag is false and a nil pointer is returned.
+func GetDict (obj PdfObject )(_gbfe *PdfObjectDictionary ,_cfbaf bool ){_gbfe ,_cfbaf =TraceToDirectObject (obj ).(*PdfObjectDictionary );return _gbfe ,_cfbaf ;};func _acad (_bcae int )cryptFilters {return cryptFilters {_ede :_bb .NewFilterV2 (_bcae )}};
+
+
+// EncodeBytes JPX encodes the passed in slice of bytes.
+func (_efbfe *JPXEncoder )EncodeBytes (data []byte )([]byte ,error ){_be .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u003a\u0020\u0041t\u0074\u0065\u006dpt\u0069\u006e\u0067\u0020\u0074\u006f \u0075\u0073\u0065\u0020\u0075\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064 \u0065\u006e\u0063\u006f\u0064\u0069\u006e\u0067 \u0025\u0073",_efbfe .GetFilterName ());
+return data ,ErrNoJPXDecode ;};
+
+// MakeHexStringFromHexNumber creates an PdfObjectString from a numeric value intended for output as a hexadecimal string.
+// The value is formatted as a hex string with padding to match the specified byte width (byteWidth * 2 digits).
+func MakeHexStringFromHexNumber (val uint32 ,byteWidth int )*PdfObjectString {_dfee :=_ebc .Sprintf ("\u0025\u0030\u002a\u0078",byteWidth *2,val );_dffdg :=PdfObjectString {_babb :_dfee ,_cdebe :true ,_cfedd :true };return &_dffdg ;};func _cdf (_edab PdfObject )(int64 ,int64 ,error ){if _efb ,_acee :=_edab .(*PdfIndirectObject );
+_acee {return _efb .ObjectNumber ,_efb .GenerationNumber ,nil ;};if _ffb ,_aba :=_edab .(*PdfObjectStream );_aba {return _ffb .ObjectNumber ,_ffb .GenerationNumber ,nil ;};return 0,0,_bc .New ("\u006e\u006ft\u0020\u0061\u006e\u0020\u0069\u006e\u0064\u0069\u0072\u0065\u0063\u0074\u002f\u0073\u0074\u0072\u0065\u0061\u006d\u0020\u006f\u0062je\u0063\u0074");
+};var _cgaf _cd .Map ;
 
 // DecodeReader returns a reader that Flate-decodes (zlib) from r. The
 // predictor configured on enc is NOT applied here — DecodeReader parities
@@ -297,83 +1430,38 @@ func (_cecd ParserMetadata )HasOddLengthHexStrings ()bool {return _cecd ._dfca }
 //
 // An empty input stream yields an empty payload (zero bytes, io.EOF),
 // matching DecodeBytes.
-func (_fabc *FlateEncoder )DecodeReader (r _ce .Reader )_ce .Reader {if r ==nil {return errorReader {_gdgba :_de .New ("\u0046\u006c\u0061\u0074eD\u0065\u0063\u006f\u0064\u0065\u003a\u0020\u006e\u0069\u006c\u0020\u0069\u006e\u0070u\u0074")};};_adbf :=_fae .NewReader (r );
-if _ ,_cadb :=_adbf .Peek (1);_cadb !=nil {if _cadb ==_ce .EOF {return emptyReader {};};return errorReader {_gdgba :_cadb };};_fgdbb ,_afbdb :=_ae .NewReader (_adbf );if _afbdb !=nil {return errorReader {_gdgba :_afbdb };};return _fgdbb ;};func (_ebc *PdfCrypt )newEncryptDict ()*PdfObjectDictionary {_ddg :=MakeDict ();
-_ddg .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName ("\u0053\u0074\u0061\u006e\u0064\u0061\u0072\u0064"));_ddg .Set ("\u0056",MakeInteger (int64 (_ebc ._aff .V )));_ddg .Set ("\u004c\u0065\u006e\u0067\u0074\u0068",MakeInteger (int64 (_ebc ._aff .Length )));
-return _ddg ;};func (_dadd *PdfParser )getNumbersOfUpdatedObjects (_ggcgg *PdfParser )([]int ,error ){if _ggcgg ==nil {return nil ,_de .New ("\u0070\u0072e\u0076\u0069\u006f\u0075\u0073\u0020\u0070\u0061\u0072\u0073\u0065\u0072\u0020\u0063\u0061\u006e\u0027\u0074\u0020\u0062\u0065\u0020nu\u006c\u006c");
-};_eaafd :=_ggcgg ._fcbfc ;_bgff :=make ([]int ,0);_ebag :=make (map[int ]interface{});_gcggg :=make (map[int ]int64 );for _ceebb ,_cfga :=range _dadd ._gabb .ObjectMap {if _cfga .Offset ==0{if _cfga .OsObjNumber !=0{if _ebceg ,_faacb :=_dadd ._gabb .ObjectMap [_cfga .OsObjNumber ];
-_faacb {_ebag [_cfga .OsObjNumber ]=struct{}{};_gcggg [_ceebb ]=_ebceg .Offset ;}else {return nil ,_de .New ("u\u006ed\u0065\u0066\u0069\u006e\u0065\u0064\u0020\u0078r\u0065\u0066\u0020\u0074ab\u006c\u0065");};};}else {_gcggg [_ceebb ]=_cfga .Offset ;};
-};for _fgeef ,_bebf :=range _gcggg {if _ ,_fdcfe :=_ebag [_fgeef ];_fdcfe {continue ;};if _bebf > _eaafd {_bgff =append (_bgff ,_fgeef );};};return _bgff ,nil ;};type bufferedReadSeeker struct{_dbe _ce .ReadSeeker ;_cad *_fae .Reader ;};
+func (_cfbd *FlateEncoder )DecodeReader (r _g .Reader )_g .Reader {if r ==nil {return errorReader {_cabe :_bc .New ("\u0046\u006c\u0061\u0074eD\u0065\u0063\u006f\u0064\u0065\u003a\u0020\u006e\u0069\u006c\u0020\u0069\u006e\u0070u\u0074")};};_bedca :=_ecd .NewReader (r );
+if _ ,_dcce :=_bedca .Peek (1);_dcce !=nil {if _dcce ==_g .EOF {return emptyReader {};};return errorReader {_cabe :_dcce };};_gdcad ,_bddc :=_f .NewReader (_bedca );if _bddc !=nil {return errorReader {_cabe :_bddc };};return _gdcad ;};
 
-// GetAsFloat64Slice returns the array as []float64 slice.
-// Returns an error if not entirely numeric (only PdfObjectIntegers, PdfObjectFloats).
-func (_edda *PdfObjectArray )GetAsFloat64Slice ()([]float64 ,error ){var _gega []float64 ;for _ ,_badf :=range _edda .Elements (){_dbcgg ,_cbdg :=GetNumberAsFloat (TraceToDirectObject (_badf ));if _cbdg !=nil {return nil ,_ee .Errorf ("\u0061\u0072\u0072\u0061\u0079\u0020\u0065\u006c\u0065\u006d\u0065n\u0074\u0020\u006e\u006f\u0074\u0020\u0061\u0020\u006e\u0075m\u0062\u0065\u0072");
-};_gega =append (_gega ,_dbcgg );};return _gega ,nil ;};
+// IsDelimiter checks if a character represents a delimiter.
+func IsDelimiter (c byte )bool {return c =='('||c ==')'||c =='<'||c =='>'||c =='['||c ==']'||c =='{'||c =='}'||c =='/'||c =='%';};
 
-// EqualObjects returns true if `obj1` and `obj2` have the same contents.
-// It performs a deep recursive comparison, dereferencing indirect objects and
-// comparing stream data. Circular references are detected and handled safely.
-//
-// NOTE: It is a good idea to flatten obj1 and obj2 with FlattenObject before calling this function
-// so that contents, rather than references, can be compared.
-func EqualObjects (obj1 ,obj2 PdfObject )bool {return _aaad (obj1 ,obj2 ,0,nil )};
+// DecodeBytes decodes a slice of ASCII encoded bytes and returns the result.
+func (_ecfg *ASCIIHexEncoder )DecodeBytes (encoded []byte )([]byte ,error ){_fdbd :=_ad .NewReader (encoded );var _edga []byte ;for {_cbgb ,_bbcd :=_fdbd .ReadByte ();if _bbcd !=nil {return nil ,_bbcd ;};if _cbgb =='>'{break ;};if IsWhiteSpace (_cbgb ){continue ;
+};if (_cbgb >='a'&&_cbgb <='f')||(_cbgb >='A'&&_cbgb <='F')||(_cbgb >='0'&&_cbgb <='9'){_edga =append (_edga ,_cbgb );}else {_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0049\u006e\u0076\u0061\u006c\u0069d\u0020\u0061\u0073\u0063\u0069\u0069 \u0068\u0065\u0078\u0020\u0063\u0068\u0061\u0072\u0061\u0063\u0074\u0065\u0072 \u0028\u0025\u0063\u0029",_cbgb );
+return nil ,_ebc .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0061\u0073\u0063\u0069\u0069\u0020\u0068e\u0078 \u0063\u0068\u0061\u0072\u0061\u0063\u0074\u0065\u0072\u0020\u0028\u0025\u0063\u0029",_cbgb );};};if len (_edga )%2==1{_edga =append (_edga ,'0');
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0049\u006e\u0062\u006f\u0075\u006e\u0064\u0020\u0025\u0073",_edga );};_ecc :=make ([]byte ,_ee .DecodedLen (len (_edga )));_ ,_gaab :=_ee .Decode (_ecc ,_edga );if _gaab !=nil {return nil ,_gaab ;
+};return _ecc ,nil ;};
 
-// Write outputs the object as it is to be written to file.
-func (_bgafg *PdfObjectName )Write ()[]byte {return _gf (func (_dbebb *_f .Buffer ){if len (*_bgafg )> 127{_bd .Log .Debug ("\u0045R\u0052\u004f\u0052\u003a \u004e\u0061\u006d\u0065\u0020t\u006fo\u0020l\u006f\u006e\u0067\u0020\u0028\u0025\u0073)",*_bgafg );
-};_dbebb .WriteString ("\u002f");for _fceb :=0;_fceb < len (*_bgafg );_fceb ++{_ebgde :=(*_bgafg )[_fceb ];if !IsPrintable (_ebgde )||_ebgde =='#'||IsDelimiter (_ebgde ){_ee .Fprintf (_dbebb ,"\u0023\u0025\u002e2\u0078",_ebgde );}else {_dbebb .WriteByte (_ebgde );
-};};});};var (ErrUnsupportedEncodingParameters =_de .New ("\u0075\u006e\u0073u\u0070\u0070\u006f\u0072t\u0065\u0064\u0020\u0065\u006e\u0063\u006fd\u0069\u006e\u0067\u0020\u0070\u0061\u0072\u0061\u006d\u0065\u0074\u0065\u0072\u0073");ErrNoCCITTFaxDecode =_de .New ("\u0043\u0043I\u0054\u0054\u0046\u0061\u0078\u0044\u0065\u0063\u006f\u0064\u0065\u0020\u0065\u006e\u0063\u006f\u0064\u0069\u006e\u0067\u0020\u0069\u0073\u0020\u006e\u006f\u0074\u0020\u0079\u0065\u0074\u0020\u0069\u006d\u0070\u006c\u0065\u006d\u0065\u006e\u0074\u0065\u0064");
-ErrNoJBIG2Decode =_de .New ("\u004a\u0042\u0049\u0047\u0032\u0044\u0065c\u006f\u0064\u0065 \u0065\u006e\u0063\u006fd\u0069\u006e\u0067\u0020\u0069\u0073\u0020\u006e\u006f\u0074\u0020\u0079\u0065\u0074\u0020\u0069\u006d\u0070\u006c\u0065\u006d\u0065\u006e\u0074\u0065\u0064");
-ErrNoJPXDecode =_de .New ("\u004a\u0050\u0058\u0044\u0065c\u006f\u0064\u0065\u0020\u0065\u006e\u0063\u006f\u0064\u0069\u006e\u0067\u0020i\u0073\u0020\u006e\u006f\u0074\u0020\u0079\u0065\u0074\u0020\u0069\u006d\u0070\u006c\u0065\u006d\u0065\u006e\u0074\u0065\u0064");
-ErrNoPdfVersion =_de .New ("\u0076\u0065\u0072\u0073\u0069\u006f\u006e\u0020\u006e\u006f\u0074\u0020f\u006f\u0075\u006e\u0064");ErrTypeError =_de .New ("\u0074\u0079p\u0065\u0020\u0063h\u0065\u0063\u006b\u0020\u0065\u0072\u0072\u006f\u0072");ErrRangeError =_de .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");
-ErrNotSupported =_bg .New ("\u0066\u0065\u0061t\u0075\u0072\u0065\u0020n\u006f\u0074\u0020\u0063\u0075\u0072\u0072e\u006e\u0074\u006c\u0079\u0020\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064");ErrNotANumber =_de .New ("\u006e\u006f\u0074 \u0061\u0020\u006e\u0075\u006d\u0062\u0065\u0072");
-);
+// GetEncryptObj returns the PdfIndirectObject which has information about the PDFs encryption details.
+func (_fgff *PdfParser )GetEncryptObj ()*PdfIndirectObject {return _fgff ._gbfg };
 
-// IsFloatDigit checks if a character can be a part of a float number string.
-func IsFloatDigit (c byte )bool {return ('0'<=c &&c <='9')||c =='.'};
+// Elements returns a slice of the PdfObject elements in the array.
+func (_eedfc *PdfObjectArray )Elements ()[]PdfObject {if _eedfc ==nil {return nil ;};return _eedfc ._dccdc ;};
 
-// HasInvalidHexRunes implements core.ParserMetadata interface.
-func (_dbaa ParserMetadata )HasInvalidHexRunes ()bool {return _dbaa ._bbbf };
+// String returns the state of the bool as "true" or "false".
+func (_abab *PdfObjectBool )String ()string {if *_abab {return "\u0074\u0072\u0075\u0065";};return "\u0066\u0061\u006cs\u0065";};type indirectPair struct{_gaabg ,_dgfg *PdfIndirectObject };
 
-// GetArray returns the *PdfObjectArray represented by the PdfObject directly or indirectly within an indirect
-// object. On type mismatch the found bool flag is false and a nil pointer is returned.
-func GetArray (obj PdfObject )(_bdeg *PdfObjectArray ,_bafe bool ){_bdeg ,_bafe =TraceToDirectObject (obj ).(*PdfObjectArray );return _bdeg ,_bafe ;};
-
-// ToGoImage converts the JBIG2Image to the golang image.Image.
-func (_dafb *JBIG2Image )ToGoImage ()(_b .Image ,error ){const _efcdd ="J\u0042I\u0047\u0032\u0049\u006d\u0061\u0067\u0065\u002eT\u006f\u0047\u006f\u0049ma\u0067\u0065";if _dafb .Data ==nil {return nil ,_eb .Error (_efcdd ,"\u0069\u006d\u0061\u0067e \u0064\u0061\u0074\u0061\u0020\u006e\u006f\u0074\u0020\u0064\u0065\u0066\u0069\u006ee\u0064");
-};if _dafb .Width ==0||_dafb .Height ==0{return nil ,_eb .Error (_efcdd ,"\u0069\u006d\u0061\u0067\u0065\u0020h\u0065\u0069\u0067\u0068\u0074\u0020\u006f\u0072\u0020\u0077\u0069\u0064\u0074h\u0020\u006e\u006f\u0074\u0020\u0064\u0065f\u0069\u006e\u0065\u0064");
-};_ddac ,_befa :=_fd .NewImage (_dafb .Width ,_dafb .Height ,1,1,_dafb .Data ,nil ,nil );if _befa !=nil {return nil ,_befa ;};return _ddac ,nil ;};func (_deec *ascii85Reader )Read (p []byte )(int ,error ){_dfea :=0;for _dfea < len (p ){if _deec ._ecfbc < _deec ._addf {_bbbg :=copy (p [_dfea :],_deec ._fcbd [_deec ._ecfbc :_deec ._addf ]);
-_dfea +=_bbbg ;_deec ._ecfbc +=_bbbg ;continue ;};if _deec ._bbaae !=nil {if _dfea > 0{return _dfea ,nil ;};return 0,_deec ._bbaae ;};_deec ._bbaae =_deec .fillGroup ();};return _dfea ,nil ;};func _eebe (_efae *PdfObjectStream )(*MultiEncoder ,error ){_gfeb :=NewMultiEncoder ();
-_acddf :=_efae .PdfObjectDictionary ;if _acddf ==nil {return _gfeb ,nil ;};var _adg *PdfObjectDictionary ;var _fgfg []PdfObject ;_ggde :=_acddf .Get ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073");if _ggde !=nil {_gcde ,_gade :=_ggde .(*PdfObjectDictionary );
-if _gade {_adg =_gcde ;};_gfgaf ,_fbgb :=_ggde .(*PdfObjectArray );if _fbgb {for _ ,_bfcf :=range _gfgaf .Elements (){_bfcf =TraceToDirectObject (_bfcf );if _gcga ,_faf :=_bfcf .(*PdfObjectDictionary );_faf {_fgfg =append (_fgfg ,_gcga );}else {_fgfg =append (_fgfg ,MakeDict ());
-};};};};_ggde =_acddf .Get ("\u0046\u0069\u006c\u0074\u0065\u0072");if _ggde ==nil {return nil ,_ee .Errorf ("\u0066\u0069\u006c\u0074\u0065\u0072\u0020\u006d\u0069s\u0073\u0069\u006e\u0067");};_fgbf ,_eaa :=_ggde .(*PdfObjectArray );if !_eaa {return nil ,_ee .Errorf ("m\u0075\u006c\u0074\u0069\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0020\u0063\u0061\u006e\u0020\u006f\u006el\u0079\u0020\u0062\u0065\u0020\u006d\u0061\u0064\u0065\u0020fr\u006f\u006d\u0020a\u0072r\u0061\u0079");
-};for _ecbg ,_acfc :=range _fgbf .Elements (){_adda ,_aecc :=_acfc .(*PdfObjectName );if !_aecc {return nil ,_ee .Errorf ("\u006d\u0075l\u0074\u0069\u0020\u0066i\u006c\u0074e\u0072\u0020\u0061\u0072\u0072\u0061\u0079\u0020e\u006c\u0065\u006d\u0065\u006e\u0074\u0020\u006e\u006f\u0074\u0020\u0061 \u006e\u0061\u006d\u0065");
-};var _gcce PdfObject ;if _adg !=nil {_gcce =_adg ;}else {if len (_fgfg )> 0{if _ecbg >=len (_fgfg ){return nil ,_ee .Errorf ("\u006d\u0069\u0073\u0073\u0069\u006e\u0067\u0020\u0065\u006c\u0065\u006d\u0065n\u0074\u0073\u0020\u0069\u006e\u0020d\u0065\u0063\u006f\u0064\u0065\u0020\u0070\u0061\u0072\u0061\u006d\u0073\u0020a\u0072\u0072\u0061\u0079");
-};_gcce =_fgfg [_ecbg ];};};var _dedeb *PdfObjectDictionary ;if _gcgg ,_beae :=_gcce .(*PdfObjectDictionary );_beae {_dedeb =_gcgg ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004e\u0065\u0078t \u006e\u0061\u006d\u0065\u003a\u0020\u0025\u0073\u002c \u0064p\u003a \u0025v\u002c\u0020\u0064\u0050\u0061\u0072\u0061\u006d\u0073\u003a\u0020\u0025\u0076",*_adda ,_gcce ,_dedeb );
-};switch *_adda {case StreamEncodingFilterNameFlate :_bbgg ,_caff :=_baf (_efae ,_dedeb );if _caff !=nil {return nil ,_caff ;};_gfeb .AddEncoder (_bbgg );case StreamEncodingFilterNameLZW :_gacf ,_eafcd :=_agbd (_efae ,_dedeb );if _eafcd !=nil {return nil ,_eafcd ;
-};_gfeb .AddEncoder (_gacf );case StreamEncodingFilterNameASCIIHex :_dceg :=NewASCIIHexEncoder ();_gfeb .AddEncoder (_dceg );case StreamEncodingFilterNameASCII85 :_egfa :=NewASCII85Encoder ();_gfeb .AddEncoder (_egfa );case StreamEncodingFilterNameDCT :_efbce ,_fead :=_edde (_efae ,_gfeb );
-if _fead !=nil {return nil ,_fead ;};_gfeb .AddEncoder (_efbce );if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("A\u0064d\u0065\u0064\u0020\u0044\u0043\u0054\u0020\u0065n\u0063\u006f\u0064\u0065r.\u002e\u002e");};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004du\u006ct\u0069\u0020\u0065\u006e\u0063o\u0064\u0065r\u003a\u0020\u0025\u0023\u0076",_gfeb );
-};case StreamEncodingFilterNameCCITTFax :_eabc ,_dgbg :=_eaff (_efae ,_dedeb );if _dgbg !=nil {return nil ,_dgbg ;};_gfeb .AddEncoder (_eabc );default:_bd .Log .Error ("U\u006e\u0073\u0075\u0070po\u0072t\u0065\u0064\u0020\u0066\u0069l\u0074\u0065\u0072\u0020\u0025\u0073",*_adda );
-return nil ,_ee .Errorf ("\u0069\u006eva\u006c\u0069\u0064 \u0066\u0069\u006c\u0074er \u0069n \u006d\u0075\u006c\u0074\u0069\u0020\u0066il\u0074\u0065\u0072\u0020\u0061\u0072\u0072a\u0079");};};return _gfeb ,nil ;};
-
-// MakeDecodeParams makes a new instance of an encoding dictionary based on
-// the current encoder settings.
-func (_dffa *ASCII85Encoder )MakeDecodeParams ()PdfObject {return nil };
-
-// GetFilterName returns the name of the encoding filter.
-func (_dddf *LZWEncoder )GetFilterName ()string {return StreamEncodingFilterNameLZW };func (_cag *offsetReader )Seek (offset int64 ,whence int )(int64 ,error ){if whence ==_ce .SeekStart {offset +=_cag ._baccd ;};_adca ,_faab :=_cag ._ffdf .Seek (offset ,whence );
-if _faab !=nil {return _adca ,_faab ;};if whence ==_ce .SeekCurrent {_adca -=_cag ._baccd ;};if _adca < 0{return 0,_de .New ("\u0063\u006f\u0072\u0065\u002eo\u0066\u0066\u0073\u0065\u0074\u0052\u0065\u0061\u0064\u0065\u0072\u002e\u0053e\u0065\u006b\u003a\u0020\u006e\u0065\u0067\u0061\u0074\u0069\u0076\u0065\u0020\u0070\u006f\u0073\u0069\u0074\u0069\u006f\u006e");
-};return _adca ,nil ;};func (_abdae *PdfParser )seekToEOFMarker (_gebce int64 )error {var _aebff int64 ;var _fgfa int64 =2048;for _aebff < _gebce -4{if _gebce <=(_fgfa +_aebff ){_fgfa =_gebce -_aebff ;};_ ,_ccdf :=_abdae ._fgaa .Seek (_gebce -_aebff -_fgfa ,_ce .SeekStart );
-if _ccdf !=nil {return _ccdf ;};_bede :=make ([]byte ,_fgfa );_abdae ._fgaa .Read (_bede );if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004c\u006f\u006f\u006bi\u006e\u0067\u0020\u0066\u006f\u0072\u0020\u0045\u004f\u0046 \u006da\u0072\u006b\u0065\u0072\u003a\u0020\u0022%\u0073\u0022",string (_bede ));
-};_gecb :=_dffaf .FindAllStringIndex (string (_bede ),-1);if _gecb !=nil {_gcfe :=_gecb [len (_gecb )-1];if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0049\u006e\u0064\u003a\u0020\u0025\u0020\u0064",_gecb );};_fcaaa :=_gebce -_aebff -_fgfa +int64 (_gcfe [0]);
-_abdae ._fgaa .Seek (_fcaaa ,_ce .SeekStart );return nil ;};_bd .Log .Debug ("\u0057\u0061\u0072\u006e\u0069\u006eg\u003a\u0020\u0045\u004f\u0046\u0020\u006d\u0061\u0072\u006b\u0065\u0072\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075n\u0064\u0021\u0020\u002d\u0020\u0063\u006f\u006e\u0074\u0069\u006e\u0075\u0065\u0020s\u0065e\u006b\u0069\u006e\u0067");
-_aebff +=_fgfa -4;};_bd .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u003a\u0020\u0045\u004f\u0046\u0020\u006d\u0061\u0072\u006be\u0072 \u0077\u0061\u0073\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064\u002e");return _abcbe ;};
-
-// PdfParser parses a PDF file and provides access to the object structure of the PDF.
-type PdfParser struct{_ecbge Version ;_fgaa *bufferedReadSeeker ;_fcbfc int64 ;_gabb XrefTable ;_fgeb int64 ;_cefef *xrefType ;_cegf objectStreams ;_dbbf *PdfObjectDictionary ;_ggee *PdfCrypt ;_afdd *PdfIndirectObject ;_aefg bool ;ObjCache objectCache ;
-_dffda map[int ]bool ;_eaba map[int64 ]bool ;_dafba ParserMetadata ;_egbdb bool ;_ddfe []int64 ;_debg int ;_gagc bool ;_abgd int64 ;_bfab map[*PdfParser ]*PdfParser ;_cdbe []*PdfParser ;
-
-// Opts holds different parsing options.
-Opts *ParserOpts ;};func _gdbbg (_edfe byte )byte {switch {case _edfe <='9':return _edfe -'0';case _edfe <='F':return _edfe -'A'+10;default:return _edfe -'a'+10;};};
+// ParseDict reads and parses a PDF dictionary object enclosed with '<<' and '>>'
+func (_fgdb *PdfParser )ParseDict ()(*PdfObjectDictionary ,error ){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0052\u0065\u0061\u0064\u0069\u006e\u0067\u0020\u0050\u0044\u0046\u0020D\u0069\u0063\u0074\u0021");};_acdee :=MakeDict ();
+_acdee ._gcgcf =_fgdb ;_bbf ,_ :=_fgdb ._eece .ReadByte ();if _bbf !='<'{return nil ,_bc .New ("\u0069\u006e\u0076a\u006c\u0069\u0064\u0020\u0064\u0069\u0063\u0074");};_bbf ,_ =_fgdb ._eece .ReadByte ();if _bbf !='<'{return nil ,_bc .New ("\u0069\u006e\u0076a\u006c\u0069\u0064\u0020\u0064\u0069\u0063\u0074");
+};for {_fgdb .skipSpaces ();_fgdb .skipComments ();_abbg ,_gdgb :=_fgdb ._eece .Peek (2);if _gdgb !=nil {return nil ,_gdgb ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("D\u0069c\u0074\u0020\u0070\u0065\u0065\u006b\u003a\u0020%\u0073\u0020\u0028\u0025 x\u0029\u0021",string (_abbg ),string (_abbg ));
+};if (_abbg [0]=='>')&&(_abbg [1]=='>'){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0045\u004f\u0046\u0020\u0064\u0069\u0063\u0074\u0069o\u006e\u0061\u0072\u0079");};_fgdb ._eece .ReadByte ();_fgdb ._eece .ReadByte ();break ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0050a\u0072s\u0065\u0020\u0074\u0068\u0065\u0020\u006e\u0061\u006d\u0065\u0021");
+};_gdfag ,_gdgb :=_fgdb .parseName ();if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004be\u0079\u003a\u0020\u0025\u0073",_gdfag );};if _gdgb !=nil {_be .Log .Debug ("E\u0052\u0052\u004f\u0052\u0020\u0052e\u0074\u0075\u0072\u006e\u0069\u006e\u0067\u0020\u006ea\u006d\u0065\u0020e\u0072r\u0020\u0025\u0073",_gdgb );
+return nil ,_gdgb ;};if len (_gdfag )> 4&&_gdfag [len (_gdfag )-4:]=="\u006e\u0075\u006c\u006c"{_bacg :=_gdfag [0:len (_gdfag )-4];_be .Log .Debug ("\u0054\u0061\u006b\u0069n\u0067\u0020\u0063\u0061\u0072\u0065\u0020\u006f\u0066\u0020n\u0075l\u006c\u0020\u0062\u0075\u0067\u0020\u0028%\u0073\u0029",_gdfag );
+_be .Log .Debug ("\u004e\u0065\u0077\u0020ke\u0079\u0020\u0022\u0025\u0073\u0022\u0020\u003d\u0020\u006e\u0075\u006c\u006c",_bacg );_fgdb .skipSpaces ();_cagcb ,_ :=_fgdb ._eece .Peek (1);if _cagcb [0]=='/'{_acdee .Set (_bacg ,MakeNull ());continue ;};
+};_fgdb .skipSpaces ();_fcge ,_gdgb :=_fgdb .parseObject ();if _gdgb !=nil {return nil ,_gdgb ;};_acdee .Set (_gdfag ,_fcge );if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0064\u0069\u0063\u0074\u005b\u0025\u0073\u005d\u0020\u003d\u0020\u0025\u0073",_gdfag ,_fcge .String ());
+};};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0072\u0065\u0074\u0075rn\u0069\u006e\u0067\u0020\u0050\u0044\u0046\u0020\u0044\u0069\u0063\u0074\u0021");};return _acdee ,nil ;};
 
 // ParseNumber parses a numeric objects from a buffered stream.
 // Section 7.3.3.
@@ -395,45 +1483,315 @@ Opts *ParserOpts ;};func _gdbbg (_edfe byte )byte {switch {case _edfe <='9':retu
 // Nonetheless, we sometimes get numbers with exponential format, so
 // we will support it in the reader (no confusion with other types, so
 // no compromise).
-func ParseNumber (buf *_fae .Reader )(PdfObject ,error ){_cacad :=false ;_adfbb :=true ;var _dgcga _f .Buffer ;for {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0050\u0061\u0072\u0073in\u0067\u0020\u006e\u0075\u006d\u0062\u0065\u0072\u0020\u0022\u0025\u0073\u0022",_dgcga .String ());
-};_ggcd ,_cdgc :=buf .Peek (1);if _cdgc ==_ce .EOF {break ;};if _cdgc !=nil {_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0025\u0073",_cdgc );return nil ,_cdgc ;};if _adfbb &&(_ggcd [0]=='-'||_ggcd [0]=='+'){_edec ,_ :=buf .ReadByte ();_dgcga .WriteByte (_edec );
-_adfbb =false ;}else if IsDecimalDigit (_ggcd [0]){_gccfg ,_ :=buf .ReadByte ();_dgcga .WriteByte (_gccfg );}else if _ggcd [0]=='.'{_dfebc ,_ :=buf .ReadByte ();_dgcga .WriteByte (_dfebc );_cacad =true ;}else if _ggcd [0]=='e'||_ggcd [0]=='E'{_fccc ,_ :=buf .ReadByte ();
-_dgcga .WriteByte (_fccc );_cacad =true ;_adfbb =true ;}else {break ;};};var _cfdc PdfObject ;if _cacad {_ccgde ,_accbd :=_c .ParseFloat (_dgcga .String (),64);if _accbd !=nil {_bd .Log .Debug ("\u0045\u0072r\u006f\u0072\u0020\u0070\u0061\u0072\u0073\u0069\u006e\u0067\u0020\u006e\u0075\u006d\u0062\u0065\u0072\u0020\u0025v\u0020\u0065\u0072\u0072\u003d\u0025v\u002e\u0020\u0055\u0073\u0069\u006e\u0067\u0020\u0030\u002e\u0030\u002e\u0020\u004fu\u0074\u0070u\u0074\u0020\u006d\u0061y\u0020\u0062\u0065\u0020\u0069n\u0063\u006f\u0072\u0072\u0065\u0063\u0074",_dgcga .String (),_accbd );
-_ccgde =0.0;};_gdeed :=PdfObjectFloat (_ccgde );_cfdc =&_gdeed ;}else {_feae ,_gcfab :=_c .ParseInt (_dgcga .String (),10,64);if _gcfab !=nil {_bd .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u0020\u0070\u0061\u0072\u0073\u0069\u006e\u0067\u0020\u006e\u0075\u006db\u0065\u0072\u0020\u0025\u0076\u0020\u0065\u0072\u0072\u003d%\u0076\u002e\u0020\u0055\u0073\u0069\u006e\u0067\u0020\u0030\u002e\u0020\u004f\u0075\u0074\u0070\u0075\u0074 \u006d\u0061\u0079\u0020\u0062\u0065 \u0069\u006ec\u006f\u0072r\u0065c\u0074",_dgcga .String (),_gcfab );
-_feae =0;};_aebfg :=PdfObjectInteger (_feae );_cfdc =&_aebfg ;};return _cfdc ,nil ;};
+func ParseNumber (buf *_ecd .Reader )(PdfObject ,error ){_cdbga :=false ;_dgff :=true ;var _aacge _ad .Buffer ;for {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0050\u0061\u0072\u0073in\u0067\u0020\u006e\u0075\u006d\u0062\u0065\u0072\u0020\u0022\u0025\u0073\u0022",_aacge .String ());
+};_bbgf ,_gbdf :=buf .Peek (1);if _gbdf ==_g .EOF {break ;};if _gbdf !=nil {_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0025\u0073",_gbdf );return nil ,_gbdf ;};if _dgff &&(_bbgf [0]=='-'||_bbgf [0]=='+'){_fddd ,_ :=buf .ReadByte ();_aacge .WriteByte (_fddd );
+_dgff =false ;}else if IsDecimalDigit (_bbgf [0]){_gddc ,_ :=buf .ReadByte ();_aacge .WriteByte (_gddc );}else if _bbgf [0]=='.'{_dbee ,_ :=buf .ReadByte ();_aacge .WriteByte (_dbee );_cdbga =true ;}else if _bbgf [0]=='e'||_bbgf [0]=='E'{_geaa ,_ :=buf .ReadByte ();
+_aacge .WriteByte (_geaa );_cdbga =true ;_dgff =true ;}else {break ;};};var _bafa PdfObject ;if _cdbga {_eccb ,_fcgge :=_d .ParseFloat (_aacge .String (),64);if _fcgge !=nil {_be .Log .Debug ("\u0045\u0072r\u006f\u0072\u0020\u0070\u0061\u0072\u0073\u0069\u006e\u0067\u0020\u006e\u0075\u006d\u0062\u0065\u0072\u0020\u0025v\u0020\u0065\u0072\u0072\u003d\u0025v\u002e\u0020\u0055\u0073\u0069\u006e\u0067\u0020\u0030\u002e\u0030\u002e\u0020\u004fu\u0074\u0070u\u0074\u0020\u006d\u0061y\u0020\u0062\u0065\u0020\u0069n\u0063\u006f\u0072\u0072\u0065\u0063\u0074",_aacge .String (),_fcgge );
+_eccb =0.0;};_cfae :=PdfObjectFloat (_eccb );_bafa =&_cfae ;}else {_dcaf ,_daaaf :=_d .ParseInt (_aacge .String (),10,64);if _daaaf !=nil {_be .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u0020\u0070\u0061\u0072\u0073\u0069\u006e\u0067\u0020\u006e\u0075\u006db\u0065\u0072\u0020\u0025\u0076\u0020\u0065\u0072\u0072\u003d%\u0076\u002e\u0020\u0055\u0073\u0069\u006e\u0067\u0020\u0030\u002e\u0020\u004f\u0075\u0074\u0070\u0075\u0074 \u006d\u0061\u0079\u0020\u0062\u0065 \u0069\u006ec\u006f\u0072r\u0065c\u0074",_aacge .String (),_daaaf );
+_dcaf =0;};_bbga :=PdfObjectInteger (_dcaf );_bafa =&_bbga ;};return _bafa ,nil ;};
 
-// HasInvalidSeparationAfterXRef implements core.ParserMetadata interface.
-func (_aad ParserMetadata )HasInvalidSeparationAfterXRef ()bool {return _aad ._cfdb };type objectStream struct{N int ;_dcf []byte ;_fcb map[int ]int64 ;};const _ecbeb =10;func (_babd *PdfParser )parsePdfVersion ()(int ,int ,error ){var _dbaad int64 =20;
-_faege :=make ([]byte ,_dbaad );_babd ._fgaa .Seek (0,_ce .SeekStart );_babd ._fgaa .Read (_faege );var _cfec error ;var _decbb ,_bgca int ;if _cadec :=_fadc .FindStringSubmatch (string (_faege ));len (_cadec )< 3{if _decbb ,_bgca ,_cfec =_babd .seekPdfVersionTopDown ();
-_cfec !=nil {_bd .Log .Debug ("F\u0061\u0069\u006c\u0065\u0064\u0020\u0072\u0065\u0063\u006f\u0076\u0065\u0072\u0079\u0020\u002d\u0020\u0075n\u0061\u0062\u006c\u0065\u0020\u0074\u006f\u0020\u0066\u0069nd\u0020\u0076\u0065r\u0073i\u006f\u006e");return 0,0,_cfec ;
-};_babd ._fgaa ._dbe ,_cfec =_fgee (_babd ._fgaa ._dbe ,_babd .GetFileOffset ()-8);if _cfec !=nil {return 0,0,_cfec ;};}else {if _decbb ,_cfec =_c .Atoi (_cadec [1]);_cfec !=nil {return 0,0,_cfec ;};if _bgca ,_cfec =_c .Atoi (_cadec [2]);_cfec !=nil {return 0,0,_cfec ;
-};_babd .SetFileOffset (0);};_babd ._fgaa ._cad =_fae .NewReader (_babd ._fgaa ._dbe );_bd .Log .Debug ("\u0050\u0064\u0066\u0020\u0076\u0065\u0072\u0073\u0069\u006f\u006e\u0020%\u0064\u002e\u0025\u0064",_decbb ,_bgca );return _decbb ,_bgca ,nil ;};
+// NewASCIIHexEncoder makes a new ASCII hex encoder.
+func NewASCIIHexEncoder ()*ASCIIHexEncoder {_cbgf :=&ASCIIHexEncoder {};return _cbgf };
 
-// ToFloat64Array returns a slice of all elements in the array as a float64 slice.  An error is
-// returned if the array contains non-numeric objects (each element can be either PdfObjectInteger
-// or PdfObjectFloat).
-func (_fefd *PdfObjectArray )ToFloat64Array ()([]float64 ,error ){var _dbaag []float64 ;for _ ,_gfdf :=range _fefd .Elements (){switch _fdgac :=_gfdf .(type ){case *PdfObjectInteger :_dbaag =append (_dbaag ,float64 (*_fdgac ));case *PdfObjectFloat :_dbaag =append (_dbaag ,float64 (*_fdgac ));
-default:return nil ,ErrTypeError ;};};return _dbaag ,nil ;};func _agcf (_bgce *_bff .FilterDict ,_fbe *PdfObjectDictionary )error {if _eca ,_gbea :=_fbe .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );_gbea {if _abcb :=string (*_eca );_abcb !="C\u0072\u0079\u0070\u0074\u0046\u0069\u006c\u0074\u0065\u0072"{_bd .Log .Debug ("\u0049\u006e\u0076\u0061\u006c\u0069\u0064\u0020C\u0046\u0020\u0064ic\u0074\u0020\u0074\u0079\u0070\u0065:\u0020\u0025\u0073\u0020\u0028\u0073\u0068\u006f\u0075\u006c\u0064\u0020\u0062\u0065\u0020C\u0072\u0079\u0070\u0074\u0046\u0069\u006c\u0074e\u0072\u0029",_abcb );
-};};_cgf ,_gdb :=_fbe .Get ("\u0043\u0046\u004d").(*PdfObjectName );if !_gdb {return _ee .Errorf ("\u0075\u006e\u0073u\u0070\u0070\u006f\u0072t\u0065\u0064\u0020\u0063\u0072\u0079\u0070t\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0020\u0028\u004e\u006f\u006e\u0065\u0029");
-};_bgce .CFM =string (*_cgf );if _dcc ,_ded :=_fbe .Get ("\u0041u\u0074\u0068\u0045\u0076\u0065\u006et").(*PdfObjectName );_ded {_bgce .AuthEvent =_gbg .AuthEvent (*_dcc );}else {_bgce .AuthEvent =_gbg .EventDocOpen ;};if _abgf ,_aed :=_fbe .Get ("\u004c\u0065\u006e\u0067\u0074\u0068").(*PdfObjectInteger );
-_aed {_bgce .Length =int (*_abgf );};return nil ;};
+// PdfCrypt provides PDF encryption/decryption support.
+// The PDF standard supports encryption of strings and streams (Section 7.6).
+type PdfCrypt struct{_cbc encryptDict ;_eeae _ce .StdEncryptDict ;_bf string ;_gdf []byte ;_gef map[PdfObject ]bool ;_bba map[PdfObject ]bool ;_gge bool ;_fege cryptFilters ;_abc string ;_fbf string ;_fcb *PdfParser ;_aea map[int ]struct{};};func (emptyReader )Read ([]byte )(int ,error ){return 0,_g .EOF };
 
-// ParserOpts defines configuration options for Parser.
-// These options allow setting customization flags to control parsing behaviors.
-type ParserOpts struct{
 
-// RelaxedMode enables tolerant parsing by ignoring certain non-critical PDF errors.
-// When set to true, the parser will attempt to continue processing despite certain
-// structural errors such as:
-// - Missing or invalid /XRefStm entries
-// - Non-/Page or non-/Pages objects found in the page tree (/Kids array)
-RelaxedMode bool ;
+// GetAsFloat64Slice returns the array as []float64 slice.
+// Returns an error if not entirely numeric (only PdfObjectIntegers, PdfObjectFloats).
+func (_bedda *PdfObjectArray )GetAsFloat64Slice ()([]float64 ,error ){var _gdfb []float64 ;for _ ,_ecaag :=range _bedda .Elements (){_begbg ,_ecae :=GetNumberAsFloat (TraceToDirectObject (_ecaag ));if _ecae !=nil {return nil ,_ebc .Errorf ("\u0061\u0072\u0072\u0061\u0079\u0020\u0065\u006c\u0065\u006d\u0065n\u0074\u0020\u006e\u006f\u0074\u0020\u0061\u0020\u006e\u0075m\u0062\u0065\u0072");
+};_gdfb =append (_gdfb ,_begbg );};return _gdfb ,nil ;};
 
-// AutoRepairXrefTable enables automatic repair of the xref table when it is found to be malformed or missing objects.
-AutoRepairXrefTable bool ;};
+// MakeDecodeParams makes a new instance of an encoding dictionary based on
+// the current encoder settings.
+func (_efdc *DCTEncoder )MakeDecodeParams ()PdfObject {return nil };func (_ebgd *PdfParser )resolveReference (_dcfb *PdfObjectReference )(PdfObject ,bool ,error ){_cded ,_fffc :=_ebgd .ObjCache [int (_dcfb .ObjectNumber )];if _fffc {return _cded ,true ,nil ;
+};_cefg ,_cggcd :=_ebgd .LookupByReference (*_dcfb );if _cggcd !=nil {return nil ,false ,_cggcd ;};_ebgd .ObjCache [int (_dcfb .ObjectNumber )]=_cefg ;return _cefg ,false ,nil ;};
 
-// LookupByNumber looks up a PdfObject by object number.  Returns an error on failure.
-func (_gdcg *PdfParser )LookupByNumber (objNumber int )(PdfObject ,error ){_gca ,_ ,_gde :=_gdcg .lookupByNumberWrapper (objNumber ,true );return _gca ,_gde ;};
+// RunLengthEncoder represents Run length encoding.
+type RunLengthEncoder struct{};
+
+// GetNumberAsFloat returns the contents of `obj` as a float if it is an integer or float, or an
+// error if it isn't.
+func GetNumberAsFloat (obj PdfObject )(float64 ,error ){switch _aaccd :=obj .(type ){case *PdfObjectFloat :return float64 (*_aaccd ),nil ;case *PdfObjectInteger :return float64 (*_aaccd ),nil ;case *PdfObjectReference :_ebca :=TraceToDirectObject (obj );
+return GetNumberAsFloat (_ebca );case *PdfIndirectObject :return GetNumberAsFloat (_aaccd .PdfObject );};return 0,ErrNotANumber ;};func (_ecbb *PdfCrypt )checkAccessRights (_fdf []byte )(bool ,_ce .Permissions ,error ){_gdd :=_ecbb .securityHandler ();
+_caag ,_cab ,_ddd :=_gdd .Authenticate (&_ecbb ._eeae ,_fdf );if _ddd !=nil {return false ,0,_ddd ;}else if _cab ==0||len (_caag )==0{return false ,0,nil ;};return true ,_cab ,nil ;};func _gbdcd (_cegac ,_bdfed ,_fdee int )error {if _bdfed < 0||_bdfed > _cegac {return _bc .New ("s\u006c\u0069\u0063\u0065\u0020\u0069n\u0064\u0065\u0078\u0020\u0061\u0020\u006f\u0075\u0074 \u006f\u0066\u0020b\u006fu\u006e\u0064\u0073");
+};if _fdee < _bdfed {return _bc .New ("\u0069n\u0076\u0061\u006c\u0069d\u0020\u0073\u006c\u0069\u0063e\u0020i\u006ed\u0065\u0078\u0020\u0062\u0020\u003c\u0020a");};if _fdee > _cegac {return _bc .New ("s\u006c\u0069\u0063\u0065\u0020\u0069n\u0064\u0065\u0078\u0020\u0062\u0020\u006f\u0075\u0074 \u006f\u0066\u0020b\u006fu\u006e\u0064\u0073");
+};return nil ;};
+
+// MakeFloat creates an PdfObjectFloat from a float64.
+func MakeFloat (val float64 )*PdfObjectFloat {val =_age .RoundDefault (val );_dega :=PdfObjectFloat (val );return &_dega ;};
+
+// MakeIndirectObject creates an PdfIndirectObject with a specified direct object PdfObject.
+func MakeIndirectObject (obj PdfObject )*PdfIndirectObject {_gdafe :=&PdfIndirectObject {};_gdafe .PdfObject =obj ;return _gdafe ;};
+
+// ReadBytesAt reads byte content at specific offset and length within the PDF.
+func (_daaa *PdfParser )ReadBytesAt (offset ,len int64 )([]byte ,error ){_acdbg :=_daaa .GetFileOffset ();_ ,_gcac :=_daaa ._eece .Seek (offset ,_g .SeekStart );if _gcac !=nil {return nil ,_gcac ;};_cebb :=make ([]byte ,len );_ ,_gcac =_g .ReadAtLeast (_daaa ._eece ,_cebb ,int (len ));
+if _gcac !=nil {return nil ,_gcac ;};_daaa .SetFileOffset (_acdbg );return _cebb ,nil ;};var _bdab =_c .MustCompile ("\u005e\u005b\u005c\u002b\u002d\u002e\u005d\u002a\u0028\u005b\u0030\u002d9\u002e\u005d\u002b\u0029");
+
+// PdfObjectArray represents the primitive PDF array object.
+type PdfObjectArray struct{_dccdc []PdfObject };
+
+// Seek implementation of Seek interface.
+func (_gacg *limitedReadSeeker )Seek (offset int64 ,whence int )(int64 ,error ){var _fadfaa int64 ;switch whence {case _g .SeekStart :_fadfaa =offset ;case _g .SeekCurrent :_cgdd ,_gadg :=_gacg ._dcdd .Seek (0,_g .SeekCurrent );if _gadg !=nil {return 0,_gadg ;
+};_fadfaa =_cgdd +offset ;case _g .SeekEnd :_fadfaa =_gacg ._gacb +offset ;};if _cada :=_gacg .getError (_fadfaa );_cada !=nil {return 0,_cada ;};if _ ,_bfbd :=_gacg ._dcdd .Seek (_fadfaa ,_g .SeekStart );_bfbd !=nil {return 0,_bfbd ;};return _fadfaa ,nil ;
+};
+
+// JBIG2CompressionType defines the enum compression type used by the JBIG2Encoder.
+type JBIG2CompressionType int ;
+
+// GetTrailer returns the PDFs trailer dictionary. The trailer dictionary is typically the starting point for a PDF,
+// referencing other key objects that are important in the document structure.
+func (_eee *PdfParser )GetTrailer ()*PdfObjectDictionary {return _eee ._gdfce };
+
+// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
+// Has the Filter set and the DecodeParms.
+func (_feeb *LZWEncoder )MakeStreamDict ()*PdfObjectDictionary {_ffa :=MakeDict ();_ffa .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_feeb .GetFilterName ()));_facb :=_feeb .MakeDecodeParams ();if _facb !=nil {_ffa .Set ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073",_facb );
+};_ffa .Set ("E\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065",MakeInteger (int64 (_feeb .EarlyChange )));return _ffa ;};
+
+// MakeDecodeParams makes a new instance of an encoding dictionary based on
+// the current encoder settings.
+func (_ggeb *FlateEncoder )MakeDecodeParams ()PdfObject {if _ggeb .Predictor > 1{_gfdg :=MakeDict ();_gfdg .Set ("\u0050r\u0065\u0064\u0069\u0063\u0074\u006fr",MakeInteger (int64 (_ggeb .Predictor )));if _ggeb .BitsPerComponent !=8{_gfdg .Set ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074",MakeInteger (int64 (_ggeb .BitsPerComponent )));
+};if _ggeb .Columns !=1{_gfdg .Set ("\u0043o\u006c\u0075\u006d\u006e\u0073",MakeInteger (int64 (_ggeb .Columns )));};if _ggeb .Colors !=1{_gfdg .Set ("\u0043\u006f\u006c\u006f\u0072\u0073",MakeInteger (int64 (_ggeb .Colors )));};return _gfdg ;};return nil ;
+};
+
+// String returns a string describing `stream`.
+func (_cdccc *PdfObjectStream )String ()string {return _ebc .Sprintf ("O\u0062j\u0065\u0063\u0074\u0020\u0073\u0074\u0072\u0065a\u006d\u0020\u0025\u0064: \u0025\u0073",_cdccc .ObjectNumber ,_cdccc .PdfObjectDictionary );};
+
+// ResolveReferencesDeep recursively traverses through object `o`, looking up and replacing
+// references with indirect objects.
+// Optionally a map of already deep-resolved objects can be provided via `traversed`. The `traversed` map
+// is updated while traversing the objects to avoid traversing same objects multiple times.
+func ResolveReferencesDeep (o PdfObject ,traversed map[PdfObject ]struct{})error {if traversed ==nil {traversed =map[PdfObject ]struct{}{};};return _bfeda (o ,0,traversed );};
+
+// NewRawEncoder returns a new instace of RawEncoder.
+func NewRawEncoder ()*RawEncoder {return &RawEncoder {}};
+
+// String returns a string describing `streams`.
+func (_ffff *PdfObjectStreams )String ()string {return _ebc .Sprintf ("\u004f\u0062j\u0065\u0063\u0074 \u0073\u0074\u0072\u0065\u0061\u006d\u0020\u0025\u0064",_ffff .ObjectNumber );};
+
+// HasInvalidHexRunes implements core.ParserMetadata interface.
+func (_ceec ParserMetadata )HasInvalidHexRunes ()bool {return _ceec ._gee };
+
+// FormatWriteDirectionLTR formats a string for left-to-right rendering, handling bidirectional runs.
+func FormatWriteDirectionLTR (str string ,isLTR bool )string {_ggbgf :=str ;if _ggbgf ==""{return "";};_gffe :=_gb .Paragraph {};_ ,_faef :=_gffe .SetString (str );if _faef !=nil {return _ggbgf ;};_cceb ,_faef :=_gffe .Order ();if _faef !=nil {return _ggbgf ;
+};_cggce :=_cceb .NumRuns ();_eceebg :=make ([]string ,_cggce );for _fddac :=0;_fddac < _cceb .NumRuns ();_fddac ++{_cceaa :=_cceb .Run (_fddac );_ddccf :=_cceaa .String ();if _cceaa .Direction ()==_gb .RightToLeft {_ddccf =_gb .ReverseString (_ddccf );
+};if isLTR {_eceebg [_fddac ]=_ddccf ;}else {_eceebg [_cggce -1]=_ddccf ;};_cggce --;};if len (_eceebg )!=_cceb .NumRuns (){return str ;};_ggbgf =_ff .Join (_eceebg ,"");return _ggbgf ;};
+
+// XrefTable represents the cross references in a PDF, i.e. the table of objects and information
+// where to access within the PDF file.
+type XrefTable struct{ObjectMap map[int ]XrefObject ;_acf []XrefObject ;};
+
+// MakeDecodeParams makes a new instance of an encoding dictionary based on the current encoder settings.
+func (_ggbf *JBIG2Encoder )MakeDecodeParams ()PdfObject {return MakeDict ()};
+
+// MakeInteger creates a PdfObjectInteger from an int64.
+func MakeInteger (val int64 )*PdfObjectInteger {_afec :=PdfObjectInteger (val );return &_afec };
+
+// Write outputs the object as it is to be written to file.
+func (_gggd *PdfObjectReference )Write ()[]byte {return _cage (func (_ddgd *_ad .Buffer ){_ddgd .WriteString (_d .FormatInt (_gggd .ObjectNumber ,10));_ddgd .WriteString ("\u0020");_ddgd .WriteString (_d .FormatInt (_gggd .GenerationNumber ,10));_ddgd .WriteString ("\u0020\u0052");
+});};
+
+// Write outputs the object as it is to be written to file.
+func (_fbff *PdfObjectStream )Write ()[]byte {return _cage (func (_dade *_ad .Buffer ){_dade .WriteString (_d .FormatInt (_fbff .ObjectNumber ,10));_dade .WriteString ("\u0020\u0030\u0020\u0052");});};
+
+// Validate validates the page settings for the JBIG2 encoder.
+func (_dbfe JBIG2EncoderSettings )Validate ()error {const _cbdfa ="\u0076a\u006ci\u0064\u0061\u0074\u0065\u0045\u006e\u0063\u006f\u0064\u0065\u0072";if _dbfe .Threshold < 0||_dbfe .Threshold > 1.0{return _fb .Errorf (_cbdfa ,"\u0070\u0072\u006f\u0076\u0069\u0064\u0065\u0064\u0020\u0074\u0068\u0072\u0065\u0073\u0068\u006f\u006c\u0064\u0020\u0076a\u006c\u0075\u0065\u003a\u0020\u0027\u0025\u0076\u0027 \u006d\u0075\u0073\u0074\u0020\u0062\u0065\u0020\u0069\u006e\u0020\u0072\u0061n\u0067\u0065\u0020\u005b\u0030\u002e0\u002c\u0020\u0031.\u0030\u005d",_dbfe .Threshold );
+};if _dbfe .ResolutionX < 0{return _fb .Errorf (_cbdfa ,"\u0070\u0072\u006f\u0076\u0069\u0064\u0065\u0064\u0020\u0078\u0020\u0072\u0065\u0073\u006f\u006c\u0075\u0074\u0069\u006fn\u003a\u0020\u0027\u0025\u0064\u0027\u0020\u006d\u0075s\u0074\u0020\u0062\u0065\u0020\u0070\u006f\u0073\u0069\u0074\u0069\u0076\u0065 \u006f\u0072\u0020\u007a\u0065\u0072o\u0020\u0076\u0061l\u0075\u0065",_dbfe .ResolutionX );
+};if _dbfe .ResolutionY < 0{return _fb .Errorf (_cbdfa ,"\u0070\u0072\u006f\u0076\u0069\u0064\u0065\u0064\u0020\u0079\u0020\u0072\u0065\u0073\u006f\u006c\u0075\u0074\u0069\u006fn\u003a\u0020\u0027\u0025\u0064\u0027\u0020\u006d\u0075s\u0074\u0020\u0062\u0065\u0020\u0070\u006f\u0073\u0069\u0074\u0069\u0076\u0065 \u006f\u0072\u0020\u007a\u0065\u0072o\u0020\u0076\u0061l\u0075\u0065",_dbfe .ResolutionY );
+};if _dbfe .DefaultPixelValue !=0&&_dbfe .DefaultPixelValue !=1{return _fb .Errorf (_cbdfa ,"de\u0066\u0061u\u006c\u0074\u0020\u0070\u0069\u0078\u0065\u006c\u0020v\u0061\u006c\u0075\u0065\u003a\u0020\u0027\u0025\u0064\u0027\u0020\u006d\u0075\u0073\u0074\u0020\u0062\u0065\u0020\u0061\u0020\u0076\u0061\u006c\u0075\u0065\u0020\u0066o\u0072 \u0074\u0068\u0065\u0020\u0062\u0069\u0074\u003a \u007b0\u002c\u0031}",_dbfe .DefaultPixelValue );
+};if _dbfe .Compression !=JB2Generic {return _fb .Errorf (_cbdfa ,"\u0070\u0072\u006f\u0076\u0069\u0064\u0065d\u0020\u0063\u006fm\u0070\u0072\u0065\u0073s\u0069\u006f\u006e\u0020\u0069\u0073\u0020\u006e\u006f\u0074\u0020\u0069\u006d\u0070\u006c\u0065\u006d\u0065\u006e\u0074\u0065\u0064\u0020\u0079\u0065\u0074");
+};return nil ;};
+
+// ShallowEqualObjects returns true if `obj1` and `obj2` are equal at the top level
+// without recursing into nested objects. Indirect objects are compared by object number
+// (identity), not by content. Dictionary and array values are compared by pointer equality.
+func ShallowEqualObjects (obj1 ,obj2 PdfObject )bool {if obj1 ==nil &&obj2 ==nil {return true ;}else if obj1 ==nil ||obj2 ==nil {return false ;};if _e .TypeOf (obj1 )!=_e .TypeOf (obj2 ){return false ;};switch _cece :=obj1 .(type ){case *PdfObjectNull :return true ;
+case *PdfObjectReference :_fgfbf :=obj2 .(*PdfObjectReference );return _cece .ObjectNumber ==_fgfbf .ObjectNumber &&_cece .GenerationNumber ==_fgfbf .GenerationNumber ;case *PdfObjectName :return *_cece ==*(obj2 .(*PdfObjectName ));case *PdfObjectString :return *_cece ==*(obj2 .(*PdfObjectString ));
+case *PdfObjectInteger :return *_cece ==*(obj2 .(*PdfObjectInteger ));case *PdfObjectBool :return *_cece ==*(obj2 .(*PdfObjectBool ));case *PdfObjectFloat :return *_cece ==*(obj2 .(*PdfObjectFloat ));case *PdfIndirectObject :_dbfc :=obj2 .(*PdfIndirectObject );
+return _cece .ObjectNumber ==_dbfc .ObjectNumber &&_cece .GenerationNumber ==_dbfc .GenerationNumber ;case *PdfObjectArray :_gedd :=obj2 .(*PdfObjectArray );if len (_cece ._dccdc )!=len (_gedd ._dccdc ){return false ;};for _afef ,_dfce :=range _cece ._dccdc {if _dfce !=_gedd ._dccdc [_afef ]{return false ;
+};};return true ;case *PdfObjectDictionary :_bcdge :=obj2 .(*PdfObjectDictionary );_egbaa :=_cece .Keys ();_fbffd :=_bcdge .Keys ();if len (_egbaa )!=len (_fbffd ){return false ;};for _ ,_gfdfd :=range _egbaa {_adedd :=_cece .Get (_gfdfd );_fgdd :=_bcdge .Get (_gfdfd );
+if _adedd !=_fgdd {return false ;};};return true ;case *PdfObjectStream :_dfdeec :=obj2 .(*PdfObjectStream );if _cece .PdfObjectDictionary !=_dfdeec .PdfObjectDictionary {return false ;};return _ad .Equal (_cece .Stream ,_dfdeec .Stream );default:_be .Log .Error ("\u0045\u0052R\u004f\u0052\u003a\u0020\u0055\u006e\u006b\u006e\u006f\u0077\u006e\u0020\u0074\u0079\u0070\u0065\u003a\u0020\u0025\u0054\u0020\u002d\u0020\u0073\u0068\u006f\u0075\u006c\u0064\u0020\u006e\u0065\u0076\u0065\u0072\u0020\u0068\u0061\u0070\u0070\u0065\u006e\u0021",obj1 );
+};return false ;};
+
+// GetString is a helper for Get that returns a string value.
+// Returns false if the key is missing or a value is not a string.
+func (_ceeb *PdfObjectDictionary )GetString (key PdfObjectName )(string ,bool ){_acfe :=_ceeb .Get (key );if _acfe ==nil {return "",false ;};_fegg ,_deea :=_acfe .(*PdfObjectString );if !_deea {return "",false ;};return _fegg .Str (),true ;};
+
+// PdfIndirectObject represents the primitive PDF indirect object.
+type PdfIndirectObject struct{PdfObjectReference ;PdfObject ;};
+
+// ResolveReference resolves reference if `o` is a *PdfObjectReference and returns the object referenced to.
+// Otherwise returns back `o`.
+func ResolveReference (obj PdfObject )PdfObject {if _gcfa ,_fbbce :=obj .(*PdfObjectReference );_fbbce {return _gcfa .Resolve ();};return obj ;};
+
+// Decrypt an object with specified key. For numbered objects,
+// the key argument is not used and a new one is generated based
+// on the object and generation number.
+// Traverses through all the subobjects (recursive).
+//
+// Does not look up references..  That should be done prior to calling.
+func (_bbb *PdfCrypt )Decrypt (obj PdfObject ,parentObjNum ,parentGenNum int64 )error {if _bbb .isDecrypted (obj ){return nil ;};switch _bdb :=obj .(type ){case *PdfIndirectObject :_bbb ._gef [_bdb ]=true ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0044\u0065\u0063\u0072\u0079\u0070\u0074\u0069\u006e\u0067 \u0069\u006e\u0064\u0069\u0072\u0065\u0063t\u0020\u0025\u0064\u0020\u0025\u0064\u0020\u006f\u0062\u006a\u0021",_bdb .ObjectNumber ,_bdb .GenerationNumber );
+};_babd :=_bdb .ObjectNumber ;_fedc :=_bdb .GenerationNumber ;_bcg :=_bbb .Decrypt (_bdb .PdfObject ,_babd ,_fedc );if _bcg !=nil {return _bcg ;};return nil ;case *PdfObjectStream :_bbb ._gef [_bdb ]=true ;_ccde :=_bdb .PdfObjectDictionary ;if _bbb ._eeae .R !=5{if _gcfg ,_efbf :=_ccde .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );
+_efbf &&*_gcfg =="\u0058\u0052\u0065\u0066"{return nil ;};};_gbg :=_bdb .ObjectNumber ;_dga :=_bdb .GenerationNumber ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0044e\u0063\u0072\u0079\u0070t\u0069\u006e\u0067\u0020\u0073t\u0072e\u0061m\u0020\u0025\u0064\u0020\u0025\u0064\u0020!",_gbg ,_dga );
+};_ebf :=_ede ;if _bbb ._cbc .V >=4{_ebf =_bbb ._abc ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0074\u0068\u0069\u0073.s\u0074\u0072\u0065\u0061\u006d\u0046\u0069\u006c\u0074\u0065\u0072\u0020\u003d\u0020%\u0073",_bbb ._abc );};
+if _fba ,_aeeaa :=_ccde .Get ("\u0046\u0069\u006c\u0074\u0065\u0072").(*PdfObjectArray );_aeeaa {if _bfe ,_dggc :=GetName (_fba .Get (0));_dggc {if *_bfe =="\u0043\u0072\u0079p\u0074"{_ebf ="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079";if _bbca ,_fdae :=_ccde .Get ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073").(*PdfObjectDictionary );
+_fdae {if _afcg ,_dad :=_bbca .Get ("\u004e\u0061\u006d\u0065").(*PdfObjectName );_dad {if _ ,_egfg :=_bbb ._fege [string (*_afcg )];_egfg {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0055\u0073\u0069\u006eg \u0073\u0074\u0072\u0065\u0061\u006d\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0020%\u0073",*_afcg );
+};_ebf =string (*_afcg );};};};};};};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0077\u0069\u0074\u0068\u0020\u0025\u0073\u0020\u0066i\u006c\u0074\u0065\u0072",_ebf );};if _ebf =="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079"{return nil ;
+};};_dfa :=_bbb .Decrypt (_ccde ,_gbg ,_dga );if _dfa !=nil {return _dfa ;};_gfc ,_dfa :=_bbb .makeKey (_ebf ,uint32 (_gbg ),uint32 (_dga ),_bbb ._gdf );if _dfa !=nil {return _dfa ;};_bdb .Stream ,_dfa =_bbb .decryptBytes (_bdb .Stream ,_ebf ,_gfc );if _dfa !=nil {return _dfa ;
+};_ccde .Set ("\u004c\u0065\u006e\u0067\u0074\u0068",MakeInteger (int64 (len (_bdb .Stream ))));return nil ;case *PdfObjectString :if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0044e\u0063r\u0079\u0070\u0074\u0069\u006eg\u0020\u0073t\u0072\u0069\u006e\u0067\u0021");
+};_fgg :=_ede ;if _bbb ._cbc .V >=4{if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0077\u0069\u0074\u0068\u0020\u0025\u0073\u0020\u0066i\u006c\u0074\u0065\u0072",_bbb ._fbf );};if _bbb ._fbf =="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079"{return nil ;
+};_fgg =_bbb ._fbf ;};_gaa ,_eggff :=_bbb .makeKey (_fgg ,uint32 (parentObjNum ),uint32 (parentGenNum ),_bbb ._gdf );if _eggff !=nil {return _eggff ;};_afaf :=_bdb .Str ();_gaf :=make ([]byte ,len (_afaf ));for _cccc :=0;_cccc < len (_afaf );_cccc ++{_gaf [_cccc ]=_afaf [_cccc ];
+};if len (_gaf )> 0{if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0044e\u0063\u0072\u0079\u0070\u0074\u0020\u0073\u0074\u0072\u0069\u006eg\u003a\u0020\u0025\u0073\u0020\u003a\u0020\u0025\u0020\u0078",_gaf ,_gaf );};_gaf ,_eggff =_bbb .decryptBytes (_gaf ,_fgg ,_gaa );
+if _eggff !=nil {return _eggff ;};};_bdb ._babb =string (_gaf );return nil ;case *PdfObjectArray :for _ ,_dbeg :=range _bdb .Elements (){_eggc :=_bbb .Decrypt (_dbeg ,parentObjNum ,parentGenNum );if _eggc !=nil {return _eggc ;};};return nil ;case *PdfObjectDictionary :_gddg :=false ;
+if _agbb :=_bdb .Get ("\u0054\u0079\u0070\u0065");_agbb !=nil {_acab ,_ecg :=_agbb .(*PdfObjectName );if _ecg &&*_acab =="\u0053\u0069\u0067"{_gddg =true ;};};for _ ,_dcfd :=range _bdb .Keys (){_edad :=_bdb .Get (_dcfd );if _gddg &&string (_dcfd )=="\u0043\u006f\u006e\u0074\u0065\u006e\u0074\u0073"{continue ;
+};if string (_dcfd )!="\u0050\u0061\u0072\u0065\u006e\u0074"&&string (_dcfd )!="\u0050\u0072\u0065\u0076"&&string (_dcfd )!="\u004c\u0061\u0073\u0074"{_bac :=_bbb .Decrypt (_edad ,parentObjNum ,parentGenNum );if _bac !=nil {return _bac ;};};};return nil ;
+};return nil ;};func (_adbb *runLengthReader )fillRun ()error {_ccfb ,_cddga :=_adbb ._afd .ReadByte ();if _cddga !=nil {return _cddga ;};switch {case _ccfb ==128:return _g .EOF ;case _ccfb > 128:_bfdc ,_ccgec :=_adbb ._afd .ReadByte ();if _ccgec !=nil {return _ccgec ;
+};_agf :=257-int (_ccfb );for _aaccg :=0;_aaccg < _agf ;_aaccg ++{_adbb ._ecgb [_aaccg ]=_bfdc ;};_adbb ._bbaaa =_agf ;_adbb ._cdagg =0;return nil ;default:_cgdb :=int (_ccfb )+1;if _ ,_bgad :=_g .ReadFull (_adbb ._afd ,_adbb ._ecgb [:_cgdb ]);_bgad !=nil {return _bgad ;
+};_adbb ._bbaaa =_cgdb ;_adbb ._cdagg =0;return nil ;};};
+
+// DecodeStream decodes a JBIG2 encoded stream and returns the result as a slice of bytes.
+func (_acdec *JBIG2Encoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return _acdec .DecodeBytes (streamObj .Stream );};
+
+// Append appends PdfObject(s) to the streams.
+func (_gegf *PdfObjectStreams )Append (objects ...PdfObject ){if _gegf ==nil {_be .Log .Debug ("\u0057\u0061\u0072\u006e\u0020-\u0020\u0041\u0074\u0074\u0065\u006d\u0070\u0074\u0020\u0074\u006f\u0020\u0061p\u0070\u0065\u006e\u0064\u0020\u0074\u006f\u0020\u0061\u0020\u006e\u0069\u006c\u0020\u0073\u0074\u0072\u0065\u0061\u006d\u0073");
+return ;};_gegf ._fefge =append (_gegf ._fefge ,objects ...);};
+
+// ReadBytes reads until the first occurrence of delim in the buffered reader.
+func (_caab *bufferedReadSeeker )ReadBytes (delim byte )([]byte ,error ){_ef ,_ccc :=_caab ._df .ReadBytes (delim );if _ccc !=nil {return nil ,_ccc ;};return _ef ,nil ;};const (_cfg =0;_ecgd =1;_eae =2;_adbg =3;_acfa =4;);func _affd (_cgfg PdfObject ,_ddef int )PdfObject {if _ddef > _cggg {_be .Log .Error ("\u0054\u0072ac\u0065\u0020\u0064e\u0070\u0074\u0068\u0020lev\u0065l \u0062\u0065\u0079\u006f\u006e\u0064\u0020%d\u0020\u002d\u0020\u0065\u0072\u0072\u006fr\u0021",_cggg );
+return MakeNull ();};switch _gacfa :=_cgfg .(type ){case *PdfIndirectObject :_cgfg =_affd ((*_gacfa ).PdfObject ,_ddef +1);case *PdfObjectArray :for _dgedg ,_dedc :=range (*_gacfa )._dccdc {(*_gacfa )._dccdc [_dgedg ]=_affd (_dedc ,_ddef +1);};case *PdfObjectDictionary :_gacfa ._egfe .RLock ();
+_cca :=make (map[PdfObjectName ]PdfObject ,len (_gacfa ._dbcd ));for _dbfbf ,_aaca :=range _gacfa ._dbcd {_cca [_dbfbf ]=_aaca ;};_gacfa ._egfe .RUnlock ();for _ceaa ,_face :=range _cca {_cca [_ceaa ]=_affd (_face ,_ddef +1);};_gacfa ._egfe .Lock ();for _abgb ,_bdbc :=range _cca {_gacfa ._dbcd [_abgb ]=_bdbc ;
+};_ec .Slice (_gacfa ._gaga ,func (_dedg ,_fbcec int )bool {return _gacfa ._gaga [_dedg ]< _gacfa ._gaga [_fbcec ]});_gacfa ._egfe .Unlock ();};return _cgfg ;};
+
+// EncodeJBIG2Image encodes 'img' into jbig2 encoded bytes stream, using default encoder settings.
+func (_fabd *JBIG2Encoder )EncodeJBIG2Image (img *JBIG2Image )([]byte ,error ){const _cgb ="c\u006f\u0072\u0065\u002eEn\u0063o\u0064\u0065\u004a\u0042\u0049G\u0032\u0049\u006d\u0061\u0067\u0065";if _cfeba :=_fabd .AddPageImage (img ,&_fabd .DefaultPageSettings );
+_cfeba !=nil {return nil ,_fb .Wrap (_cfeba ,_cgb ,"");};return _fabd .Encode ();};func (_dced *PdfCrypt )encryptBytes (_acgc []byte ,_edada string ,_efec []byte )([]byte ,error ){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0045\u006e\u0063\u0072\u0079\u0070\u0074\u0020\u0062\u0079\u0074\u0065\u0073");
+};_cdbcg ,_cgc :=_dced ._fege [_edada ];if !_cgc {return nil ,_ebc .Errorf ("\u0075n\u006b\u006e\u006f\u0077n\u0020\u0063\u0072\u0079\u0070t\u0020f\u0069l\u0074\u0065\u0072\u0020\u0028\u0025\u0073)",_edada );};return _cdbcg .EncryptBytes (_acgc ,_efec );
+};func (_bff *asciiHexReader )Read (p []byte )(int ,error ){_bege :=0;for _bege < len (p ){if _bff ._bebb !=nil {if _bege > 0{return _bege ,nil ;};return 0,_bff ._bebb ;};_gfbf ,_daag :=_bff .nextDigit ();if !_daag {continue ;};_eaba ,_daag :=_bff .nextDigit ();
+if !_daag {if _bff ._bebb ==_g .EOF {p [_bege ]=_dged (_gfbf )<<4;_bege ++;};continue ;};p [_bege ]=_dged (_gfbf )<<4|_dged (_eaba );_bege ++;};return _bege ,nil ;};func (_decd *PdfParser )parseArray ()(*PdfObjectArray ,error ){_ggef :=MakeArray ();_decd ._eece .ReadByte ();
+for {_decd .skipSpaces ();_gceffd ,_bgaf :=_decd ._eece .Peek (1);if _bgaf !=nil {return _ggef ,_bgaf ;};if _gceffd [0]==']'{_decd ._eece .ReadByte ();break ;};_ccgb ,_bgaf :=_decd .parseObject ();if _bgaf !=nil {return _ggef ,_bgaf ;};_ggef .Append (_ccgb );
+};return _ggef ,nil ;};
+
+// PdfObjectInteger represents the primitive PDF integer numerical object.
+type PdfObjectInteger int64 ;func (_dfcg *PdfCrypt )decryptBytes (_dccd []byte ,_fae string ,_efbg []byte )([]byte ,error ){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0044\u0065\u0063\u0072\u0079\u0070\u0074\u0020\u0062\u0079\u0074\u0065\u0073");
+};_bged ,_faf :=_dfcg ._fege [_fae ];if !_faf {return nil ,_ebc .Errorf ("\u0075n\u006b\u006e\u006f\u0077n\u0020\u0063\u0072\u0079\u0070t\u0020f\u0069l\u0074\u0065\u0072\u0020\u0028\u0025\u0073)",_fae );};return _bged .DecryptBytes (_dccd ,_efbg );};
+
+// Decoded returns the PDFDocEncoding or UTF-16BE decoded string contents.
+// UTF-16BE is applied when the first two bytes are 0xFE, 0XFF, otherwise decoding of
+// PDFDocEncoding is performed.
+func (_addbd *PdfObjectString )Decoded ()string {if _addbd ==nil {return "";};_fadc :=[]byte (_addbd ._babb );if len (_fadc )>=2&&_fadc [0]==0xFE&&_fadc [1]==0xFF{return _gg .UTF16ToString (_fadc [2:]);};return _gg .PDFDocEncodingToString (_fadc );};func _fagf (_cacfe ,_cged PdfObject ,_acce int ,_bafcd map[indirectPair ]bool )bool {if _acce > _cggg {_be .Log .Error ("\u0054\u0072ac\u0065\u0020\u0064e\u0070\u0074\u0068\u0020lev\u0065l \u0062\u0065\u0079\u006f\u006e\u0064\u0020%d\u0020\u002d\u0020\u0065\u0072\u0072\u006fr\u0021",_cggg );
+return false ;};if _cacfe ==nil &&_cged ==nil {return true ;}else if _cacfe ==nil ||_cged ==nil {return false ;};if _e .TypeOf (_cacfe )!=_e .TypeOf (_cged ){return false ;};switch _cddgad :=_cacfe .(type ){case *PdfObjectNull :return true ;case *PdfObjectReference :_daee :=_cged .(*PdfObjectReference );
+return _cddgad .ObjectNumber ==_daee .ObjectNumber &&_cddgad .GenerationNumber ==_daee .GenerationNumber ;case *PdfObjectName :return *_cddgad ==*(_cged .(*PdfObjectName ));case *PdfObjectString :return *_cddgad ==*(_cged .(*PdfObjectString ));case *PdfObjectInteger :return *_cddgad ==*(_cged .(*PdfObjectInteger ));
+case *PdfObjectBool :return *_cddgad ==*(_cged .(*PdfObjectBool ));case *PdfObjectFloat :return *_cddgad ==*(_cged .(*PdfObjectFloat ));case *PdfIndirectObject :if _bafcd ==nil {_bafcd =map[indirectPair ]bool {};};_gfgde :=_cged .(*PdfIndirectObject );
+_adecb :=indirectPair {_cddgad ,_gfgde };if _bafcd [_adecb ]{return true ;};_bafcd [_adecb ]=true ;return _fagf (TraceToDirectObject (_cacfe ),TraceToDirectObject (_cged ),_acce +1,_bafcd );case *PdfObjectArray :_befgb :=_cged .(*PdfObjectArray );if len ((*_cddgad )._dccdc )!=len ((*_befgb )._dccdc ){return false ;
+};for _cafgdaa ,_agcga :=range (*_cddgad )._dccdc {if !_fagf (_agcga ,(*_befgb )._dccdc [_cafgdaa ],_acce +1,_bafcd ){return false ;};};return true ;case *PdfObjectDictionary :_bcea :=_cged .(*PdfObjectDictionary );_geac :=_cddgad .Keys ();_fgcb :=_bcea .Keys ();
+if len (_geac )!=len (_fgcb ){return false ;};for _ ,_agegd :=range _geac {_acbd :=_cddgad .Get (_agegd );_fecfb :=_bcea .Get (_agegd );if _fecfb ==nil ||!_fagf (_acbd ,_fecfb ,_acce +1,_bafcd ){return false ;};};return true ;case *PdfObjectStream :_cdbeb :=_cged .(*PdfObjectStream );
+if !_ad .Equal (_cddgad .Stream ,_cdbeb .Stream ){return false ;};return _fagf (_cddgad .PdfObjectDictionary ,_cdbeb .PdfObjectDictionary ,_acce +1,_bafcd );default:_be .Log .Error ("\u0045\u0052R\u004f\u0052\u003a\u0020\u0055\u006e\u006b\u006e\u006f\u0077\u006e\u0020\u0074\u0079\u0070\u0065\u003a\u0020\u0025\u0054\u0020\u002d\u0020\u0073\u0068\u006f\u0075\u006c\u0064\u0020\u006e\u0065\u0076\u0065\u0072\u0020\u0068\u0061\u0070\u0070\u0065\u006e\u0021",_cacfe );
+};return false ;};func _fdbc (_gbfbb *PdfObjectStream ,_ecgaa *MultiEncoder )(*DCTEncoder ,error ){_cbb :=NewDCTEncoder ();_ccgf :=_gbfbb .PdfObjectDictionary ;if _ccgf ==nil {return _cbb ,nil ;};var _ffede _g .Reader =_ad .NewReader (_gbfbb .Stream );
+if _ecgaa !=nil {_ffede =_ecgaa .DecodeReader (_ffede );if _ged ,_cead :=_ffede .(_g .Closer );_cead {defer _ged .Close ();};};_cdgga ,_fcg :=_af .DecodeConfig (_ffede );if _fcg !=nil {_be .Log .Debug ("\u0045\u0072\u0072or\u0020\u0064\u0065\u0063\u006f\u0064\u0069\u006e\u0067\u0020\u0066\u0069\u006c\u0065\u003a\u0020\u0025\u0073",_fcg );
+return nil ,_fcg ;};switch _cdgga .ColorModel {case _ca .RGBAModel :_cbb .BitsPerComponent =8;_cbb .ColorComponents =3;_cbb .Decode =[]float64 {0.0,1.0,0.0,1.0,0.0,1.0};case _ca .RGBA64Model :_cbb .BitsPerComponent =16;_cbb .ColorComponents =3;_cbb .Decode =[]float64 {0.0,1.0,0.0,1.0,0.0,1.0};
+case _ca .GrayModel :_cbb .BitsPerComponent =8;_cbb .ColorComponents =1;_cbb .Decode =[]float64 {0.0,1.0};case _ca .Gray16Model :_cbb .BitsPerComponent =16;_cbb .ColorComponents =1;_cbb .Decode =[]float64 {0.0,1.0};case _ca .CMYKModel :_cbb .BitsPerComponent =8;
+_cbb .ColorComponents =4;_cbb .Decode =[]float64 {0.0,1.0,0.0,1.0,0.0,1.0,0.0,1.0};case _ca .YCbCrModel :_cbb .BitsPerComponent =8;_cbb .ColorComponents =3;_cbb .Decode =[]float64 {0.0,1.0,0.0,1.0,0.0,1.0};default:return nil ,_bc .New ("\u0075\u006e\u0073up\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0063\u006f\u006c\u006f\u0072\u0020\u006d\u006f\u0064\u0065\u006c");
+};_cbb .Width =_cdgga .Width ;_cbb .Height =_cdgga .Height ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0044\u0043T\u0020\u0045\u006ec\u006f\u0064\u0065\u0072\u003a\u0020\u0025\u002b\u0076",_cbb );};_cbb .Quality =DefaultJPEGQuality ;
+_dfbb ,_gadb :=GetArray (_ccgf .Get ("\u0044\u0065\u0063\u006f\u0064\u0065"));if _gadb {_aaaf ,_ffac :=_dfbb .ToFloat64Array ();if _ffac !=nil {return _cbb ,_ffac ;};_cbb .Decode =_aaaf ;};return _cbb ,nil ;};
+
+// EncodeBytes encodes a bytes array and return the encoded value based on the encoder parameters.
+func (_gbec *FlateEncoder )EncodeBytes (data []byte )([]byte ,error ){if _gbec .Predictor !=1&&_gbec .Predictor !=11{_be .Log .Debug ("E\u006e\u0063\u006f\u0064\u0069\u006e\u0067\u0020\u0065\u0072\u0072\u006f\u0072\u003a\u0020\u0046\u006c\u0061\u0074\u0065\u0045\u006e\u0063\u006f\u0064\u0065r\u0020P\u0072\u0065\u0064\u0069c\u0074\u006fr\u0020\u003d\u0020\u0031\u002c\u0020\u0031\u0031\u0020\u006f\u006e\u006c\u0079\u0020\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064");
+return nil ,ErrUnsupportedEncodingParameters ;};if _gbec .Predictor ==11{_gdcd :=_gbec .Columns ;_cdfc :=len (data )/_gdcd ;if len (data )%_gdcd !=0{_be .Log .Error ("\u0049n\u0076a\u006c\u0069\u0064\u0020\u0072o\u0077\u0020l\u0065\u006e\u0067\u0074\u0068");
+return nil ,_bc .New ("\u0069n\u0076a\u006c\u0069\u0064\u0020\u0072o\u0077\u0020l\u0065\u006e\u0067\u0074\u0068");};_gccb :=_ad .NewBuffer (nil );_efbff :=make ([]byte ,_gdcd );for _ffgg :=0;_ffgg < _cdfc ;_ffgg ++{_fcaa :=data [_gdcd *_ffgg :_gdcd *(_ffgg +1)];
+_efbff [0]=_fcaa [0];for _ffge :=1;_ffge < _gdcd ;_ffge ++{_efbff [_ffge ]=byte (int (_fcaa [_ffge ]-_fcaa [_ffge -1])%256);};_gccb .WriteByte (1);_gccb .Write (_efbff );};data =_gccb .Bytes ();};var _fcbdc _ad .Buffer ;_addb :=_f .NewWriter (&_fcbdc );
+_addb .Write (data );_addb .Close ();return _fcbdc .Bytes (),nil ;};
+
+// Write outputs the object as it is to be written to file.
+func (_deaf *PdfObjectBool )Write ()[]byte {if *_deaf {return []byte ("\u0074\u0072\u0075\u0065");};return []byte ("\u0066\u0061\u006cs\u0065");};func _fbbc (_bbgb *_bb .FilterDict ,_dfe *PdfObjectDictionary )error {if _abe ,_egf :=_dfe .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );
+_egf {if _bbge :=string (*_abe );_bbge !="C\u0072\u0079\u0070\u0074\u0046\u0069\u006c\u0074\u0065\u0072"{_be .Log .Debug ("\u0049\u006e\u0076\u0061\u006c\u0069\u0064\u0020C\u0046\u0020\u0064ic\u0074\u0020\u0074\u0079\u0070\u0065:\u0020\u0025\u0073\u0020\u0028\u0073\u0068\u006f\u0075\u006c\u0064\u0020\u0062\u0065\u0020C\u0072\u0079\u0070\u0074\u0046\u0069\u006c\u0074e\u0072\u0029",_bbge );
+};};_ffg ,_cgd :=_dfe .Get ("\u0043\u0046\u004d").(*PdfObjectName );if !_cgd {return _ebc .Errorf ("\u0075\u006e\u0073u\u0070\u0070\u006f\u0072t\u0065\u0064\u0020\u0063\u0072\u0079\u0070t\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0020\u0028\u004e\u006f\u006e\u0065\u0029");
+};_bbgb .CFM =string (*_ffg );if _agca ,_eddb :=_dfe .Get ("\u0041u\u0074\u0068\u0045\u0076\u0065\u006et").(*PdfObjectName );_eddb {_bbgb .AuthEvent =_ce .AuthEvent (*_agca );}else {_bbgb .AuthEvent =_ce .EventDocOpen ;};if _aceb ,_abb :=_dfe .Get ("\u004c\u0065\u006e\u0067\u0074\u0068").(*PdfObjectInteger );
+_abb {_bbgb .Length =int (*_aceb );};return nil ;};
+
+// GetFilterName returns the name of the encoding filter.
+func (_efed *FlateEncoder )GetFilterName ()string {return StreamEncodingFilterNameFlate };func (_dccg *PdfParser )parseString ()(*PdfObjectString ,error ){_dccg ._eece .ReadByte ();_dbcb :=_bae ();defer _ac (_dbcb );_daccb :=1;for {_gbbb ,_fbaae :=_dccg ._eece .Peek (1);
+if _fbaae !=nil {return MakeString (_dbcb .String ()),_fbaae ;};if _gbbb [0]=='\\'{_dccg ._eece .ReadByte ();_efeg ,_eeeg :=_dccg ._eece .ReadByte ();if _eeeg !=nil {return MakeString (_dbcb .String ()),_eeeg ;};if IsOctalDigit (_efeg ){_acgcf ,_cafd :=_dccg ._eece .Peek (2);
+if _cafd !=nil {return MakeString (_dbcb .String ()),_cafd ;};var _fedcg []byte ;_fedcg =append (_fedcg ,_efeg );for _ ,_baec :=range _acgcf {if IsOctalDigit (_baec ){_fedcg =append (_fedcg ,_baec );}else {break ;};};_dccg ._eece .Discard (len (_fedcg )-1);
+if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004e\u0075\u006d\u0065ri\u0063\u0020\u0073\u0074\u0072\u0069\u006e\u0067\u0020\u0022\u0025\u0073\u0022",_fedcg );};_bbbe ,_cafd :=_d .ParseUint (string (_fedcg ),8,32);if _cafd !=nil {return MakeString (_dbcb .String ()),_cafd ;
+};_dbcb .WriteByte (byte (_bbbe ));continue ;};switch _efeg {case 'n':_dbcb .WriteRune ('\n');case 'r':_dbcb .WriteRune ('\r');case 't':_dbcb .WriteRune ('\t');case 'b':_dbcb .WriteRune ('\b');case 'f':_dbcb .WriteRune ('\f');case '(':_dbcb .WriteRune ('(');
+case ')':_dbcb .WriteRune (')');case '\\':_dbcb .WriteRune ('\\');};continue ;}else if _gbbb [0]=='('{_daccb ++;}else if _gbbb [0]==')'{_daccb --;if _daccb ==0{_dccg ._eece .ReadByte ();break ;};};_dddcg ,_ :=_dccg ._eece .ReadByte ();_dbcb .WriteByte (_dddcg );
+};return MakeString (_dbcb .String ()),nil ;};
+
+// TraceToDirectObject traces a PdfObject to a direct object.  For example direct objects contained
+// in indirect objects (can be double referenced even).
+func TraceToDirectObject (obj PdfObject )PdfObject {if _gcbc ,_eefe :=obj .(*PdfObjectReference );_eefe {obj =_gcbc .Resolve ();};_afgc ,_agfb :=obj .(*PdfIndirectObject );_ebec :=0;for _agfb {obj =_afgc .PdfObject ;_afgc ,_agfb =GetIndirect (obj );_ebec ++;
+if _ebec > _cggg {_be .Log .Error ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0054\u0072\u0061\u0063\u0065\u0020\u0064\u0065p\u0074\u0068\u0020\u006c\u0065\u0076\u0065\u006c\u0020\u0062\u0065\u0079\u006fn\u0064\u0020\u0025\u0064\u0020\u002d\u0020\u006e\u006f\u0074\u0020\u0067oi\u006e\u0067\u0020\u0064\u0065\u0065\u0070\u0065\u0072\u0021",_cggg );
+return nil ;};};return obj ;};var _gega =_c .MustCompile ("\u0028\u005c\u0064\u002b\u0029\u005c\u0073\u002b\u0028\u005c\u0064\u002b)\u005c\u0073\u002a\u0024");
+
+// PdfObjectReference represents the primitive PDF reference object.
+type PdfObjectReference struct{_bgaa *PdfParser ;ObjectNumber int64 ;GenerationNumber int64 ;};func (_ccff *PdfParser )parseBool ()(PdfObjectBool ,error ){_aabb ,_bedfg :=_ccff ._eece .Peek (4);if _bedfg !=nil {return PdfObjectBool (false ),_bedfg ;};if (len (_aabb )>=4)&&(string (_aabb [:4])=="\u0074\u0072\u0075\u0065"){_ccff ._eece .Discard (4);
+return PdfObjectBool (true ),nil ;};_aabb ,_bedfg =_ccff ._eece .Peek (5);if _bedfg !=nil {return PdfObjectBool (false ),_bedfg ;};if (len (_aabb )>=5)&&(string (_aabb [:5])=="\u0066\u0061\u006cs\u0065"){_ccff ._eece .Discard (5);return PdfObjectBool (false ),nil ;
+};return PdfObjectBool (false ),_bc .New ("\u0075n\u0065\u0078\u0070\u0065c\u0074\u0065\u0064\u0020\u0062o\u006fl\u0065a\u006e\u0020\u0073\u0074\u0072\u0069\u006eg");};
+
+// MakeArrayFromIntegers64 creates an PdfObjectArray from a slice of int64s, where each array element
+// is an PdfObjectInteger.
+func MakeArrayFromIntegers64 (vals []int64 )*PdfObjectArray {_gfed :=MakeArray ();for _ ,_bbbefd :=range vals {_gfed .Append (MakeInteger (_bbbefd ));};return _gfed ;};
+
+// GetIndirect returns the *PdfIndirectObject represented by the PdfObject. On type mismatch the found bool flag is
+// false and a nil pointer is returned.
+func GetIndirect (obj PdfObject )(_abfea *PdfIndirectObject ,_eegbf bool ){obj =ResolveReference (obj );_abfea ,_eegbf =obj .(*PdfIndirectObject );return _abfea ,_eegbf ;};
+
+// MakeHexString creates an PdfObjectString from a string intended for output as a hexadecimal string.
+func MakeHexString (s string )*PdfObjectString {_bgfd :=PdfObjectString {_babb :s ,_cdebe :true };return &_bgfd ;};
+
+// IsOctalDigit checks if a character can be part of an octal digit string.
+func IsOctalDigit (c byte )bool {return '0'<=c &&c <='7'};func (_bfgd *PdfParser )parseXrefStream (_egff *PdfObjectInteger )(*PdfObjectDictionary ,error ){if _egff !=nil {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0058\u0052\u0065f\u0053\u0074\u006d\u0020x\u0072\u0065\u0066\u0020\u0074\u0061\u0062l\u0065\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0061\u0074\u0020\u0025\u0064",_egff );
+};_bfgd ._eece .Seek (int64 (*_egff ),_g .SeekStart );};_gafed :=_bfgd .GetFileOffset ();_ddde ,_addf :=_bfgd .ParseIndirectObject ();if _addf !=nil {_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0046\u0061\u0069\u006c\u0065\u0064\u0020\u0074\u006f\u0020\u0072\u0065\u0061d\u0020\u0078\u0072\u0065\u0066\u0020\u006fb\u006a\u0065\u0063\u0074");
+return nil ,_bc .New ("\u0066\u0061\u0069\u006c\u0065\u0064\u0020\u0074\u006f\u0020\u0072e\u0061\u0064\u0020\u0078\u0072\u0065\u0066\u0020\u006f\u0062j\u0065\u0063\u0074");};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0058R\u0065f\u0053\u0074\u006d\u0020\u006fb\u006a\u0065c\u0074\u003a\u0020\u0025\u0073",_ddde );
+};_dbcg ,_eceg :=_ddde .(*PdfObjectStream );if !_eceg {_be .Log .Debug ("\u0045R\u0052\u004fR\u003a\u0020\u0058R\u0065\u0066\u0053\u0074\u006d\u0020\u0070o\u0069\u006e\u0074\u0069\u006e\u0067 \u0074\u006f\u0020\u006e\u006f\u006e\u002d\u0073\u0074\u0072\u0065a\u006d\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0021");
+return nil ,_bc .New ("\u0058\u0052\u0065\u0066\u0053\u0074\u006d\u0020\u0070\u006f\u0069\u006e\u0074i\u006e\u0067\u0020\u0074\u006f\u0020a\u0020\u006e\u006f\u006e\u002d\u0073\u0074\u0072\u0065\u0061\u006d\u0020\u006fb\u006a\u0065\u0063\u0074");};_ffca :=_dbcg .PdfObjectDictionary ;
+_edcc ,_eceg :=_dbcg .Get ("\u0053\u0069\u007a\u0065").(*PdfObjectInteger );if !_eceg {_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u004d\u0069\u0073\u0073\u0069\u006e\u0067\u0020\u0073\u0069\u007a\u0065\u0020f\u0072\u006f\u006d\u0020\u0078\u0072\u0065f\u0020\u0073\u0074\u006d");
+return nil ,_bc .New ("\u006d\u0069\u0073\u0073\u0069\u006e\u0067\u0020\u0053\u0069\u007ae\u0020\u0066\u0072\u006f\u006d\u0020\u0078\u0072\u0065\u0066 \u0073\u0074\u006d");};if int64 (*_edcc )> 8388607{_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0078\u0072\u0065\u0066\u0020\u0053\u0069\u007a\u0065\u0020\u0065x\u0063\u0065\u0065\u0064\u0065\u0064\u0020l\u0069\u006d\u0069\u0074\u002c\u0020\u006f\u0076\u0065\u0072\u00208\u0033\u0038\u0038\u0036\u0030\u0037\u0020\u0028\u0025\u0064\u0029",*_edcc );
+return nil ,_bc .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};_fcgeg :=_dbcg .Get ("\u0057");_edfa ,_eceg :=_fcgeg .(*PdfObjectArray );if !_eceg {return nil ,_bc .New ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0057\u0020\u0069\u006e\u0020x\u0072\u0065\u0066\u0020\u0073\u0074\u0072\u0065\u0061\u006d");
+};_daefe :=_edfa .Len ();if _daefe !=3{_be .Log .Debug ("\u0045\u0052R\u004f\u0052\u003a\u0020\u0055\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0078\u0072\u0065\u0066\u0020\u0073\u0074\u006d\u0020\u0028\u006c\u0065\u006e\u0028\u0057\u0029\u0020\u0021\u003d\u0020\u0033\u0020\u002d\u0020\u0025\u0064\u0029",_daefe );
+return nil ,_bc .New ("\u0075\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0078\u0072\u0065f\u0020s\u0074\u006d\u0020\u006c\u0065\u006e\u0028\u0057\u0029\u0020\u0021\u003d\u0020\u0033");};var _gdbfa []int64 ;for _ggdg :=0;_ggdg < 3;
+_ggdg ++{_gfee ,_eba :=GetInt (_edfa .Get (_ggdg ));if !_eba {return nil ,_bc .New ("i\u006e\u0076\u0061\u006cid\u0020w\u0020\u006f\u0062\u006a\u0065c\u0074\u0020\u0074\u0079\u0070\u0065");};_gdbfa =append (_gdbfa ,int64 (*_gfee ));};_bbbef ,_addf :=DecodeStream (_dbcg );
+if _addf !=nil {_be .Log .Debug ("\u0045\u0052\u0052OR\u003a\u0020\u0055\u006e\u0061\u0062\u006c\u0065\u0020t\u006f \u0064e\u0063o\u0064\u0065\u0020\u0073\u0074\u0072\u0065\u0061\u006d\u003a\u0020\u0025\u0076",_addf );return nil ,_addf ;};_gbfde :=int (_gdbfa [0]);
+_debb :=int (_gdbfa [0]+_gdbfa [1]);_dcgb :=int (_gdbfa [0]+_gdbfa [1]+_gdbfa [2]);_fbfa :=int (_gdbfa [0]+_gdbfa [1]+_gdbfa [2]);if _gbfde < 0||_debb < 0||_dcgb < 0{_be .Log .Debug ("\u0045\u0072\u0072\u006fr\u0020\u0073\u0020\u0076\u0061\u006c\u0075\u0065\u0020\u003c \u0030 \u0028\u0025\u0064\u002c\u0025\u0064\u002c%\u0064\u0029",_gbfde ,_debb ,_dcgb );
+return nil ,_bc .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};if _fbfa ==0{_be .Log .Debug ("\u004e\u006f\u0020\u0078\u0072\u0065\u0066\u0020\u006f\u0062\u006a\u0065\u0063t\u0073\u0020\u0069\u006e\u0020\u0073t\u0072\u0065\u0061\u006d\u0020\u0028\u0064\u0065\u006c\u0074\u0061\u0062\u0020=\u003d\u0020\u0030\u0029");
+return _ffca ,nil ;};_gfg :=len (_bbbef )/_fbfa ;_ffbdc :=0;_eefg :=_dbcg .Get ("\u0049\u006e\u0064e\u0078");var _agag []int ;if _eefg !=nil {if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0049n\u0064\u0065\u0078\u003a\u0020\u0025b",_eefg );
+};_defc ,_cddf :=_eefg .(*PdfObjectArray );if !_cddf {_be .Log .Debug ("\u0049\u006e\u0076\u0061\u006ci\u0064\u0020\u0049\u006e\u0064\u0065\u0078\u0020\u006f\u0062\u006a\u0065\u0063t\u0020\u0028\u0073\u0068\u006f\u0075\u006c\u0064\u0020\u0062\u0065\u0020\u0061\u006e\u0020\u0061\u0072\u0072\u0061\u0079\u0029");
+return nil ,_bc .New ("i\u006ev\u0061\u006c\u0069\u0064\u0020\u0049\u006e\u0064e\u0078\u0020\u006f\u0062je\u0063\u0074");};if _defc .Len ()%2!=0{_be .Log .Debug ("\u0057\u0041\u0052\u004eI\u004e\u0047\u0020\u0046\u0061\u0069\u006c\u0075\u0072e\u0020\u006c\u006f\u0061\u0064\u0069\u006e\u0067\u0020\u0078\u0072\u0065\u0066\u0020\u0073\u0074\u006d\u0020i\u006e\u0064\u0065\u0078\u0020n\u006f\u0074\u0020\u006d\u0075\u006c\u0074\u0069\u0070\u006c\u0065\u0020\u006f\u0066\u0020\u0032\u002e");
+return nil ,_bc .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};_ffbdc =0;_edafd ,_bbbb :=_defc .ToIntegerArray ();if _bbbb !=nil {_be .Log .Debug ("\u0045\u0072\u0072\u006f\u0072 \u0067\u0065\u0074\u0074\u0069\u006e\u0067\u0020\u0069\u006e\u0064\u0065\u0078 \u0061\u0072\u0072\u0061\u0079\u0020\u0061\u0073\u0020\u0069\u006e\u0074\u0065\u0067\u0065\u0072\u0073\u003a\u0020\u0025\u0076",_bbbb );
+return nil ,_bbbb ;};for _cbac :=0;_cbac < len (_edafd );_cbac +=2{_dfaa :=_edafd [_cbac ];_begb :=_edafd [_cbac +1];for _ebeg :=0;_ebeg < _begb ;_ebeg ++{_agag =append (_agag ,_dfaa +_ebeg );};_ffbdc +=_begb ;};}else {for _aecg :=0;_aecg < int (*_edcc );
+_aecg ++{_agag =append (_agag ,_aecg );};_ffbdc =int (*_edcc );};if _gfg ==_ffbdc +1{_be .Log .Debug ("\u0049n\u0063\u006f\u006d\u0070ati\u0062\u0069\u006c\u0069t\u0079\u003a\u0020\u0049\u006e\u0064\u0065\u0078\u0020\u006di\u0073\u0073\u0069\u006e\u0067\u0020\u0063\u006f\u0076\u0065\u0072\u0061\u0067\u0065\u0020\u006f\u0066\u0020\u0031\u0020\u006f\u0062\u006ae\u0063\u0074\u0020\u002d\u0020\u0061\u0070\u0070en\u0064\u0069\u006eg\u0020\u006f\u006e\u0065\u0020-\u0020M\u0061\u0079\u0020\u006c\u0065\u0061\u0064\u0020\u0074o\u0020\u0070\u0072\u006f\u0062\u006c\u0065\u006d\u0073");
+_egeg :=_ffbdc -1;for _ ,_bde :=range _agag {if _bde > _egeg {_egeg =_bde ;};};_agag =append (_agag ,_egeg +1);_ffbdc ++;};if _gfg !=len (_agag ){_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020x\u0072\u0065\u0066 \u0073\u0074\u006d:\u0020\u006eu\u006d\u0020\u0065\u006e\u0074\u0072i\u0065s \u0021\u003d\u0020\u006c\u0065\u006e\u0028\u0069\u006e\u0064\u0069\u0063\u0065\u0073\u0029\u0020\u0028\u0025\u0064\u0020\u0021\u003d\u0020\u0025\u0064\u0029",_gfg ,len (_agag ));
+return nil ,_bc .New ("\u0078\u0072ef\u0020\u0073\u0074m\u0020\u006e\u0075\u006d en\u0074ri\u0065\u0073\u0020\u0021\u003d\u0020\u006cen\u0028\u0069\u006e\u0064\u0069\u0063\u0065s\u0029");};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004f\u0062j\u0065\u0063\u0074s\u0020\u0063\u006f\u0075\u006e\u0074\u0020\u0025\u0064",_ffbdc );
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0049\u006e\u0064i\u0063\u0065\u0073\u003a\u0020\u0025\u0020\u0064",_agag );};_aebe :=func (_ddgag []byte )int64 {var _gadaa int64 ;for _aggg :=0;_aggg < len (_ddgag );_aggg ++{_gadaa +=int64 (_ddgag [_aggg ])*(1<<uint (8*(len (_ddgag )-_aggg -1)));
+};return _gadaa ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0044e\u0063\u006f\u0064\u0065d\u0020\u0073\u0074\u0072\u0065a\u006d \u006ce\u006e\u0067\u0074\u0068\u003a\u0020\u0025d",len (_bbbef ));};_aeagg :=0;for _aggfe :=0;_aggfe < len (_bbbef );
+_aggfe +=_fbfa {_gafcc :=_gbdcd (len (_bbbef ),_aggfe ,_aggfe +_gbfde );if _gafcc !=nil {_be .Log .Debug ("\u0049\u006e\u0076al\u0069\u0064\u0020\u0073\u006c\u0069\u0063\u0065\u0020\u0072\u0061\u006e\u0067\u0065\u003a\u0020\u0025\u0076",_gafcc );return nil ,_gafcc ;
+};_edcf :=_bbbef [_aggfe :_aggfe +_gbfde ];_gafcc =_gbdcd (len (_bbbef ),_aggfe +_gbfde ,_aggfe +_debb );if _gafcc !=nil {_be .Log .Debug ("\u0049\u006e\u0076al\u0069\u0064\u0020\u0073\u006c\u0069\u0063\u0065\u0020\u0072\u0061\u006e\u0067\u0065\u003a\u0020\u0025\u0076",_gafcc );
+return nil ,_gafcc ;};_ggggc :=_bbbef [_aggfe +_gbfde :_aggfe +_debb ];_gafcc =_gbdcd (len (_bbbef ),_aggfe +_debb ,_aggfe +_dcgb );if _gafcc !=nil {_be .Log .Debug ("\u0049\u006e\u0076al\u0069\u0064\u0020\u0073\u006c\u0069\u0063\u0065\u0020\u0072\u0061\u006e\u0067\u0065\u003a\u0020\u0025\u0076",_gafcc );
+return nil ,_gafcc ;};_aggb :=_bbbef [_aggfe +_debb :_aggfe +_dcgb ];_cefe :=_aebe (_edcf );_ffeee :=_aebe (_ggggc );_egdbf :=_aebe (_aggb );if _gdbfa [0]==0{_cefe =1;};if _aeagg >=len (_agag ){_be .Log .Debug ("X\u0052\u0065\u0066\u0020\u0073\u0074\u0072\u0065\u0061\u006d\u0020\u002d\u0020\u0054\u0072\u0079\u0069\u006e\u0067\u0020\u0074\u006f\u0020\u0061\u0063\u0063e\u0073s\u0020\u0069\u006e\u0064e\u0078\u0020o\u0075\u0074\u0020\u006f\u0066\u0020\u0062\u006f\u0075\u006e\u0064\u0073\u0020\u002d\u0020\u0062\u0072\u0065\u0061\u006b\u0069\u006e\u0067");
+break ;};_beagc :=_agag [_aeagg ];_aeagg ++;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("%\u0064\u002e\u0020\u0070\u0031\u003a\u0020\u0025\u0020\u0078",_beagc ,_edcf );};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("%\u0064\u002e\u0020\u0070\u0032\u003a\u0020\u0025\u0020\u0078",_beagc ,_ggggc );
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("%\u0064\u002e\u0020\u0070\u0033\u003a\u0020\u0025\u0020\u0078",_beagc ,_aggb );};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0025d\u002e \u0078\u0072\u0065\u0066\u003a \u0025\u0064 \u0025\u0064\u0020\u0025\u0064",_beagc ,_cefe ,_ffeee ,_egdbf );
+};switch _cefe {case 0:if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("-\u0020\u0046\u0072\u0065\u0065\u0020o\u0062\u006a\u0065\u0063\u0074\u0020-\u0020\u0063\u0061\u006e\u0020\u0070\u0072o\u0062\u0061\u0062\u006c\u0079\u0020\u0069\u0067\u006e\u006fr\u0065");
+};case 1:if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d\u0020I\u006e\u0020\u0075\u0073e\u0020\u002d \u0075\u006e\u0063\u006f\u006d\u0070\u0072\u0065s\u0073\u0065\u0064\u0020\u0076\u0069\u0061\u0020\u006f\u0066\u0066\u0073e\u0074\u0020\u0025\u0062",_ggggc );
+};if _ffeee ==_gafed {_be .Log .Debug ("\u0055\u0070d\u0061\u0074\u0069\u006e\u0067\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u006e\u0075\u006d\u0062\u0065\u0072\u0020\u0066\u006f\u0072\u0020\u0058\u0052\u0065\u0066\u0020\u0074\u0061\u0062\u006c\u0065\u0020\u0025\u0064\u0020\u002d\u003e\u0020\u0025\u0064",_beagc ,_dbcg .ObjectNumber );
+_beagc =int (_dbcg .ObjectNumber );};if _ddbf ,_aaddf :=_bfgd ._dggd .ObjectMap [_beagc ];!_aaddf ||int (_egdbf )> _ddbf .Generation {_dfbba :=XrefObject {ObjectNumber :_beagc ,XType :XrefTypeTableEntry ,Offset :_ffeee ,Generation :int (_egdbf )};_bfgd ._dggd .ObjectMap [_beagc ]=_dfbba ;
+};case 2:if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u002d\u0020\u0049\u006e \u0075\u0073\u0065\u0020\u002d\u0020\u0063\u006f\u006d\u0070r\u0065s\u0073\u0065\u0064\u0020\u006f\u0062\u006ae\u0063\u0074");};if _ ,_daea :=_bfgd ._dggd .ObjectMap [_beagc ];
+!_daea {_dfgg :=XrefObject {ObjectNumber :_beagc ,XType :XrefTypeObjectStream ,OsObjNumber :int (_ffeee ),OsObjIndex :int (_egdbf )};_bfgd ._dggd .ObjectMap [_beagc ]=_dfgg ;if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0065\u006e\u0074\u0072\u0079\u003a\u0020\u0025\u002b\u0076",_dfgg );
+};};default:_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052:\u0020\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u0049\u004e\u0056\u0041L\u0049\u0044\u0020\u0054\u0059\u0050\u0045\u0020\u0058\u0072\u0065\u0066\u0053\u0074\u006d\u0020\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u003f\u002d\u002d\u002d\u002d\u002d\u002d-");
+continue ;};};if _bfgd ._dgef ==nil {_abga :=XrefTypeObjectStream ;_bfgd ._dgef =&_abga ;};return _ffca ,nil ;};
+
+// MakeArrayFromIntegers creates an PdfObjectArray from a slice of ints, where each array element is
+// an PdfObjectInteger.
+func MakeArrayFromIntegers (vals []int )*PdfObjectArray {_adee :=MakeArray ();for _ ,_faac :=range vals {_adee .Append (MakeInteger (int64 (_faac )));};return _adee ;};func _gafc (_bcec uint ,_aaae ,_dbdg float64 )float64 {_ecgab :=_age .RoundFloat ((float64 (_bcec )/255.0),6);
+_fddca :=_age .RoundFloat ((_dbdg -_aaae )*_ecgab ,6);return _age .RoundFloat ((_aaae +_fddca )*255.0,6);};var _bcaeg =_c .MustCompile ("\u005e\u005b\\\u002b\u002d\u002e\u005d*\u0028\u005b0\u002d\u0039\u002e\u005d\u002b\u0029\u005b\u0065E\u005d\u005b\u005c\u002b\u002d\u002e\u005d\u002a\u0028\u005b\u0030\u002d9\u002e\u005d\u002b\u0029");
+
+
+// GetObjectStreams returns the *PdfObjectStreams represented by the PdfObject. On type mismatch the found bool flag is
+// false and a nil pointer is returned.
+func GetObjectStreams (obj PdfObject )(_egba *PdfObjectStreams ,_baadg bool ){_egba ,_baadg =obj .(*PdfObjectStreams );return _egba ,_baadg ;};
+
+// GetParser returns the parser for lazy-loading or compare references.
+func (_cgce *PdfObjectReference )GetParser ()*PdfParser {return _cgce ._bgaa };
 
 // RGBToGrayscale converts RGB color values to grayscale using the standard luminance formula.
 //
@@ -446,46 +1804,75 @@ func (_gdcg *PdfParser )LookupByNumber (objNumber int )(PdfObject ,error ){_gca 
 //
 // This implementation uses integer arithmetic for better performance by using
 // scaled coefficients: 299, 587, 114 (scaled by 1000).
-func RGBToGrayscale (r ,g ,b int )int {_adbg :=299*r +587*g +114*b ;return _adbg /1000};func (_gbaf *offsetReader )Read (p []byte )(_bbbga int ,_fdfgb error ){return _gbaf ._ffdf .Read (p )};
+func RGBToGrayscale (r ,g ,b int )int {_feag :=299*r +587*g +114*b ;return _feag /1000};
 
-// UpdateParams updates the parameter values of the encoder.
-func (_cbgg *RawEncoder )UpdateParams (params *PdfObjectDictionary ){};
+// GetAccessPermissions returns the PDF access permissions as an AccessPermissions object.
+func (_ggb *PdfCrypt )GetAccessPermissions ()_ce .Permissions {return _ggb ._eeae .P };
 
-// PdfVersion returns version of the PDF file.
-func (_dbafb *PdfParser )PdfVersion ()Version {return _dbafb ._ecbge };
+// HasNonConformantStream implements core.ParserMetadata.
+func (_dfbc ParserMetadata )HasNonConformantStream ()bool {return _dfbc ._dfdc };
 
-// Decrypt attempts to decrypt the PDF file with a specified password.  Also tries to
-// decrypt with an empty password.  Returns true if successful, false otherwise.
-// An error is returned when there is a problem with decrypting.
-func (_ffebe *PdfParser )Decrypt (password []byte )(bool ,error ){if _ffebe ._ggee ==nil {return false ,_de .New ("\u0063\u0068\u0065\u0063k \u0065\u006e\u0063\u0072\u0079\u0070\u0074\u0069\u006f\u006e\u0020\u0066\u0069\u0072s\u0074");};_dbeb ,_cbfa :=_ffebe ._ggee .authenticate (password );
-if _cbfa !=nil {return false ,_cbfa ;};if !_dbeb {_dbeb ,_cbfa =_ffebe ._ggee .authenticate ([]byte (""));};return _dbeb ,_cbfa ;};
+// GetPreviousRevisionParser returns PdfParser for the previous version of the Pdf document.
+func (_ggbeg *PdfParser )GetPreviousRevisionParser ()(*PdfParser ,error ){if _ggbeg ._fcaf ==0{return nil ,_bc .New ("\u0074\u0068\u0069\u0073 i\u0073\u0020\u0066\u0069\u0072\u0073\u0074\u0020\u0072\u0065\u0076\u0069\u0073\u0069o\u006e");};if _efee ,_deaab :=_ggbeg ._ceggf [_ggbeg ];
+_deaab {return _efee ,nil ;};_ggba ,_ffad :=_ggbeg .GetPreviousRevisionReadSeeker ();if _ffad !=nil {return nil ,_ffad ;};_gege ,_ffad :=NewParser (_ggba );_gege ._ceggf =_ggbeg ._ceggf ;if _ffad !=nil {return nil ,_ffad ;};_ggbeg ._ceggf [_ggbeg ]=_gege ;
+return _gege ,nil ;};
 
-// PdfCryptNewEncrypt makes the document crypt handler based on a specified crypt filter.
-func PdfCryptNewEncrypt (cf _bff .Filter ,userPass ,ownerPass []byte ,perm _gbg .Permissions )(*PdfCrypt ,*EncryptInfo ,error ){_gbe :=&PdfCrypt {_dfa :make (map[PdfObject ]bool ),_edb :make (cryptFilters ),_dfb :_gbg .StdEncryptDict {P :perm ,EncryptMetadata :true }};
-var _bfb Version ;if cf !=nil {_bea :=cf .PDFVersion ();_bfb .Major ,_bfb .Minor =_bea [0],_bea [1];V ,R :=cf .HandlerVersion ();_gbe ._aff .V =V ;_gbe ._dfb .R =R ;_gbe ._aff .Length =cf .KeyLength ()*8;};const (_fda =_fcab ;);_gbe ._edb [_fda ]=cf ;if _gbe ._aff .V >=4{_gbe ._dcg =_fda ;
-_gbe ._eabe =_fda ;};_afe :=_gbe .newEncryptDict ();_eff :=_bf .Sum ([]byte (_ca .Now ().Format (_ca .RFC850 )));_ge :=string (_eff [:]);_cbb :=make ([]byte ,100);_agc .Read (_cbb );_eff =_bf .Sum (_cbb );_cegg :=string (_eff [:]);if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0052\u0061\u006e\u0064\u006f\u006d\u0020\u0062\u003a\u0020\u0025\u0020\u0078",_cbb );
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0047\u0065\u006e\u0020\u0049\u0064\u0020\u0030\u003a\u0020\u0025\u0020\u0078",_ge );};_gbe ._fcd =_ge ;_cebd :=_gbe .generateParams (userPass ,ownerPass );if _cebd !=nil {return nil ,nil ,_cebd ;
-};_dgg (&_gbe ._dfb ,_afe );if _gbe ._aff .V >=4{if _afec :=_gbe .saveCryptFilters (_afe );_afec !=nil {return nil ,nil ,_afec ;};};return _gbe ,&EncryptInfo {Version :_bfb ,Encrypt :_afe ,ID0 :_ge ,ID1 :_cegg },nil ;};
+// String returns a string representation of the *PdfObjectString.
+func (_egeb *PdfObjectString )String ()string {return _egeb ._babb };
 
-// DecodeReader returns a reader that decodes the chain of sub-encoders in
-// forward (decode) order: r → encoders[0].DecodeReader → ... → output.
-//
-// The first sub-encoder that does NOT implement StreamingDecoder (typically
-// DCT, JPX, CCITTFax, JBIG2) terminates the streaming portion: the upstream
-// reader is drained into memory and the remaining encoders run via their
-// DecodeBytes. The end-to-end output is therefore identical to DecodeBytes,
-// but only the portion of the chain up to (and not including) the first
-// non-streaming encoder runs without full materialization.
-func (_fbfd *MultiEncoder )DecodeReader (r _ce .Reader )_ce .Reader {_cfdba :=r ;for _fegd ,_afca :=range _fbfd ._gdgb {_fgdba ,_ddedc :=_afca .(StreamingDecoder );if !_ddedc {return &multiFallbackReader {_feff :_cfdba ,_ccgc :_fbfd ._gdgb [_fegd :]};};
-_cfdba =_fgdba .DecodeReader (_cfdba );};return _cfdba ;};const JB2ImageAutoThreshold =-1.0;
+// Elements returns a slice of the PdfObject elements in the array.
+// Preferred over accessing the array directly as type may be changed in future major versions (v3).
+func (_ceae *PdfObjectStreams )Elements ()[]PdfObject {if _ceae ==nil {return nil ;};return _ceae ._fefge ;};
 
-// UpdateParams updates the parameter values of the encoder.
-func (_bfef *ASCIIHexEncoder )UpdateParams (params *PdfObjectDictionary ){};
+// DecodeStream decodes a DCT encoded stream and returns the result as a
+// slice of bytes.
+func (_adec *DCTEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return _adec .DecodeBytes (streamObj .Stream );};
 
-// UpdateParams updates the parameter values of the encoder.
-func (_gbde *FlateEncoder )UpdateParams (params *PdfObjectDictionary ){_gdd ,_cgg :=GetNumberAsInt64 (params .Get ("\u0050r\u0065\u0064\u0069\u0063\u0074\u006fr"));if _cgg ==nil {_gbde .Predictor =int (_gdd );};_fcf ,_cgg :=GetNumberAsInt64 (params .Get ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074"));
-if _cgg ==nil {_gbde .BitsPerComponent =int (_fcf );};_degb ,_cgg :=GetNumberAsInt64 (params .Get ("\u0057\u0069\u0064t\u0068"));if _cgg ==nil {_gbde .Columns =int (_degb );};_bbaa ,_cgg :=GetNumberAsInt64 (params .Get ("\u0043o\u006co\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u0073"));
-if _cgg ==nil {_gbde .Colors =int (_bbaa );};};
+// String returns a string describing `ind`.
+func (_ebebc *PdfIndirectObject )String ()string {return _ebc .Sprintf ("\u0049\u004f\u0062\u006a\u0065\u0063\u0074\u003a\u0025\u0064",(*_ebebc ).ObjectNumber );};
+
+// HeaderPosition gets the file header position.
+func (_debc ParserMetadata )HeaderPosition ()int {return _debc ._ggcf };
+
+// Read implementation of Read interface.
+func (_eccd *limitedReadSeeker )Read (p []byte )(_bgge int ,_eeaff error ){_fcfd ,_eeaff :=_eccd ._dcdd .Seek (0,_g .SeekCurrent );if _eeaff !=nil {return 0,_eeaff ;};_dfeg :=_eccd ._gacb -_fcfd ;if _dfeg <=0{return 0,_g .EOF ;};if _fbab :=int64 (len (p ));
+_fbab < _dfeg {_dfeg =_fbab ;};_fbdbf :=make ([]byte ,_dfeg );_bgge ,_eeaff =_eccd ._dcdd .Read (_fbdbf );copy (p ,_fbdbf );return _bgge ,_eeaff ;};
+
+// GetString returns the *PdfObjectString represented by the PdfObject directly or indirectly within an indirect
+// object. On type mismatch the found bool flag is false and a nil pointer is returned.
+func GetString (obj PdfObject )(_baffd *PdfObjectString ,_febd bool ){_baffd ,_febd =TraceToDirectObject (obj ).(*PdfObjectString );return _baffd ,_febd ;};
+
+// MakeDecodeParams makes a new instance of an encoding dictionary based on
+// the current encoder settings.
+func (_aead *ASCIIHexEncoder )MakeDecodeParams ()PdfObject {return nil };
+
+// GetIntVal returns the int value represented by the PdfObject directly or indirectly if contained within an
+// indirect object. On type mismatch the found bool flag returned is false and a nil pointer is returned.
+func GetIntVal (obj PdfObject )(_faafd int ,_bcbc bool ){_feeg ,_bcbc :=TraceToDirectObject (obj ).(*PdfObjectInteger );if _bcbc &&_feeg !=nil {return int (*_feeg ),true ;};return 0,false ;};
+
+// GetXrefType returns the type of the first xref object (table or stream).
+func (_abgf *PdfParser )GetXrefType ()*xrefType {return _abgf ._dgef };func (_dca *PdfParser )parseNumber ()(PdfObject ,error ){return ParseNumber (_dca ._eece ._df )};
+
+// MakeArrayFromFloats creates an PdfObjectArray from a slice of float64s, where each array element is an
+// PdfObjectFloat.
+func MakeArrayFromFloats (vals []float64 )*PdfObjectArray {_geea :=MakeArray ();for _ ,_fedce :=range vals {_geea .Append (MakeFloat (_fedce ));};return _geea ;};
+
+// MakeDecodeParams makes a new instance of an encoding dictionary based on
+// the current encoder settings.
+func (_afae *JPXEncoder )MakeDecodeParams ()PdfObject {return nil };func (_eedfa *PdfParser )parseHexString ()(*PdfObjectString ,error ){_eedfa ._eece .ReadByte ();_bgeaa :=_bae ();defer _ac (_bgeaa );for {_cgdbf ,_fefd :=_eedfa ._eece .Peek (1);if _fefd !=nil {return MakeString (""),_fefd ;
+};if _cgdbf [0]=='>'{_eedfa ._eece .ReadByte ();break ;};_facc ,_ :=_eedfa ._eece .ReadByte ();if _eedfa ._dbdc {if _ad .IndexByte (_cbba ,_facc )==-1{_eedfa ._deaa ._gee =true ;};};if !IsWhiteSpace (_facc ){_bgeaa .WriteByte (_facc );};};if _bgeaa .Len ()%2==1{_eedfa ._deaa ._dddc =true ;
+_bgeaa .WriteRune ('0');};_bgcf ,_ :=_ee .DecodeString (_bgeaa .String ());return MakeHexString (string (_bgcf )),nil ;};
+
+// EncodeBytes encodes the passed in slice of bytes by passing it through the
+// EncodeBytes method of the underlying encoders.
+func (_cbee *MultiEncoder )EncodeBytes (data []byte )([]byte ,error ){_abfe :=data ;var _gfaa error ;for _agcb :=len (_cbee ._dfbf )-1;_agcb >=0;_agcb --{_eagaa :=_cbee ._dfbf [_agcb ];_abfe ,_gfaa =_eagaa .EncodeBytes (_abfe );if _gfaa !=nil {return nil ,_gfaa ;
+};};return _abfe ,nil ;};
+
+// String returns a string describing `null`.
+func (_bdeb *PdfObjectNull )String ()string {return "\u006e\u0075\u006c\u006c"};
+
+// PdfObjectString represents the primitive PDF string object.
+type PdfObjectString struct{_babb string ;_cdebe bool ;_cfedd bool ;};
 
 // JBIG2EncoderSettings contains the parameters and settings used by the JBIG2Encoder.
 // Current version works only on JB2Generic compression.
@@ -519,792 +1906,122 @@ ResolutionY int ;
 // Default value: 0.95
 Threshold float64 ;};
 
-// ToIntegerArray returns a slice of all array elements as an int slice. An error is returned if the
-// array non-integer objects. Each element can only be PdfObjectInteger.
-func (_fggfb *PdfObjectArray )ToIntegerArray ()([]int ,error ){var _adebc []int ;for _ ,_ceefa :=range _fggfb .Elements (){if _fefad ,_aeffd :=_ceefa .(*PdfObjectInteger );_aeffd {_adebc =append (_adebc ,int (*_fefad ));}else {return nil ,ErrTypeError ;
-};};return _adebc ,nil ;};
-
-// Clear resets the array to an empty state.
-func (_aeec *PdfObjectArray )Clear (){_aeec ._bgegc =[]PdfObject {}};func (_dbdc *PdfParser )lookupByNumber (_dac int ,_deg bool )(PdfObject ,bool ,error ){_dcfb ,_ebf :=_dbdc .ObjCache [_dac ];if _ebf {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0052\u0065\u0074\u0075\u0072\u006e\u0069\u006e\u0067\u0020\u0063a\u0063\u0068\u0065\u0064\u0020\u006f\u0062\u006a\u0065\u0063t\u0020\u0025\u0064",_dac );
-};return _dcfb ,false ,nil ;};if _dbdc ._dffda ==nil {_dbdc ._dffda =map[int ]bool {};};if _dbdc ._dffda [_dac ]{_bd .Log .Debug ("ER\u0052\u004f\u0052\u003a\u0020\u004c\u006fok\u0075\u0070\u0020\u006f\u0066\u0020\u0025\u0064\u0020\u0069\u0073\u0020\u0061\u006c\u0072e\u0061\u0064\u0079\u0020\u0069\u006e\u0020\u0070\u0072\u006f\u0067\u0072\u0065\u0073\u0073\u0020\u002d\u0020\u0072\u0065c\u0075\u0072\u0073\u0069\u0076\u0065 \u006c\u006f\u006f\u006b\u0075\u0070\u0020\u0061\u0074t\u0065m\u0070\u0074\u0020\u0062\u006c\u006f\u0063\u006b\u0065\u0064",_dac );
-return nil ,false ,_de .New ("\u0072\u0065\u0063\u0075\u0072\u0073\u0069\u0076\u0065\u0020\u006c\u006f\u006f\u006b\u0075p\u0020a\u0074\u0074\u0065\u006d\u0070\u0074\u0020\u0062\u006c\u006f\u0063\u006b\u0065\u0064");};_dbdc ._dffda [_dac ]=true ;defer delete (_dbdc ._dffda ,_dac );
-_ggg ,_ebf :=_dbdc ._gabb .ObjectMap [_dac ];if !_ebf {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0055\u006e\u0061\u0062l\u0065\u0020\u0074\u006f\u0020\u006c\u006f\u0063\u0061t\u0065\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0069\u006e\u0020\u0078\u0072\u0065\u0066\u0073\u0021 \u002d\u0020\u0052\u0065\u0074u\u0072\u006e\u0069\u006e\u0067\u0020\u006e\u0075\u006c\u006c\u0020\u006f\u0062\u006a\u0065\u0063\u0074");
-};var _gfa PdfObjectNull ;return &_gfa ,false ,nil ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("L\u006fo\u006b\u0075\u0070\u0020\u006f\u0062\u006a\u0020n\u0075\u006d\u0062\u0065r \u0025\u0064",_dac );};switch _ggg .XType {case XrefTypeTableEntry :if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0078r\u0065f\u006f\u0062\u006a\u0020\u006fb\u006a\u0020n\u0075\u006d\u0020\u0025\u0064",_ggg .ObjectNumber );
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0078\u0072\u0065\u0066\u006f\u0062\u006a\u0020\u0067e\u006e\u0020\u0025\u0064",_ggg .Generation );};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0078\u0072\u0065\u0066\u006f\u0062\u006a\u0020\u006f\u0066\u0066\u0073e\u0074\u0020\u0025\u0064",_ggg .Offset );
-};_dbdc ._fgaa .Seek (_ggg .Offset ,_ce .SeekStart );_eed ,_acd :=_dbdc .ParseIndirectObject ();if _acd !=nil {_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0046\u0061\u0069\u006ce\u0064\u0020\u0072\u0065\u0061\u0064\u0069n\u0067\u0020\u0078\u0072\u0065\u0066\u0020\u0028\u0025\u0073\u0029",_acd );
-if _deg {_bd .Log .Debug ("\u0041\u0074t\u0065\u006d\u0070\u0074i\u006e\u0067 \u0074\u006f\u0020\u0072\u0065\u0070\u0061\u0069r\u0020\u0078\u0072\u0065\u0066\u0073\u0020\u0028\u0074\u006f\u0070\u0020d\u006f\u0077\u006e\u0029");_bba ,_afb :=_dbdc .repairRebuildXrefsTopDown ();
-if _afb !=nil {_bd .Log .Debug ("\u0045R\u0052\u004f\u0052\u0020\u0046\u0061\u0069\u006c\u0065\u0064\u0020r\u0065\u0070\u0061\u0069\u0072\u0020\u0028\u0025\u0073\u0029",_afb );return nil ,false ,_afb ;};_dbdc ._gabb =*_bba ;return _dbdc .lookupByNumber (_dac ,false );
-};return nil ,false ,_acd ;};if _deg {_dffc ,_ ,_ :=_dbd (_eed );if int (_dffc )!=_dac {_bd .Log .Debug ("\u0049n\u0076\u0061\u006c\u0069d\u0020\u0078\u0072\u0065\u0066s\u003a \u0052e\u0062\u0075\u0069\u006c\u0064\u0069\u006eg");_bae :=_dbdc .rebuildXrefTable ();
-if _bae !=nil {return nil ,false ,_bae ;};_dbdc .ObjCache =objectCache {};return _dbdc .lookupByNumberWrapper (_dac ,false );};};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0052\u0065\u0074\u0075\u0072\u006e\u0069\u006e\u0067\u0020\u006f\u0062\u006a");
-};_dbdc .ObjCache [_dac ]=_eed ;return _eed ,false ,nil ;case XrefTypeObjectStream :if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0078r\u0065\u0066\u0020\u0066\u0072\u006f\u006d\u0020\u006f\u0062\u006ae\u0063\u0074\u0020\u0073\u0074\u0072\u0065\u0061\u006d\u0021");
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u003e\u004c\u006f\u0061\u0064\u0020\u0076\u0069\u0061\u0020\u004f\u0053\u0021");};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004f\u0062\u006a\u0065\u0063\u0074\u0020\u0073\u0074\u0072\u0065\u0061\u006d \u0061\u0076\u0061\u0069\u006c\u0061b\u006c\u0065\u0020\u0069\u006e\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020%\u0064\u002f\u0025\u0064",_ggg .OsObjNumber ,_ggg .OsObjIndex );
-};if _ggg .OsObjNumber ==_dac {_bd .Log .Debug ("E\u0052\u0052\u004f\u0052\u0020\u0043i\u0072\u0063\u0075\u006c\u0061\u0072\u0020\u0072\u0065f\u0065\u0072\u0065n\u0063e\u0021\u003f\u0021");return nil ,true ,_de .New ("\u0078\u0072\u0065f \u0063\u0069\u0072\u0063\u0075\u006c\u0061\u0072\u0020\u0072\u0065\u0066\u0065\u0072\u0065\u006e\u0063\u0065");
-};if _ ,_bcd :=_dbdc ._gabb .ObjectMap [_ggg .OsObjNumber ];_bcd {_dbc ,_cae :=_dbdc .lookupObjectViaOS (_ggg .OsObjNumber ,_dac );if _cae !=nil {_bd .Log .Debug ("\u0045R\u0052\u004f\u0052\u0020\u0052\u0065\u0074\u0075\u0072\u006e\u0069n\u0067\u0020\u0045\u0052\u0052\u0020\u0028\u0025\u0073\u0029",_cae );
-return nil ,true ,_cae ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u003c\u004c\u006f\u0061\u0064\u0065\u0064\u0020\u0076i\u0061\u0020\u004f\u0053");};_dbdc .ObjCache [_dac ]=_dbc ;if _dbdc ._ggee !=nil {_dbdc ._ggee ._aae [_dbc ]=true ;
-};return _dbc ,true ,nil ;};_bd .Log .Debug ("\u003f\u003f\u0020\u0042\u0065\u006c\u006f\u006eg\u0073\u0020\u0074o \u0061\u0020\u006e\u006f\u006e\u002dc\u0072\u006f\u0073\u0073\u0020\u0072\u0065\u0066\u0065\u0072\u0065\u006e\u0063\u0065\u0064 \u006f\u0062\u006a\u0065\u0063\u0074\u0020\u002e.\u002e\u0021");
-return nil ,true ,_de .New ("\u006f\u0073\u0020\u0062\u0065\u006c\u006fn\u0067\u0073\u0020t\u006f\u0020\u0061\u0020n\u006f\u006e\u0020\u0063\u0072\u006f\u0073\u0073\u0020\u0072\u0065\u0066\u0065\u0072\u0065\u006e\u0063\u0065\u0064\u0020\u006f\u0062\u006a\u0065\u0063\u0074");
-};return nil ,false ,_de .New ("\u0075\u006e\u006b\u006e\u006f\u0077\u006e\u0020\u0078\u0072\u0065\u0066 \u0074\u0079\u0070\u0065");};
-
-// GetObjectNums returns a sorted list of object numbers of the PDF objects in the file.
-func (_deaa *PdfParser )GetObjectNums ()[]int {var _bcaec []int ;for _ ,_bdbea :=range _deaa ._gabb .ObjectMap {_bcaec =append (_bcaec ,_bdbea .ObjectNumber );};_ef .Ints (_bcaec );return _bcaec ;};func _bbff (_aagc *PdfObjectDictionary )(_edea *_fd .ImageBase ){var (_fdgb *PdfObjectInteger ;
-_dgge bool ;);if _fdgb ,_dgge =_aagc .Get ("\u0057\u0069\u0064t\u0068").(*PdfObjectInteger );_dgge {_edea =&_fd .ImageBase {Width :int (*_fdgb )};}else {return nil ;};if _fdgb ,_dgge =_aagc .Get ("\u0048\u0065\u0069\u0067\u0068\u0074").(*PdfObjectInteger );
-_dgge {_edea .Height =int (*_fdgb );};if _fdgb ,_dgge =_aagc .Get ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074").(*PdfObjectInteger );_dgge {_edea .BitsPerComponent =int (*_fdgb );};if _fdgb ,_dgge =_aagc .Get ("\u0043o\u006co\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u0073").(*PdfObjectInteger );
-_dgge {_edea .ColorComponents =int (*_fdgb );};return _edea ;};func (_bdfbg *PdfParser )parseNull ()(PdfObjectNull ,error ){_ ,_eegad :=_bdfbg ._fgaa .Discard (4);return PdfObjectNull {},_eegad ;};
-
-// NewFlateEncoder makes a new flate encoder with default parameters, predictor 1 and bits per component 8.
-func NewFlateEncoder ()*FlateEncoder {_fcde :=&FlateEncoder {};_fcde .Predictor =1;_fcde .BitsPerComponent =8;_fcde .Colors =1;_fcde .Columns =1;return _fcde ;};
-
-// ResolveReference resolves reference if `o` is a *PdfObjectReference and returns the object referenced to.
-// Otherwise returns back `o`.
-func ResolveReference (obj PdfObject )PdfObject {if _gged ,_dcbb :=obj .(*PdfObjectReference );_dcbb {return _gged .Resolve ();};return obj ;};
-
-// ParseDict reads and parses a PDF dictionary object enclosed with '<<' and '>>'
-func (_caba *PdfParser )ParseDict ()(*PdfObjectDictionary ,error ){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0052\u0065\u0061\u0064\u0069\u006e\u0067\u0020\u0050\u0044\u0046\u0020D\u0069\u0063\u0074\u0021");};_fgfge :=MakeDict ();
-_fgfge ._gacbc =_caba ;_ffbfa ,_ :=_caba ._fgaa .ReadByte ();if _ffbfa !='<'{return nil ,_de .New ("\u0069\u006e\u0076a\u006c\u0069\u0064\u0020\u0064\u0069\u0063\u0074");};_ffbfa ,_ =_caba ._fgaa .ReadByte ();if _ffbfa !='<'{return nil ,_de .New ("\u0069\u006e\u0076a\u006c\u0069\u0064\u0020\u0064\u0069\u0063\u0074");
-};for {_caba .skipSpaces ();_caba .skipComments ();_ecacc ,_dbbec :=_caba ._fgaa .Peek (2);if _dbbec !=nil {return nil ,_dbbec ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("D\u0069c\u0074\u0020\u0070\u0065\u0065\u006b\u003a\u0020%\u0073\u0020\u0028\u0025 x\u0029\u0021",string (_ecacc ),string (_ecacc ));
-};if (_ecacc [0]=='>')&&(_ecacc [1]=='>'){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0045\u004f\u0046\u0020\u0064\u0069\u0063\u0074\u0069o\u006e\u0061\u0072\u0079");};_caba ._fgaa .ReadByte ();_caba ._fgaa .ReadByte ();break ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0050a\u0072s\u0065\u0020\u0074\u0068\u0065\u0020\u006e\u0061\u006d\u0065\u0021");
-};_ggc ,_dbbec :=_caba .parseName ();if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004be\u0079\u003a\u0020\u0025\u0073",_ggc );};if _dbbec !=nil {_bd .Log .Debug ("E\u0052\u0052\u004f\u0052\u0020\u0052e\u0074\u0075\u0072\u006e\u0069\u006e\u0067\u0020\u006ea\u006d\u0065\u0020e\u0072r\u0020\u0025\u0073",_dbbec );
-return nil ,_dbbec ;};if len (_ggc )> 4&&_ggc [len (_ggc )-4:]=="\u006e\u0075\u006c\u006c"{_aeaf :=_ggc [0:len (_ggc )-4];_bd .Log .Debug ("\u0054\u0061\u006b\u0069n\u0067\u0020\u0063\u0061\u0072\u0065\u0020\u006f\u0066\u0020n\u0075l\u006c\u0020\u0062\u0075\u0067\u0020\u0028%\u0073\u0029",_ggc );
-_bd .Log .Debug ("\u004e\u0065\u0077\u0020ke\u0079\u0020\u0022\u0025\u0073\u0022\u0020\u003d\u0020\u006e\u0075\u006c\u006c",_aeaf );_caba .skipSpaces ();_ddfd ,_ :=_caba ._fgaa .Peek (1);if _ddfd [0]=='/'{_fgfge .Set (_aeaf ,MakeNull ());continue ;};};
-_caba .skipSpaces ();_fcgb ,_dbbec :=_caba .parseObject ();if _dbbec !=nil {return nil ,_dbbec ;};_fgfge .Set (_ggc ,_fcgb );if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0064\u0069\u0063\u0074\u005b\u0025\u0073\u005d\u0020\u003d\u0020\u0025\u0073",_ggc ,_fcgb .String ());
-};};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0072\u0065\u0074\u0075rn\u0069\u006e\u0067\u0020\u0050\u0044\u0046\u0020\u0044\u0069\u0063\u0074\u0021");};return _fgfge ,nil ;};
-
-// Encode encodes previously prepare jbig2 document and stores it as the byte slice.
-func (_adac *JBIG2Encoder )Encode ()(_daf []byte ,_cfdbd error ){const _fcffd ="J\u0042I\u0047\u0032\u0044\u006f\u0063\u0075\u006d\u0065n\u0074\u002e\u0045\u006eco\u0064\u0065";if _adac ._daa ==nil {return nil ,_eb .Errorf (_fcffd ,"\u0064\u006f\u0063u\u006d\u0065\u006e\u0074 \u0069\u006e\u0070\u0075\u0074\u0020\u0064a\u0074\u0061\u0020\u006e\u006f\u0074\u0020\u0064\u0065\u0066\u0069\u006e\u0065\u0064");
-};_adac ._daa .FullHeaders =_adac .DefaultPageSettings .FileMode ;_daf ,_cfdbd =_adac ._daa .Encode ();if _cfdbd !=nil {return nil ,_eb .Wrap (_cfdbd ,_fcffd ,"");};return _daf ,nil ;};
-
-// DecodeStream decodes a JPX encoded stream and returns the result as a
-// slice of bytes.
-func (_eaef *JPXEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){_bd .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u003a\u0020\u0041t\u0074\u0065\u006dpt\u0069\u006e\u0067\u0020\u0074\u006f \u0075\u0073\u0065\u0020\u0075\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064 \u0065\u006e\u0063\u006f\u0064\u0069\u006e\u0067 \u0025\u0073",_eaef .GetFilterName ());
-return streamObj .Stream ,ErrNoJPXDecode ;};
-
-// GetNumbersAsFloat converts a list of pdf objects representing floats or integers to a slice of
-// float64 values.
-func GetNumbersAsFloat (objects []PdfObject )(_egcdc []float64 ,_bgcc error ){for _ ,_eacf :=range objects {_fabae ,_abecc :=GetNumberAsFloat (_eacf );if _abecc !=nil {return nil ,_abecc ;};_egcdc =append (_egcdc ,_fabae );};return _egcdc ,nil ;};const (JB2Generic JBIG2CompressionType =iota ;
-JB2SymbolCorrelation ;JB2SymbolRankHaus ;);
-
-// DecodeReader returns a reader that LZW-decodes from r. EarlyChange selects
-// which LZW variant (one-code-early vs postponed code-length increase),
-// matching DecodeBytes. The predictor is NOT applied — see FlateEncoder's
-// DecodeReader for rationale.
-func (_cecg *LZWEncoder )DecodeReader (r _ce .Reader )_ce .Reader {if _cecg .EarlyChange ==1{return _bgf .NewReader (r ,_bgf .MSB ,8);};return _d .NewReader (r ,_d .MSB ,8);};
-
-// GetFilterName returns the name of the encoding filter.
-func (_cefed *CCITTFaxEncoder )GetFilterName ()string {return StreamEncodingFilterNameCCITTFax };
-
-// ShallowCopy returns a new PdfObjectDictionary with the same key-value mappings.
-// The new dictionary has its own mutex and independent keys slice, but values
-// are shared (not deep-copied).
-func (_eddfe *PdfObjectDictionary )ShallowCopy ()*PdfObjectDictionary {_eddfe ._cagec .RLock ();defer _eddfe ._cagec .RUnlock ();_ggfa :=&PdfObjectDictionary {};_ggfa ._abada =make (map[PdfObjectName ]PdfObject ,len (_eddfe ._abada ));_ggfa ._ggeeg =make ([]PdfObjectName ,len (_eddfe ._ggeeg ));
-copy (_ggfa ._ggeeg ,_eddfe ._ggeeg );for _gabeb ,_dedff :=range _eddfe ._abada {_ggfa ._abada [_gabeb ]=_dedff ;};_ggfa ._gacbc =_eddfe ._gacbc ;return _ggfa ;};
-
-// String returns a string representation of `name`.
-func (_ccdd *PdfObjectName )String ()string {return string (*_ccdd )};
-
-// ReadBytes reads until the first occurrence of delim in the buffered reader.
-func (_bgc *bufferedReadSeeker )ReadBytes (delim byte )([]byte ,error ){_dbf ,_cf :=_bgc ._cad .ReadBytes (delim );if _cf !=nil {return nil ,_cf ;};return _dbf ,nil ;};
-
-// NewCompliancePdfParser creates a new PdfParser that will parse input reader with the focus on extracting more metadata, which
-// might affect performance of the regular PdfParser this function.
-func NewCompliancePdfParser (rs _ce .ReadSeeker )(_beaa *PdfParser ,_fdfd error ){_beaa =&PdfParser {_fgaa :_ba (rs ),ObjCache :make (objectCache ),_eaba :map[int64 ]bool {},_egbdb :true ,_bfab :make (map[*PdfParser ]*PdfParser )};if _fdfd =_beaa .parseDetailedHeader ();
-_fdfd !=nil {return nil ,_fdfd ;};if _beaa ._dbbf ,_fdfd =_beaa .loadXrefs ();_fdfd !=nil {_bd .Log .Debug ("\u0045\u0052RO\u0052\u003a\u0020F\u0061\u0069\u006c\u0065d t\u006f l\u006f\u0061\u0064\u0020\u0078\u0072\u0065f \u0074\u0061\u0062\u006c\u0065\u0021\u0020%\u0073",_fdfd );
-return nil ,_fdfd ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("T\u0072\u0061\u0069\u006c\u0065\u0072\u003a\u0020\u0025\u0073",_beaa ._dbbf );};if len (_beaa ._gabb .ObjectMap )==0{return nil ,_ee .Errorf ("\u0065\u006d\u0070\u0074\u0079\u0020\u0058\u0052\u0045\u0046\u0020t\u0061\u0062\u006c\u0065\u0020\u002d\u0020\u0049\u006e\u0076a\u006c\u0069\u0064");
-};return _beaa ,nil ;};
-
-// String returns the state of the bool as "true" or "false".
-func (_acfcf *PdfObjectBool )String ()string {if *_acfcf {return "\u0074\u0072\u0075\u0065";};return "\u0066\u0061\u006cs\u0065";};
-
-// String returns the PDF version as a string. Implements interface fmt.Stringer.
-func (_baa Version )String ()string {return _ee .Sprintf ("\u00250\u0064\u002e\u0025\u0030\u0064",_baa .Major ,_baa .Minor );};func (_fabaa *PdfParser )parseBool ()(PdfObjectBool ,error ){_geabc ,_fafg :=_fabaa ._fgaa .Peek (4);if _fafg !=nil {return PdfObjectBool (false ),_fafg ;
-};if (len (_geabc )>=4)&&(string (_geabc [:4])=="\u0074\u0072\u0075\u0065"){_fabaa ._fgaa .Discard (4);return PdfObjectBool (true ),nil ;};_geabc ,_fafg =_fabaa ._fgaa .Peek (5);if _fafg !=nil {return PdfObjectBool (false ),_fafg ;};if (len (_geabc )>=5)&&(string (_geabc [:5])=="\u0066\u0061\u006cs\u0065"){_fabaa ._fgaa .Discard (5);
-return PdfObjectBool (false ),nil ;};return PdfObjectBool (false ),_de .New ("\u0075n\u0065\u0078\u0070\u0065c\u0074\u0065\u0064\u0020\u0062o\u006fl\u0065a\u006e\u0020\u0073\u0074\u0072\u0069\u006eg");};
-
-// PdfObjectReference represents the primitive PDF reference object.
-type PdfObjectReference struct{_eebb *PdfParser ;ObjectNumber int64 ;GenerationNumber int64 ;};func _cage (_edce ,_bfbe ,_agdfd uint8 )uint8 {_bbdcb :=int (_agdfd );_bdfe :=int (_bfbe )-_bbdcb ;_bdcf :=int (_edce )-_bbdcb ;_bbdcb =_gcfa (_bdfe +_bdcf );
-_bdfe =_gcfa (_bdfe );_bdcf =_gcfa (_bdcf );if _bdfe <=_bdcf &&_bdfe <=_bbdcb {return _edce ;}else if _bdcf <=_bbdcb {return _bfbe ;};return _agdfd ;};
-
-// GetRevision returns PdfParser for the specific version of the Pdf document.
-func (_bdbb *PdfParser )GetRevision (revisionNumber int )(*PdfParser ,error ){_gbeg :=_bdbb ._debg ;if _gbeg ==revisionNumber {return _bdbb ,nil ;};if _gbeg < revisionNumber {return nil ,_de .New ("\u0075\u006e\u0064\u0065\u0066\u0069\u006e\u0065\u0064\u0020\u0072\u0065\u0076\u0069\u0073i\u006fn\u004e\u0075\u006d\u0062\u0065\u0072\u0020\u0076\u0065\u0072\u0073\u0069\u006f\u006e");
-};if _bdbb ._cdbe [revisionNumber ]!=nil {return _bdbb ._cdbe [revisionNumber ],nil ;};_aaab :=_bdbb ;for ;_gbeg > revisionNumber ;_gbeg --{_aafda ,_gabd :=_aaab .GetPreviousRevisionParser ();if _gabd !=nil {return nil ,_gabd ;};_bdbb ._cdbe [_gbeg -1]=_aafda ;
-_bdbb ._bfab [_aaab ]=_aafda ;_aaab =_aafda ;};return _aaab ,nil ;};func (_geeb *PdfParser )initParser ()error {_ebdc ,_dcgaa ,_fgfff :=_geeb .parsePdfVersion ();if _fgfff !=nil {_bd .Log .Error ("U\u006e\u0061\u0062\u006c\u0065\u0020t\u006f\u0020\u0070\u0061\u0072\u0073\u0065\u0020\u0076e\u0072\u0073\u0069o\u006e:\u0020\u0025\u0076",_fgfff );
-return _fgfff ;};_geeb ._ecbge .Major =_ebdc ;_geeb ._ecbge .Minor =_dcgaa ;if _geeb ._dbbf ,_fgfff =_geeb .loadXrefs ();_fgfff !=nil {_bd .Log .Debug ("\u0045\u0052RO\u0052\u003a\u0020F\u0061\u0069\u006c\u0065d t\u006f l\u006f\u0061\u0064\u0020\u0078\u0072\u0065f \u0074\u0061\u0062\u006c\u0065\u0021\u0020%\u0073",_fgfff );
-return _fgfff ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("T\u0072\u0061\u0069\u006c\u0065\u0072\u003a\u0020\u0025\u0073",_geeb ._dbbf );};_ffba ,_fgfff :=_geeb .parseLinearizedDictionary ();if _fgfff !=nil {return _fgfff ;};if _ffba !=nil {_geeb ._gagc ,_fgfff =_geeb .checkLinearizedInformation (_ffba );
-if _fgfff !=nil {return _fgfff ;};};if len (_geeb ._gabb .ObjectMap )==0{return _ee .Errorf ("\u0065\u006d\u0070\u0074\u0079\u0020\u0058\u0052\u0045\u0046\u0020t\u0061\u0062\u006c\u0065\u0020\u002d\u0020\u0049\u006e\u0076a\u006c\u0069\u0064");};_geeb ._debg =len (_geeb ._ddfe );
-if _geeb ._gagc &&_geeb ._debg !=0{_geeb ._debg --;};_geeb ._cdbe =make ([]*PdfParser ,_geeb ._debg );return nil ;};
-
-// PdfObjectFloat represents the primitive PDF floating point numerical object.
-type PdfObjectFloat float64 ;
-
-// UpdateParams updates the parameter values of the encoder.
-// Implements StreamEncoder interface.
-func (_ccce *JBIG2Encoder )UpdateParams (params *PdfObjectDictionary ){_bgec ,_gdeb :=GetNumberAsInt64 (params .Get ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074"));if _gdeb ==nil {_ccce .BitsPerComponent =int (_bgec );
-};_dcad ,_gdeb :=GetNumberAsInt64 (params .Get ("\u0057\u0069\u0064t\u0068"));if _gdeb ==nil {_ccce .Width =int (_dcad );};_baeb ,_gdeb :=GetNumberAsInt64 (params .Get ("\u0048\u0065\u0069\u0067\u0068\u0074"));if _gdeb ==nil {_ccce .Height =int (_baeb );
-};_fbbed ,_gdeb :=GetNumberAsInt64 (params .Get ("\u0043o\u006co\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u0073"));if _gdeb ==nil {_ccce .ColorComponents =int (_fbbed );};};
-
-// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
-func (_ddcb *JPXEncoder )MakeStreamDict ()*PdfObjectDictionary {return MakeDict ()};var _ebeg =_gb .Pool {New :func ()any {_cfac ,_ :=_ae .NewReader (_f .NewReader ([]byte {0x78,0x9c,0x01,0x00,0x00,0xff,0xff,0x00,0x00,0x00,0x01}));return _cfac ;}};
-
-// AddPageImage adds the page with the image 'img' to the encoder context in order to encode it jbig2 document.
-// The 'settings' defines what encoding type should be used by the encoder.
-func (_gbgc *JBIG2Encoder )AddPageImage (img *JBIG2Image ,settings *JBIG2EncoderSettings )(_ddf error ){const _bcc ="\u004a\u0042\u0049\u0047\u0032\u0044\u006f\u0063\u0075\u006d\u0065n\u0074\u002e\u0041\u0064\u0064\u0050\u0061\u0067\u0065\u0049m\u0061\u0067\u0065";
-if _gbgc ==nil {return _eb .Error (_bcc ,"J\u0042I\u0047\u0032\u0044\u006f\u0063\u0075\u006d\u0065n\u0074\u0020\u0069\u0073 n\u0069\u006c");};if settings ==nil {settings =&_gbgc .DefaultPageSettings ;};if _gbgc ._daa ==nil {_gbgc ._daa =_eea .InitEncodeDocument (settings .FileMode );
-};if _ddf =settings .Validate ();_ddf !=nil {return _eb .Wrap (_ddf ,_bcc ,"");};_baca ,_ddf :=img .toBitmap ();if _ddf !=nil {return _eb .Wrap (_ddf ,_bcc ,"");};switch settings .Compression {case JB2Generic :if _ddf =_gbgc ._daa .AddGenericPage (_baca ,settings .DuplicatedLinesRemoval );
-_ddf !=nil {return _eb .Wrap (_ddf ,_bcc ,"");};case JB2SymbolCorrelation :return _eb .Error (_bcc ,"s\u0079\u006d\u0062\u006f\u006c\u0020\u0063\u006f\u0072r\u0065\u006c\u0061\u0074\u0069\u006f\u006e e\u006e\u0063\u006f\u0064i\u006e\u0067\u0020\u006e\u006f\u0074\u0020\u0069\u006dpl\u0065\u006de\u006e\u0074\u0065\u0064\u0020\u0079\u0065\u0074");
-case JB2SymbolRankHaus :return _eb .Error (_bcc ,"\u0073y\u006d\u0062o\u006c\u0020\u0072a\u006e\u006b\u0020\u0068\u0061\u0075\u0073 \u0065\u006e\u0063\u006f\u0064\u0069n\u0067\u0020\u006e\u006f\u0074\u0020\u0069\u006d\u0070\u006c\u0065m\u0065\u006e\u0074\u0065\u0064\u0020\u0079\u0065\u0074");
-default:return _eb .Error (_bcc ,"\u0070\u0072\u006f\u0076i\u0064\u0065\u0064\u0020\u0069\u006e\u0076\u0061\u006c\u0069d\u0020c\u006f\u006d\u0070\u0072\u0065\u0073\u0073i\u006f\u006e");};return nil ;};
-
-// Get returns the i-th element of the array or nil if out of bounds (by index).
-func (_ceaa *PdfObjectArray )Get (i int )PdfObject {if _ceaa ==nil ||i >=len (_ceaa ._bgegc )||i < 0{return nil ;};return _ceaa ._bgegc [i ];};
-
-// GetFileOffset returns the current file offset, accounting for buffered position.
-func (_agfdd *PdfParser )GetFileOffset ()int64 {return _agfdd ._fgaa .GetFileOffset ()};
-
-// GetFilterName returns the name of the encoding filter.
-func (_eeab *JBIG2Encoder )GetFilterName ()string {return StreamEncodingFilterNameJBIG2 };func _bgbde (_dcdd PdfObject ,_ccebc int )PdfObject {if _ccebc > _ecbeb {_bd .Log .Error ("\u0054\u0072ac\u0065\u0020\u0064e\u0070\u0074\u0068\u0020lev\u0065l \u0062\u0065\u0079\u006f\u006e\u0064\u0020%d\u0020\u002d\u0020\u0065\u0072\u0072\u006fr\u0021",_ecbeb );
-return MakeNull ();};switch _faea :=_dcdd .(type ){case *PdfIndirectObject :_dcdd =_bgbde ((*_faea ).PdfObject ,_ccebc +1);case *PdfObjectArray :for _fddc ,_bbab :=range (*_faea )._bgegc {(*_faea )._bgegc [_fddc ]=_bgbde (_bbab ,_ccebc +1);};case *PdfObjectDictionary :_faea ._cagec .RLock ();
-_ccfcf :=make (map[PdfObjectName ]PdfObject ,len (_faea ._abada ));for _dcdfc ,_agfdg :=range _faea ._abada {_ccfcf [_dcdfc ]=_agfdg ;};_faea ._cagec .RUnlock ();for _bdcd ,_caee :=range _ccfcf {_ccfcf [_bdcd ]=_bgbde (_caee ,_ccebc +1);};_faea ._cagec .Lock ();
-for _fafd ,_gfcc :=range _ccfcf {_faea ._abada [_fafd ]=_gfcc ;};_ef .Slice (_faea ._ggeeg ,func (_efce ,_acfd int )bool {return _faea ._ggeeg [_efce ]< _faea ._ggeeg [_acfd ]});_faea ._cagec .Unlock ();};return _dcdd ;};
-
-// ParserMetadata gets the pdf parser metadata.
-func (_bebc *PdfParser )ParserMetadata ()(ParserMetadata ,error ){if !_bebc ._egbdb {return ParserMetadata {},_ee .Errorf ("\u0070\u0061\u0072\u0073\u0065r\u0020\u0077\u0061\u0073\u0020\u006e\u006f\u0074\u0020\u006d\u0061\u0072\u006be\u0064\u0020\u0066\u006f\u0072\u0020\u0067\u0065\u0074\u0074\u0069\u006e\u0067\u0020\u0064\u0065\u0074\u0061\u0069\u006c\u0065\u0064\u0020\u006d\u0065\u0074\u0061\u0064\u0061\u0074a");
-};return _bebc ._dafba ,nil ;};func (_cbgc *PdfCrypt )generateParams (_cffe ,_bgfe []byte )error {_ecaag :=_cbgc .securityHandler ();_dbce ,_abgfe :=_ecaag .GenerateParams (&_cbgc ._dfb ,_bgfe ,_cffe );if _abgfe !=nil {return _abgfe ;};_cbgc ._eab =_dbce ;
-return nil ;};
-
-// GetFilterName returns the name of the encoding filter.
-func (_fcfb *RawEncoder )GetFilterName ()string {return StreamEncodingFilterNameRaw };func (_ddca *PdfParser )repairRebuildXrefsTopDown ()(*XrefTable ,error ){if _ddca ._aefg {return nil ,_ee .Errorf ("\u0072\u0065\u0070\u0061\u0069\u0072\u0020\u0066\u0061\u0069\u006c\u0065\u0064");
-};_ddca ._aefg =true ;_ddca ._fgaa .Seek (0,_ce .SeekStart );_eagg :=20;_faed :=make ([]byte ,_eagg );_aedd :=XrefTable {};_aedd .ObjectMap =make (map[int ]XrefObject );for {_gfbfb ,_gdag :=_ddca ._fgaa .ReadByte ();if _gdag !=nil {if _gdag ==_ce .EOF {break ;
-}else {return nil ,_gdag ;};};if _gfbfb =='j'&&_faed [_eagg -1]=='b'&&_faed [_eagg -2]=='o'&&IsWhiteSpace (_faed [_eagg -3]){_eedec :=_eagg -4;for IsWhiteSpace (_faed [_eedec ])&&_eedec > 0{_eedec --;};if _eedec ==0||!IsDecimalDigit (_faed [_eedec ]){continue ;
-};for IsDecimalDigit (_faed [_eedec ])&&_eedec > 0{_eedec --;};if _eedec ==0||!IsWhiteSpace (_faed [_eedec ]){continue ;};for IsWhiteSpace (_faed [_eedec ])&&_eedec > 0{_eedec --;};if _eedec ==0||!IsDecimalDigit (_faed [_eedec ]){continue ;};for IsDecimalDigit (_faed [_eedec ])&&_eedec > 0{_eedec --;
-};if _eedec ==0{continue ;};_ebca :=_ddca .GetFileOffset ()-int64 (_eagg -_eedec );_cfbg :=append (_faed [_eedec +1:],_gfbfb );_cgcfc ,_dedc ,_beaf :=_dfafe (string (_cfbg ));if _beaf !=nil {_bd .Log .Debug ("\u0055\u006e\u0061\u0062\u006c\u0065 \u0074\u006f\u0020\u0070\u0061\u0072\u0073\u0065\u0020\u006f\u0062\u006a\u0065c\u0074\u0020\u006e\u0075\u006d\u0062\u0065r\u003a\u0020\u0025\u0076",_beaf );
-return nil ,_beaf ;};if _abdc ,_gcgaf :=_aedd .ObjectMap [_cgcfc ];!_gcgaf ||_abdc .Generation <=_dedc {_cacda :=XrefObject {};_cacda .XType =XrefTypeTableEntry ;_cacda .ObjectNumber =_cgcfc ;_cacda .Generation =_dedc ;_cacda .Offset =_ebca ;_aedd .ObjectMap [_cgcfc ]=_cacda ;
-};};_faed =append (_faed [1:_eagg ],_gfbfb );};_ddca ._dffda =nil ;return &_aedd ,nil ;};
-
-// NewParserFromString is used for testing purposes.
-func NewParserFromString (txt string )*PdfParser {_dgabg :=_f .NewReader ([]byte (txt ));_dbfdc :=&PdfParser {ObjCache :objectCache {},_fgaa :_ba (_dgabg ),_fcbfc :int64 (len (txt )),_eaba :map[int64 ]bool {},_bfab :make (map[*PdfParser ]*PdfParser )};
-_dbfdc ._gabb .ObjectMap =make (map[int ]XrefObject );return _dbfdc ;};func (_fea *PdfCrypt )checkAccessRights (_eega []byte )(bool ,_gbg .Permissions ,error ){_dbfg :=_fea .securityHandler ();_dga ,_effg ,_cgfd :=_dbfg .Authenticate (&_fea ._dfb ,_eega );
-if _cgfd !=nil {return false ,0,_cgfd ;}else if _effg ==0||len (_dga )==0{return false ,0,nil ;};return true ,_effg ,nil ;};func (_acdc *PdfParser )parseObject ()(PdfObject ,error ){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0052e\u0061d\u0020\u0064\u0069\u0072\u0065c\u0074\u0020o\u0062\u006a\u0065\u0063\u0074");
-};_acdc .skipSpaces ();for {_addg ,_gdcgb :=_acdc ._fgaa .Peek (2);if _gdcgb !=nil {if _gdcgb !=_ce .EOF ||len (_addg )==0{return nil ,_gdcgb ;};if len (_addg )==1{_addg =append (_addg ,' ');};};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0050e\u0065k\u0020\u0073\u0074\u0072\u0069\u006e\u0067\u003a\u0020\u0025\u0073",string (_addg ));
-};if _addg [0]=='/'{_ebega ,_acae :=_acdc .parseName ();if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d\u003e\u004ea\u006d\u0065\u003a\u0020\u0027\u0025\u0073\u0027",_ebega );};return &_ebega ,_acae ;}else if _addg [0]=='('{if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d>\u0053\u0074\u0072\u0069\u006e\u0067!");
-};_eaefd ,_ebde :=_acdc .parseString ();return _eaefd ,_ebde ;}else if _addg [0]=='['{if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d\u003e\u0041\u0072\u0072\u0061\u0079\u0021");};_adddc ,_bgbg :=_acdc .parseArray ();return _adddc ,_bgbg ;
-}else if (_addg [0]=='<')&&(_addg [1]=='<'){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d>\u0044\u0069\u0063\u0074\u0021");};_deag ,_dbbe :=_acdc .ParseDict ();return _deag ,_dbbe ;}else if _addg [0]=='<'{if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d\u003e\u0048\u0065\u0078\u0020\u0073\u0074\u0072\u0069\u006e\u0067\u0021");
-};_daebg ,_fgeg :=_acdc .parseHexString ();return _daebg ,_fgeg ;}else if _addg [0]=='%'{_acdc .readComment ();_acdc .skipSpaces ();}else {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d\u003eN\u0075\u006d\u0062e\u0072\u0020\u006f\u0072\u0020\u0072\u0065\u0066\u003f");
-};_addg ,_ =_acdc ._fgaa .Peek (15);_gegeb :=string (_addg );if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0050\u0065\u0065k\u0020\u0073\u0074\u0072\u003a\u0020\u0025\u0073",_gegeb );};if (len (_gegeb )> 3)&&(_gegeb [:4]=="\u006e\u0075\u006c\u006c"){_adae ,_cdaf :=_acdc .parseNull ();
-return &_adae ,_cdaf ;}else if (len (_gegeb )> 4)&&(_gegeb [:5]=="\u0066\u0061\u006cs\u0065"){_bdg ,_gceb :=_acdc .parseBool ();return &_bdg ,_gceb ;}else if (len (_gegeb )> 3)&&(_gegeb [:4]=="\u0074\u0072\u0075\u0065"){_adgb ,_dbef :=_acdc .parseBool ();
-return &_adgb ,_dbef ;};_afgd :=_fcbc .FindStringSubmatchIndex (_gegeb );if len (_afgd )>=6{if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d\u003e\u0020\u0021\u0052\u0065\u0066\u003a\u0020\u0027\u0025\u0073\u0027",_gegeb [:_afgd [1]]);
-};_gacfa ,_ :=_c .Atoi (_gegeb [_afgd [2]:_afgd [3]]);_edba ,_ :=_c .Atoi (_gegeb [_afgd [4]:_afgd [5]]);_acdc ._fgaa .Discard (_afgd [1]);_bcbag :=PdfObjectReference {ObjectNumber :int64 (_gacfa ),GenerationNumber :int64 (_edba ),_eebb :_acdc };return &_bcbag ,nil ;
-};_dbgg :=_edbc .FindStringSubmatch (_gegeb );if len (_dbgg )> 1{if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d\u003e\u0020\u004e\u0075\u006d\u0062\u0065\u0072\u0021");};_affd ,_faegf :=_acdc .parseNumber ();return _affd ,_faegf ;
-};_dbgg =_facc .FindStringSubmatch (_gegeb );if len (_dbgg )> 1{if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d\u003e\u0020\u0045xp\u006f\u006e\u0065\u006e\u0074\u0069\u0061\u006c\u0020\u004e\u0075\u006d\u0062\u0065r\u0021");};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0025\u0020\u0073",_dbgg );
-};_abe ,_gdcc :=_acdc .parseNumber ();return _abe ,_gdcc ;};_bd .Log .Debug ("\u0045R\u0052\u004f\u0052\u0020U\u006e\u006b\u006e\u006f\u0077n\u0020(\u0070e\u0065\u006b\u0020\u0022\u0025\u0073\u0022)",_gegeb );return nil ,_de .New ("\u006f\u0062\u006a\u0065\u0063t\u0020\u0070\u0061\u0072\u0073\u0069\u006e\u0067\u0020\u0065\u0072\u0072\u006fr\u0020\u002d\u0020\u0075\u006e\u0065\u0078\u0070\u0065\u0063\u0074\u0065\u0064\u0020\u0070\u0061\u0074\u0074\u0065\u0072\u006e");
-};};};
-
-// GetParser returns the parser for lazy-loading or compare references.
-func (_bdaf *PdfObjectReference )GetParser ()*PdfParser {return _bdaf ._eebb };
-
-// JBIG2Image is the image structure used by the jbig2 encoder. Its Data must be in a
-// 1 bit per component and 1 component per pixel (1bpp). In order to create binary image
-// use GoImageToJBIG2 function. If the image data contains the row bytes padding set the HasPadding to true.
-type JBIG2Image struct{
-
-// Width and Height defines the image boundaries.
-Width ,Height int ;
-
-// Data is the byte slice data for the input image
-Data []byte ;
-
-// HasPadding is the attribute that defines if the last byte of the data in the row contains
-// 0 bits padding.
-HasPadding bool ;};
-
-// Decrypt an object with specified key. For numbered objects,
-// the key argument is not used and a new one is generated based
-// on the object and generation number.
-// Traverses through all the subobjects (recursive).
-//
-// Does not look up references..  That should be done prior to calling.
-func (_cce *PdfCrypt )Decrypt (obj PdfObject ,parentObjNum ,parentGenNum int64 )error {if _cce .isDecrypted (obj ){return nil ;};switch _abae :=obj .(type ){case *PdfIndirectObject :_cce ._aae [_abae ]=true ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0044\u0065\u0063\u0072\u0079\u0070\u0074\u0069\u006e\u0067 \u0069\u006e\u0064\u0069\u0072\u0065\u0063t\u0020\u0025\u0064\u0020\u0025\u0064\u0020\u006f\u0062\u006a\u0021",_abae .ObjectNumber ,_abae .GenerationNumber );
-};_eafc :=_abae .ObjectNumber ;_bged :=_abae .GenerationNumber ;_cgce :=_cce .Decrypt (_abae .PdfObject ,_eafc ,_bged );if _cgce !=nil {return _cgce ;};return nil ;case *PdfObjectStream :_cce ._aae [_abae ]=true ;_dccc :=_abae .PdfObjectDictionary ;if _cce ._dfb .R !=5{if _fdfe ,_dddb :=_dccc .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );
-_dddb &&*_fdfe =="\u0058\u0052\u0065\u0066"{return nil ;};};_eccf :=_abae .ObjectNumber ;_bag :=_abae .GenerationNumber ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0044e\u0063\u0072\u0079\u0070t\u0069\u006e\u0067\u0020\u0073t\u0072e\u0061m\u0020\u0025\u0064\u0020\u0025\u0064\u0020!",_eccf ,_bag );
-};_gbga :=_fcab ;if _cce ._aff .V >=4{_gbga =_cce ._dcg ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0074\u0068\u0069\u0073.s\u0074\u0072\u0065\u0061\u006d\u0046\u0069\u006c\u0074\u0065\u0072\u0020\u003d\u0020%\u0073",_cce ._dcg );
-};if _aebf ,_edd :=_dccc .Get ("\u0046\u0069\u006c\u0074\u0065\u0072").(*PdfObjectArray );_edd {if _bcbd ,_deb :=GetName (_aebf .Get (0));_deb {if *_bcbd =="\u0043\u0072\u0079p\u0074"{_gbga ="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079";if _dag ,_bbg :=_dccc .Get ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073").(*PdfObjectDictionary );
-_bbg {if _gec ,_cbdb :=_dag .Get ("\u004e\u0061\u006d\u0065").(*PdfObjectName );_cbdb {if _ ,_ebb :=_cce ._edb [string (*_gec )];_ebb {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0055\u0073\u0069\u006eg \u0073\u0074\u0072\u0065\u0061\u006d\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0020%\u0073",*_gec );
-};_gbga =string (*_gec );};};};};};};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0077\u0069\u0074\u0068\u0020\u0025\u0073\u0020\u0066i\u006c\u0074\u0065\u0072",_gbga );};if _gbga =="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079"{return nil ;
-};};_dgc :=_cce .Decrypt (_dccc ,_eccf ,_bag );if _dgc !=nil {return _dgc ;};_fdge ,_dgc :=_cce .makeKey (_gbga ,uint32 (_eccf ),uint32 (_bag ),_cce ._eab );if _dgc !=nil {return _dgc ;};_abae .Stream ,_dgc =_cce .decryptBytes (_abae .Stream ,_gbga ,_fdge );
-if _dgc !=nil {return _dgc ;};_dccc .Set ("\u004c\u0065\u006e\u0067\u0074\u0068",MakeInteger (int64 (len (_abae .Stream ))));return nil ;case *PdfObjectString :if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0044e\u0063r\u0079\u0070\u0074\u0069\u006eg\u0020\u0073t\u0072\u0069\u006e\u0067\u0021");
-};_daef :=_fcab ;if _cce ._aff .V >=4{if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0077\u0069\u0074\u0068\u0020\u0025\u0073\u0020\u0066i\u006c\u0074\u0065\u0072",_cce ._eabe );};if _cce ._eabe =="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079"{return nil ;
-};_daef =_cce ._eabe ;};_acda ,_bceg :=_cce .makeKey (_daef ,uint32 (parentObjNum ),uint32 (parentGenNum ),_cce ._eab );if _bceg !=nil {return _bceg ;};_acbd :=_abae .Str ();_bgbd :=make ([]byte ,len (_acbd ));for _fcabe :=0;_fcabe < len (_acbd );_fcabe ++{_bgbd [_fcabe ]=_acbd [_fcabe ];
-};if len (_bgbd )> 0{if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0044e\u0063\u0072\u0079\u0070\u0074\u0020\u0073\u0074\u0072\u0069\u006eg\u003a\u0020\u0025\u0073\u0020\u003a\u0020\u0025\u0020\u0078",_bgbd ,_bgbd );};_bgbd ,_bceg =_cce .decryptBytes (_bgbd ,_daef ,_acda );
-if _bceg !=nil {return _bceg ;};};_abae ._fadd =string (_bgbd );return nil ;case *PdfObjectArray :for _ ,_edgcc :=range _abae .Elements (){_gdee :=_cce .Decrypt (_edgcc ,parentObjNum ,parentGenNum );if _gdee !=nil {return _gdee ;};};return nil ;case *PdfObjectDictionary :_aaeg :=false ;
-if _dddg :=_abae .Get ("\u0054\u0079\u0070\u0065");_dddg !=nil {_egf ,_fab :=_dddg .(*PdfObjectName );if _fab &&*_egf =="\u0053\u0069\u0067"{_aaeg =true ;};};for _ ,_cfd :=range _abae .Keys (){_fdgg :=_abae .Get (_cfd );if _aaeg &&string (_cfd )=="\u0043\u006f\u006e\u0074\u0065\u006e\u0074\u0073"{continue ;
-};if string (_cfd )!="\u0050\u0061\u0072\u0065\u006e\u0074"&&string (_cfd )!="\u0050\u0072\u0065\u0076"&&string (_cfd )!="\u004c\u0061\u0073\u0074"{_bde :=_cce .Decrypt (_fdgg ,parentObjNum ,parentGenNum );if _bde !=nil {return _bde ;};};};return nil ;
-};return nil ;};
-
-// Write outputs the object as it is to be written to file.
-func (_aacfg *PdfObjectInteger )Write ()[]byte {return []byte (_c .FormatInt (int64 (*_aacfg ),10))};type xrefType int ;type indirectPair struct{_aaeb ,_baffd *PdfIndirectObject };
-
-// DecodeStream decodes a JBIG2 encoded stream and returns the result as a slice of bytes.
-func (_ddegd *JBIG2Encoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return _ddegd .DecodeBytes (streamObj .Stream );};
-
-// GetIntVal returns the int value represented by the PdfObject directly or indirectly if contained within an
-// indirect object. On type mismatch the found bool flag returned is false and a nil pointer is returned.
-func GetIntVal (obj PdfObject )(_cccc int ,_facag bool ){_cdbeg ,_facag :=TraceToDirectObject (obj ).(*PdfObjectInteger );if _facag &&_cdbeg !=nil {return int (*_cdbeg ),true ;};return 0,false ;};
-
-// GetNumberAsInt64 returns the contents of `obj` as an int64 if it is an integer or float, or an
-// error if it isn't. This is for cases where expecting an integer, but some implementations
-// actually store the number in a floating point format.
-func GetNumberAsInt64 (obj PdfObject )(int64 ,error ){switch _aecb :=obj .(type ){case *PdfObjectFloat :_bd .Log .Debug ("\u004e\u0075m\u0062\u0065\u0072\u0020\u0065\u0078\u0070\u0065\u0063\u0074\u0065\u0064\u0020\u0061\u0073\u0020\u0069\u006e\u0074e\u0067\u0065\u0072\u0020\u0077\u0061s\u0020\u0073\u0074\u006f\u0072\u0065\u0064\u0020\u0061\u0073\u0020\u0066\u006c\u006fa\u0074\u0020(\u0074\u0079\u0070\u0065 \u0063\u0061\u0073\u0074\u0069n\u0067\u0020\u0075\u0073\u0065\u0064\u0029");
-return int64 (*_aecb ),nil ;case *PdfObjectInteger :return int64 (*_aecb ),nil ;case *PdfObjectReference :_cgdd :=TraceToDirectObject (obj );return GetNumberAsInt64 (_cgdd );case *PdfIndirectObject :return GetNumberAsInt64 (_aecb .PdfObject );};return 0,ErrNotANumber ;
+// Update updates multiple keys and returns the dictionary back so can be used in a chained fashion.
+func (_ggbef *PdfObjectDictionary )Update (objmap map[string ]PdfObject )*PdfObjectDictionary {_ggbef ._egfe .Lock ();defer _ggbef ._egfe .Unlock ();for _bcgb ,_cbdcf :=range objmap {_ggbef .setWithLock (PdfObjectName (_bcgb ),_cbdcf ,false );};return _ggbef ;
 };
 
-// PdfObjectStreams represents the primitive PDF object streams.
-// 7.5.7 Object Streams (page 45).
-type PdfObjectStreams struct{PdfObjectReference ;_egfda []PdfObject ;};
+// IsNullObject returns true if `obj` is a PdfObjectNull.
+func IsNullObject (obj PdfObject )bool {_ ,_ebcd :=TraceToDirectObject (obj ).(*PdfObjectNull );return _ebcd ;};
 
-// NewDCTEncoder makes a new DCT encoder with default parameters.
-func NewDCTEncoder ()*DCTEncoder {_abac :=&DCTEncoder {};_abac .ColorComponents =3;_abac .BitsPerComponent =8;_abac .Quality =DefaultJPEGQuality ;_abac .Decode =[]float64 {0.0,1.0,0.0,1.0,0.0,1.0};return _abac ;};
-
-// GetPreviousRevisionReadSeeker returns ReadSeeker for the previous version of the Pdf document.
-func (_aeed *PdfParser )GetPreviousRevisionReadSeeker ()(_ce .ReadSeeker ,error ){if _fegda :=_aeed .seekToEOFMarker (_aeed ._fcbfc -_aeeeg );_fegda !=nil {return nil ,_fegda ;};_dgcb ,_geabf :=_aeed ._fgaa .Seek (0,_ce .SeekCurrent );if _geabf !=nil {return nil ,_geabf ;
-};_dgcb +=_aeeeg ;return _dgff (_aeed ._fgaa ,_dgcb );};
-
-// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
-func (_bfd *RawEncoder )MakeStreamDict ()*PdfObjectDictionary {return MakeDict ()};
-
-// DecodeStream decodes a LZW encoded stream and returns the result as a
-// slice of bytes.
-func (_dfdg *LZWEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004c\u005a\u0057 \u0044\u0065\u0063\u006f\u0064\u0069\u006e\u0067");};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0050\u0072\u0065\u0064\u0069\u0063\u0074\u006f\u0072\u003a\u0020\u0025\u0064",_dfdg .Predictor );
-};_gebe ,_gbdg :=_dfdg .DecodeBytes (streamObj .Stream );if _gbdg !=nil {return nil ,_gbdg ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0020\u0049\u004e\u003a\u0020\u0028\u0025\u0064\u0029\u0020\u0025\u0020\u0078",len (streamObj .Stream ),streamObj .Stream );
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004f\u0055\u0054\u003a\u0020\u0028\u0025\u0064\u0029\u0020\u0025\u0020\u0078",len (_gebe ),_gebe );};if _dfdg .Predictor > 1{if _dfdg .Predictor ==2{defer ReleaseBytes (_gebe );if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0054\u0069\u0066\u0066\u0020\u0065\u006e\u0063\u006f\u0064\u0069\u006e\u0067");
-};_gdbb :=_dfdg .Columns *_dfdg .Colors ;if _gdbb < 1{return []byte {},nil ;};_afce :=len (_gebe )/_gdbb ;if len (_gebe )%_gdbb !=0{_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020T\u0049\u0046\u0046 \u0065\u006e\u0063\u006fd\u0069\u006e\u0067\u003a\u0020\u0049\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u006f\u0077\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u002e\u002e\u002e");
-return nil ,_ee .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u006f\u0077 \u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064/\u0025\u0064\u0029",len (_gebe ),_gdbb );};if _gdbb %_dfdg .Colors !=0{return nil ,_ee .Errorf ("\u0069\u006ev\u0061\u006c\u0069\u0064 \u0072\u006fw\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u0020(\u0025\u0064\u0029\u0020\u0066\u006f\u0072\u0020\u0063\u006f\u006c\u006fr\u0073\u0020\u0025\u0064",_gdbb ,_dfdg .Colors );
-};if _gdbb > len (_gebe ){_bd .Log .Debug ("\u0052\u006fw\u0020\u006c\u0065\u006e\u0067t\u0068\u0020\u0063\u0061\u006en\u006f\u0074\u0020\u0062\u0065\u0020\u006c\u006f\u006e\u0067\u0065\u0072\u0020\u0074\u0068\u0061\u006e\u0020\u0064\u0061\u0074\u0061\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064\u002f\u0025\u0064\u0029",_gdbb ,len (_gebe ));
-return nil ,_de .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("i\u006e\u0070\u0020\u006fut\u0044a\u0074\u0061\u0020\u0028\u0025d\u0029\u003a\u0020\u0025\u0020\u0078",len (_gebe ),_gebe );
-};_cbfd :=_f .NewBuffer (nil );for _eeec :=0;_eeec < _afce ;_eeec ++{_dbcb :=_gebe [_gdbb *_eeec :_gdbb *(_eeec +1)];for _aaf :=_dfdg .Colors ;_aaf < _gdbb ;_aaf ++{_dbcb [_aaf ]=byte (int (_dbcb [_aaf ]+_dbcb [_aaf -_dfdg .Colors ])%256);};_cbfd .Write (_dbcb );
-};_adec :=_cbfd .Bytes ();if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0050O\u0075t\u0044\u0061\u0074\u0061\u0020(\u0025\u0064)\u003a\u0020\u0025\u0020\u0078",len (_adec ),_adec );};return _adec ,nil ;}else if _dfdg .Predictor >=10&&_dfdg .Predictor <=15{defer ReleaseBytes (_gebe );
-if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0050\u004e\u0047 \u0045\u006e\u0063\u006f\u0064\u0069\u006e\u0067");};_geca :=_dfdg .Columns *_dfdg .Colors +1;if _geca < 1{return []byte {},nil ;};_ggbcb :=len (_gebe )/_geca ;if len (_gebe )%_geca !=0{return nil ,_ee .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u006f\u0077 \u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064/\u0025\u0064\u0029",len (_gebe ),_geca );
-};if _geca > len (_gebe ){_bd .Log .Debug ("\u0052\u006fw\u0020\u006c\u0065\u006e\u0067t\u0068\u0020\u0063\u0061\u006en\u006f\u0074\u0020\u0062\u0065\u0020\u006c\u006f\u006e\u0067\u0065\u0072\u0020\u0074\u0068\u0061\u006e\u0020\u0064\u0061\u0074\u0061\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064\u002f\u0025\u0064\u0029",_geca ,len (_gebe ));
-return nil ,_de .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};_bafg :=_f .NewBuffer (nil );if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("P\u0072\u0065\u0064\u0069ct\u006fr\u0020\u0063\u006f\u006c\u0075m\u006e\u0073\u003a\u0020\u0025\u0064",_dfdg .Columns );
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004ce\u006e\u0067\u0074\u0068:\u0020\u0025\u0064\u0020\u002f \u0025d\u0020=\u0020\u0025\u0064\u0020\u0072\u006f\u0077s",len (_gebe ),_geca ,_ggbcb );};_bee :=make ([]byte ,_geca );for _beef :=0;
-_beef < _geca ;_beef ++{_bee [_beef ]=0;};for _gad :=0;_gad < _ggbcb ;_gad ++{_dcfe :=_gebe [_geca *_gad :_geca *(_gad +1)];_ebcg :=_dcfe [0];switch _ebcg {case 0:case 1:for _cdd :=2;_cdd < _geca ;_cdd ++{_dcfe [_cdd ]=byte (int (_dcfe [_cdd ]+_dcfe [_cdd -1])%256);
-};case 2:for _egca :=1;_egca < _geca ;_egca ++{_dcfe [_egca ]=byte (int (_dcfe [_egca ]+_bee [_egca ])%256);};default:_bd .Log .Debug ("\u0045\u0052\u0052O\u0052\u003a\u0020\u0049n\u0076\u0061\u006c\u0069\u0064\u0020\u0066i\u006c\u0074\u0065\u0072\u0020\u0062\u0079\u0074\u0065\u0020\u0028\u0025\u0064\u0029",_ebcg );
-return nil ,_ee .Errorf ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0066\u0069\u006c\u0074\u0065r\u0020\u0062\u0079\u0074\u0065\u0020\u0028\u0025\u0064\u0029",_ebcg );};for _dcab :=0;_dcab < _geca ;_dcab ++{_bee [_dcab ]=_dcfe [_dcab ];};_bafg .Write (_dcfe [1:]);
-};_cebc :=_bafg .Bytes ();return _cebc ,nil ;}else {ReleaseBytes (_gebe );_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0055\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0070r\u0065\u0064\u0069\u0063\u0074\u006f\u0072 \u0028\u0025\u0064\u0029",_dfdg .Predictor );
-return nil ,_ee .Errorf ("\u0075\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064 \u0070\u0072\u0065\u0064\u0069\u0063\u0074\u006f\u0072\u0020(\u0025\u0064\u0029",_dfdg .Predictor );};};return _gebe ,nil ;};func (_bbafc *PdfParser )checkLinearizedInformation (_gccb *PdfObjectDictionary )(bool ,error ){var _eabeb error ;
-_bbafc ._abgd ,_eabeb =GetNumberAsInt64 (_gccb .Get ("\u004c"));if _eabeb !=nil {return false ,_eabeb ;};_eabeb =_bbafc .seekToEOFMarker (_bbafc ._abgd );switch _eabeb {case nil :return true ,nil ;case _abcbe :return false ,nil ;default:return false ,_eabeb ;
-};};
-
-// MakeHexString creates an PdfObjectString from a string intended for output as a hexadecimal string.
-func MakeHexString (s string )*PdfObjectString {_dgccd :=PdfObjectString {_fadd :s ,_gfedc :true };return &_dgccd ;};const _febe =32<<(^uint (0)>>63);
-
-// Resolve resolves the reference and returns the indirect or stream object.
-// If the reference cannot be resolved, a *PdfObjectNull object is returned.
-func (_ecgaa *PdfObjectReference )Resolve ()PdfObject {if _ecgaa ._eebb ==nil {return MakeNull ();};_fdee ,_ ,_ecacf :=_ecgaa ._eebb .resolveReference (_ecgaa );if _ecacf !=nil {_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0072\u0065\u0073\u006f\u006cv\u0069\u006e\u0067\u0020\u0072\u0065\u0066\u0065r\u0065n\u0063\u0065\u003a\u0020\u0025\u0076\u0020\u002d\u0020\u0072\u0065\u0074\u0075\u0072\u006e\u0069\u006e\u0067 \u006e\u0075\u006c\u006c\u0020\u006f\u0062\u006a\u0065\u0063\u0074",_ecacf );
-return MakeNull ();};if _fdee ==nil {_bd .Log .Debug ("\u0045R\u0052\u004f\u0052\u0020\u0072\u0065\u0073ol\u0076\u0069\u006e\u0067\u0020\u0072\u0065\u0066\u0065\u0072\u0065\u006e\u0063\u0065:\u0020\u006ei\u006c\u0020\u006fb\u006a\u0065\u0063\u0074\u0020\u002d\u0020\u0072\u0065\u0074\u0075\u0072\u006e\u0069\u006e\u0067 \u0061\u0020nu\u006c\u006c\u0020o\u0062\u006a\u0065\u0063\u0074");
-return MakeNull ();};return _fdee ;};var _gdff =_fe .MustCompile ("\u0028\u005c\u0064\u002b\u0029\u005c\u0073\u002b\u0028\u005c\u0064\u002b)\u005c\u0073\u002a\u0024");
-
-// MakeFloat creates an PdfObjectFloat from a float64.
-func MakeFloat (val float64 )*PdfObjectFloat {val =_fefg .RoundDefault (val );_bgcd :=PdfObjectFloat (val );return &_bgcd ;};
-
-// MakeDecodeParams makes a new instance of an encoding dictionary based on
-// the current encoder settings.
-func (_ddb *DCTEncoder )MakeDecodeParams ()PdfObject {return nil };
-
-// StreamEncoder represents the interface for all PDF stream encoders.
-type StreamEncoder interface{GetFilterName ()string ;MakeDecodeParams ()PdfObject ;MakeStreamDict ()*PdfObjectDictionary ;UpdateParams (_fbee *PdfObjectDictionary );EncodeBytes (_ceaf []byte )([]byte ,error );DecodeBytes (_aggg []byte )([]byte ,error );
-DecodeStream (_ceafe *PdfObjectStream )([]byte ,error );};func (_dgb *PdfCrypt )encryptBytes (_bbb []byte ,_cfe string ,_agfb []byte )([]byte ,error ){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0045\u006e\u0063\u0072\u0079\u0070\u0074\u0020\u0062\u0079\u0074\u0065\u0073");
-};_fabg ,_aaa :=_dgb ._edb [_cfe ];if !_aaa {return nil ,_ee .Errorf ("\u0075n\u006b\u006e\u006f\u0077n\u0020\u0063\u0072\u0079\u0070t\u0020f\u0069l\u0074\u0065\u0072\u0020\u0028\u0025\u0073)",_cfe );};return _fabg .EncryptBytes (_bbb ,_agfb );};
-
-// HasEOLAfterHeader gets information if there is a EOL after the version header.
-func (_eae ParserMetadata )HasEOLAfterHeader ()bool {return _eae ._bac };
-
-// GetRevisionNumber returns the current version of the Pdf document.
-func (_ecbf *PdfParser )GetRevisionNumber ()int {return _ecbf ._debg };var _aabd =_fe .MustCompile ("\u005c\u0073\u002a\u0078\u0072\u0065\u0066\u005c\u0073\u002a");
-
-// Append appends PdfObject(s) to the streams.
-func (_ecedg *PdfObjectStreams )Append (objects ...PdfObject ){if _ecedg ==nil {_bd .Log .Debug ("\u0057\u0061\u0072\u006e\u0020-\u0020\u0041\u0074\u0074\u0065\u006d\u0070\u0074\u0020\u0074\u006f\u0020\u0061p\u0070\u0065\u006e\u0064\u0020\u0074\u006f\u0020\u0061\u0020\u006e\u0069\u006c\u0020\u0073\u0074\u0072\u0065\u0061\u006d\u0073");
-return ;};_ecedg ._egfda =append (_ecedg ._egfda ,objects ...);};
-
-// Len returns the number of elements in the array.
-func (_gacd *PdfObjectArray )Len ()int {if _gacd ==nil {return 0;};return len (_gacd ._bgegc );};
+// Clear resets the array to an empty state.
+func (_gfad *PdfObjectArray )Clear (){_gfad ._dccdc =[]PdfObject {}};func (_dfab *PdfParser )skipSpaces ()(int ,error ){_cebge :=0;for {_afga ,_dfdb :=_dfab ._eece .ReadByte ();if _dfdb !=nil {return 0,_dfdb ;};if IsWhiteSpace (_afga ){_cebge ++;}else {_dfab ._eece .UnreadByte ();
+break ;};};return _cebge ,nil ;};func (_eafdg *PdfParser )readTextLine ()(string ,error ){_acbf :=_bae ();defer _ac (_acbf );for {_cgfea ,_gcda :=_eafdg ._eece .Peek (1);if _gcda !=nil {_be .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u0020\u0025\u0073",_gcda .Error ());
+return _acbf .String (),_gcda ;};if (_cgfea [0]!='\r')&&(_cgfea [0]!='\n'){_efde ,_ :=_eafdg ._eece .ReadByte ();_acbf .WriteByte (_efde );}else {break ;};};return _acbf .String (),nil ;};
 
 // ReadAtLeast reads at least n bytes into slice p.
 // Returns the number of bytes read (should always be == n), and an error on failure.
-func (_dedg *PdfParser )ReadAtLeast (p []byte ,n int )(int ,error ){_eeag :=n ;_ecd :=0;_adbb :=0;for _eeag > 0{_cgbd ,_agddc :=_dedg ._fgaa .Read (p [_ecd :]);if _agddc !=nil {_bd .Log .Debug ("\u0045\u0052\u0052O\u0052\u0020\u0046\u0061i\u006c\u0065\u0064\u0020\u0072\u0065\u0061d\u0069\u006e\u0067\u0020\u0028\u0025\u0064\u003b\u0025\u0064\u0029\u0020\u0025\u0073",_cgbd ,_adbb ,_agddc .Error ());
-return _ecd ,_de .New ("\u0066\u0061\u0069\u006c\u0065\u0064\u0020\u0072\u0065a\u0064\u0069\u006e\u0067");};_adbb ++;_ecd +=_cgbd ;_eeag -=_cgbd ;};return _ecd ,nil ;};func _baf (_fcgg *PdfObjectStream ,_ebad *PdfObjectDictionary )(*FlateEncoder ,error ){_cfgfe :=NewFlateEncoder ();
-_aedf :=_fcgg .PdfObjectDictionary ;if _aedf ==nil {return _cfgfe ,nil ;};_cfgfe ._fbc =_bbff (_aedf );if _ebad ==nil {_bbcfe :=TraceToDirectObject (_aedf .Get ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073"));switch _dgdd :=_bbcfe .(type ){case *PdfObjectArray :if _dgdd .Len ()!=1{_bd .Log .Debug ("\u0045\u0072\u0072\u006f\u0072:\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073\u0020a\u0072\u0072\u0061\u0079\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0021\u003d\u0020\u0031\u0020\u0028\u0025\u0064\u0029",_dgdd .Len ());
-return nil ,_de .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};if _cfad ,_aecf :=GetDict (_dgdd .Get (0));_aecf {_ebad =_cfad ;};case *PdfObjectDictionary :_ebad =_dgdd ;case *PdfObjectNull ,nil :default:_bd .Log .Debug ("E\u0072\u0072\u006f\u0072\u003a\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073\u0020n\u006f\u0074\u0020\u0061\u0020\u0064\u0069\u0063\u0074\u0069on\u0061\u0072\u0079 \u0028%\u0054\u0029",_bbcfe );
-return nil ,_ee .Errorf ("\u0069\u006e\u0076\u0061li\u0064\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073");};};if _ebad ==nil {return _cfgfe ,nil ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0064\u0065\u0063\u006f\u0064\u0065\u0020\u0070\u0061\u0072\u0061\u006ds\u003a\u0020\u0025\u0073",_ebad .String ());
-};_bcee :=_ebad .Get ("\u0050r\u0065\u0064\u0069\u0063\u0074\u006fr");if _bcee ==nil {_bd .Log .Debug ("E\u0072\u0072o\u0072\u003a\u0020\u0050\u0072\u0065\u0064\u0069\u0063\u0074\u006f\u0072\u0020\u006d\u0069\u0073\u0073\u0069\u006e\u0067 \u0066\u0072\u006f\u006d\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073 \u002d\u0020\u0043\u006f\u006e\u0074\u0069\u006e\u0075\u0065\u0020\u0077\u0069t\u0068\u0020\u0064\u0065\u0066\u0061\u0075\u006c\u0074\u0020\u00281\u0029");
-}else {_edfd ,_ggaa :=_bcee .(*PdfObjectInteger );if !_ggaa {_bd .Log .Debug ("E\u0072\u0072\u006f\u0072\u003a\u0020\u0050\u0072\u0065d\u0069\u0063\u0074\u006f\u0072\u0020\u0073pe\u0063\u0069\u0066\u0069e\u0064\u0020\u0062\u0075\u0074\u0020\u006e\u006f\u0074 n\u0075\u006de\u0072\u0069\u0063\u0020\u0028\u0025\u0054\u0029",_bcee );
-return nil ,_ee .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0050\u0072\u0065\u0064i\u0063\u0074\u006f\u0072");};_cfgfe .Predictor =int (*_edfd );};_bcee =_ebad .Get ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074");
-if _bcee !=nil {_edbf ,_ebea :=_bcee .(*PdfObjectInteger );if !_ebea {_bd .Log .Debug ("\u0045\u0052\u0052O\u0052\u003a\u0020\u0049n\u0076\u0061\u006c\u0069\u0064\u0020\u0042i\u0074\u0073\u0050\u0065\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074");
-return nil ,_ee .Errorf ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0042\u0069\u0074\u0073\u0050e\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074");};_cfgfe .BitsPerComponent =int (*_edbf );if _cfgfe .BitsPerComponent !=_cfgfe ._fbc .BitsPerComponent {_bd .Log .Debug ("\u0057A\u0052\u004e\u0049\u004eG\u003a \u0042\u0069\u0074\u0073\u0050\u0065\u0072\u0043\u006fm\u0070\u006f\u006e\u0065\u006e\u0074\u0020\u006di\u0073\u006d\u0061\u0074\u0063\u0068\u0020\u0077\u0069\u0074\u0068 \u0069\u006d\u0061\u0067\u0065\u0020\u0028\u0025\u0064\u002f%\u0064\u0029\u002c\u0020\u0075\u0073\u0069\u006e\u0067\u0020\u0042\u0069\u0074\u0073\u0050\u0065\u0072\u0043\u006fm\u0070\u006f\u006e\u0065\u006e\u0074\u0020\u0066\u0072\u006f\u006d\u0020i\u006da\u0067\u0065",_cfgfe .BitsPerComponent ,_cfgfe ._fbc .BitsPerComponent );
-_cfgfe .BitsPerComponent =_cfgfe ._fbc .BitsPerComponent ;};};if _cfgfe .Predictor > 1{_cfgfe .Columns =1;_bcee =_ebad .Get ("\u0043o\u006c\u0075\u006d\u006e\u0073");if _bcee !=nil {_bead ,_bed :=_bcee .(*PdfObjectInteger );if !_bed {return nil ,_ee .Errorf ("\u0070r\u0065\u0064\u0069\u0063\u0074\u006f\u0072\u0020\u0063\u006f\u006cu\u006d\u006e\u0020\u0069\u006e\u0076\u0061\u006c\u0069\u0064");
-};_cfgfe .Columns =int (*_bead );};_cfgfe .Colors =1;_bcee =_ebad .Get ("\u0043\u006f\u006c\u006f\u0072\u0073");if _bcee !=nil {_abaf ,_dbg :=_bcee .(*PdfObjectInteger );if !_dbg {return nil ,_ee .Errorf ("\u0070\u0072\u0065d\u0069\u0063\u0074\u006fr\u0020\u0063\u006f\u006c\u006f\u0072\u0073 \u006e\u006f\u0074\u0020\u0061\u006e\u0020\u0069\u006e\u0074\u0065\u0067\u0065\u0072");
-};_cfgfe .Colors =int (*_abaf );};};return _cfgfe ,nil ;};func _fdgf (_cfba PdfObject )(*float64 ,error ){switch _afde :=_cfba .(type ){case *PdfObjectFloat :_ffegb :=float64 (*_afde );return &_ffegb ,nil ;case *PdfObjectInteger :_gagf :=float64 (*_afde );
-return &_gagf ,nil ;case *PdfObjectNull :return nil ,nil ;};return nil ,ErrNotANumber ;};
-
-// Peek returns the next n bytes from the buffered reader without advancing the reader.
-func (_fgcg *bufferedReadSeeker )Peek (n int )([]byte ,error ){return _fgcg ._cad .Peek (n )};
+func (_aaa *bufferedReadSeeker )ReadAtLeast (p []byte ,n int )(int ,error ){_fec :=n ;_bab :=0;for _fec > 0{_fbb ,_ade :=_aaa .Read (p [n -_bab :]);if _ade !=nil {return _bab ,_ade ;};_bab ++;_fec -=_fbb ;};return _bab ,nil ;};
 
 // UpdateParams updates the parameter values of the encoder.
-func (_ffgb *LZWEncoder )UpdateParams (params *PdfObjectDictionary ){_bdf ,_cefc :=GetNumberAsInt64 (params .Get ("\u0050r\u0065\u0064\u0069\u0063\u0074\u006fr"));if _cefc ==nil {_ffgb .Predictor =int (_bdf );};_eag ,_cefc :=GetNumberAsInt64 (params .Get ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074"));
-if _cefc ==nil {_ffgb .BitsPerComponent =int (_eag );};_cccf ,_cefc :=GetNumberAsInt64 (params .Get ("\u0057\u0069\u0064t\u0068"));if _cefc ==nil {_ffgb .Columns =int (_cccf );};_cgab ,_cefc :=GetNumberAsInt64 (params .Get ("\u0043o\u006co\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u0073"));
-if _cefc ==nil {_ffgb .Colors =int (_cgab );};_fcdc ,_cefc :=GetNumberAsInt64 (params .Get ("E\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065"));if _cefc ==nil {_ffgb .EarlyChange =int (_fcdc );};};
+func (_baa *FlateEncoder )UpdateParams (params *PdfObjectDictionary ){_bccd ,_ebfa :=GetNumberAsInt64 (params .Get ("\u0050r\u0065\u0064\u0069\u0063\u0074\u006fr"));if _ebfa ==nil {_baa .Predictor =int (_bccd );};_eecc ,_ebfa :=GetNumberAsInt64 (params .Get ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074"));
+if _ebfa ==nil {_baa .BitsPerComponent =int (_eecc );};_ece ,_ebfa :=GetNumberAsInt64 (params .Get ("\u0057\u0069\u0064t\u0068"));if _ebfa ==nil {_baa .Columns =int (_ece );};_abcdc ,_ebfa :=GetNumberAsInt64 (params .Get ("\u0043o\u006co\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u0073"));
+if _ebfa ==nil {_baa .Colors =int (_abcdc );};};
 
-// DecodeBytes decodes a slice of LZW encoded bytes and returns the result.
-func (_eabb *LZWEncoder )DecodeBytes (encoded []byte )([]byte ,error ){var _efc _f .Buffer ;_daga :=_f .NewReader (encoded );var _dgbe _ce .ReadCloser ;if _eabb .EarlyChange ==1{_dgbe =_bgf .NewReader (_daga ,_bgf .MSB ,8);}else {_dgbe =_d .NewReader (_daga ,_d .MSB ,8);
-};defer _dgbe .Close ();if _ ,_fde :=_efc .ReadFrom (_dgbe );_fde !=nil {if _fde !=_ce .ErrUnexpectedEOF ||_efc .Len ()==0{return nil ,_fde ;};_bd .Log .Debug ("\u0057\u0041\u0052\u004e\u003a\u0020\u004c\u005a\u0057\u0020\u0064\u0065\u0063\u006f\u0064i\u006e\u0067\u0020\u0065\u0072\u0072\u006f\u0072\u003a\u0020\u0025\u0076\u002e \u004f\u0075\u0074\u0070\u0075\u0074\u0020\u006d\u0061\u0079\u0020\u0062e \u0069\u006e\u0063\u006f\u0072\u0072\u0065\u0063\u0074\u002e",_fde );
-};_dcdf :=AcquireBytes (_efc .Len ());copy (_dcdf ,_efc .Bytes ());return _dcdf ,nil ;};
-
-// MakeDict creates and returns an empty PdfObjectDictionary.
-func MakeDict ()*PdfObjectDictionary {_gfff :=&PdfObjectDictionary {};_gfff ._abada =map[PdfObjectName ]PdfObject {};_gfff ._ggeeg =[]PdfObjectName {};return _gfff ;};func (_ebcd *PdfCrypt )securityHandler ()_gbg .StdHandler {if _ebcd ._dfb .R >=5{return _gbg .NewHandlerR6 ();
-};return _gbg .NewHandlerR4 (_ebcd ._fcd ,_ebcd ._aff .Length );};
-
-// GetStringBytes is like GetStringVal except that it returns the string as a []byte.
-// It is for convenience.
-func GetStringBytes (obj PdfObject )(_addff []byte ,_cfdbe bool ){_bgeb ,_cfdbe :=TraceToDirectObject (obj ).(*PdfObjectString );if _cfdbe {return _bgeb .Bytes (),true ;};return ;};var _eef =_gb .Pool {New :func ()interface{}{return new (_f .Buffer )}};
-
-
-// FormatWriteDirectionLTR formats a string for left-to-right rendering, handling bidirectional runs.
-func FormatWriteDirectionLTR (str string ,isLTR bool )string {_bffda :=str ;if _bffda ==""{return "";};_ebcge :=_dc .Paragraph {};_ ,_aefaa :=_ebcge .SetString (str );if _aefaa !=nil {return _bffda ;};_eddfc ,_aefaa :=_ebcge .Order ();if _aefaa !=nil {return _bffda ;
-};_bfgc :=_eddfc .NumRuns ();_bcce :=make ([]string ,_bfgc );for _aacbc :=0;_aacbc < _eddfc .NumRuns ();_aacbc ++{_cdfd :=_eddfc .Run (_aacbc );_agca :=_cdfd .String ();if _cdfd .Direction ()==_dc .RightToLeft {_agca =_dc .ReverseString (_agca );};if isLTR {_bcce [_aacbc ]=_agca ;
-}else {_bcce [_bfgc -1]=_agca ;};_bfgc --;};if len (_bcce )!=_eddfc .NumRuns (){return str ;};_bffda =_fa .Join (_bcce ,"");return _bffda ;};
-
-// EncodeBytes encodes a bytes array and return the encoded value based on the encoder parameters.
-func (_ecfb *FlateEncoder )EncodeBytes (data []byte )([]byte ,error ){if _ecfb .Predictor !=1&&_ecfb .Predictor !=11{_bd .Log .Debug ("E\u006e\u0063\u006f\u0064\u0069\u006e\u0067\u0020\u0065\u0072\u0072\u006f\u0072\u003a\u0020\u0046\u006c\u0061\u0074\u0065\u0045\u006e\u0063\u006f\u0064\u0065r\u0020P\u0072\u0065\u0064\u0069c\u0074\u006fr\u0020\u003d\u0020\u0031\u002c\u0020\u0031\u0031\u0020\u006f\u006e\u006c\u0079\u0020\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064");
-return nil ,ErrUnsupportedEncodingParameters ;};if _ecfb .Predictor ==11{_dda :=_ecfb .Columns ;_fed :=len (data )/_dda ;if len (data )%_dda !=0{_bd .Log .Error ("\u0049n\u0076a\u006c\u0069\u0064\u0020\u0072o\u0077\u0020l\u0065\u006e\u0067\u0074\u0068");
-return nil ,_de .New ("\u0069n\u0076a\u006c\u0069\u0064\u0020\u0072o\u0077\u0020l\u0065\u006e\u0067\u0074\u0068");};_gbda :=_f .NewBuffer (nil );_geb :=make ([]byte ,_dda );for _adcd :=0;_adcd < _fed ;_adcd ++{_ebbe :=data [_dda *_adcd :_dda *(_adcd +1)];
-_geb [0]=_ebbe [0];for _cda :=1;_cda < _dda ;_cda ++{_geb [_cda ]=byte (int (_ebbe [_cda ]-_ebbe [_cda -1])%256);};_gbda .WriteByte (1);_gbda .Write (_geb );};data =_gbda .Bytes ();};var _dcae _f .Buffer ;_fegb :=_ae .NewWriter (&_dcae );_fegb .Write (data );
-_fegb .Close ();return _dcae .Bytes (),nil ;};
-
-// RunLengthEncoder represents Run length encoding.
-type RunLengthEncoder struct{};
-
-// MakeDecodeParams makes a new instance of an encoding dictionary based on
-// the current encoder settings.
-func (_eced *RunLengthEncoder )MakeDecodeParams ()PdfObject {return nil };var _fcbc =_fe .MustCompile ("\u005e\\\u0073\u002a\u005b\u002d]\u002a\u0028\u005c\u0064\u002b)\u005cs\u002b(\u005c\u0064\u002b\u0029\u005c\u0073\u002bR");
-
-// UpdateParams updates the parameter values of the encoder.
-func (_agegg *CCITTFaxEncoder )UpdateParams (params *PdfObjectDictionary ){if _cgcb ,_fce :=GetNumberAsInt64 (params .Get ("\u004b"));_fce ==nil {_agegg .K =int (_cgcb );};if _bdec ,_cdca :=GetNumberAsInt64 (params .Get ("\u0043o\u006c\u0075\u006d\u006e\u0073"));
-_cdca ==nil {_agegg .Columns =int (_bdec );}else if _bdec ,_cdca =GetNumberAsInt64 (params .Get ("\u0057\u0069\u0064t\u0068"));_cdca ==nil {_agegg .Columns =int (_bdec );};if _ggbg ,_dcea :=GetNumberAsInt64 (params .Get ("\u0042\u006c\u0061\u0063\u006b\u0049\u0073\u0031"));
-_dcea ==nil {_agegg .BlackIs1 =_ggbg > 0;}else {if _efeg ,_caef :=GetBoolVal (params .Get ("\u0042\u006c\u0061\u0063\u006b\u0049\u0073\u0031"));_caef {_agegg .BlackIs1 =_efeg ;}else {if _ecff ,_fegc :=GetArray (params .Get ("\u0044\u0065\u0063\u006f\u0064\u0065"));
-_fegc {_aeff ,_cddb :=_ecff .ToIntegerArray ();if _cddb ==nil {_agegg .BlackIs1 =_aeff [0]==1&&_aeff [1]==0;};};};};if _ddad ,_bgdc :=GetNumberAsInt64 (params .Get ("\u0045\u006ec\u006f\u0064\u0065d\u0042\u0079\u0074\u0065\u0041\u006c\u0069\u0067\u006e"));
-_bgdc ==nil {_agegg .EncodedByteAlign =_ddad > 0;}else {if _cbgb ,_beee :=GetBoolVal (params .Get ("\u0045\u006ec\u006f\u0064\u0065d\u0042\u0079\u0074\u0065\u0041\u006c\u0069\u0067\u006e"));_beee {_agegg .EncodedByteAlign =_cbgb ;};};if _aaae ,_cebf :=GetNumberAsInt64 (params .Get ("\u0045n\u0064\u004f\u0066\u004c\u0069\u006ee"));
-_cebf ==nil {_agegg .EndOfLine =_aaae > 0;}else {if _gfed ,_fbge :=GetBoolVal (params .Get ("\u0045n\u0064\u004f\u0066\u004c\u0069\u006ee"));_fbge {_agegg .EndOfLine =_gfed ;};};if _daba ,_ada :=GetNumberAsInt64 (params .Get ("\u0052\u006f\u0077\u0073"));
-_ada ==nil {_agegg .Rows =int (_daba );}else if _daba ,_ada =GetNumberAsInt64 (params .Get ("\u0048\u0065\u0069\u0067\u0068\u0074"));_ada ==nil {_agegg .Rows =int (_daba );};if _baff ,_dgdb :=GetNumberAsInt64 (params .Get ("\u0045\u006e\u0064\u004f\u0066\u0042\u006c\u006f\u0063\u006b"));
-_dgdb ==nil {_agegg .EndOfBlock =_baff > 0;}else {if _fccf ,_ecfg :=GetBoolVal (params .Get ("\u0045\u006e\u0064\u004f\u0066\u0042\u006c\u006f\u0063\u006b"));_ecfg {_agegg .EndOfBlock =_fccf ;};};if _cacb ,_agcb :=GetNumberAsInt64 (params .Get ("\u0044\u0061\u006d\u0061ge\u0064\u0052\u006f\u0077\u0073\u0042\u0065\u0066\u006f\u0072\u0065\u0045\u0072\u0072o\u0072"));
-_agcb !=nil {_agegg .DamagedRowsBeforeError =int (_cacb );};};
-
-// DecodeReader returns a reader that ASCII85-decodes from r. Handles the
-// PDF/Adobe variant: 5-char groups, 'z' shortcut for four zero bytes, '~>'
-// EOD marker, whitespace skipped. The stdlib's encoding/ascii85 does not
-// recognize '~>' (it treats '~' as a corrupt byte), so this decoder is
-// hand-rolled to match DecodeBytes.
-func (_aab *ASCII85Encoder )DecodeReader (r _ce .Reader )_ce .Reader {return &ascii85Reader {_gecg :_egce (r )};};
-
-// EncodeStream encodes the stream data using the encoded specified by the stream's dictionary.
-func EncodeStream (streamObj *PdfObjectStream )error {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0045\u006e\u0063\u006f\u0064\u0065\u0020\u0073\u0074\u0072\u0065\u0061\u006d");};_fdcg ,_aefa :=NewEncoderFromStream (streamObj );if _aefa !=nil {_bd .Log .Debug ("\u0053\u0074\u0072\u0065\u0061\u006d\u0020\u0064\u0065\u0063\u006fd\u0069\u006e\u0067\u0020\u0066\u0061\u0069\u006c\u0065\u0064:\u0020\u0025\u0076",_aefa );
-return _aefa ;};if _egdfd ,_baee :=_fdcg .(*LZWEncoder );_baee {_egdfd .EarlyChange =0;streamObj .Set ("E\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065",MakeInteger (0));};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0045\u006e\u0063\u006f\u0064\u0065\u0072\u003a\u0020\u0025\u002b\u0076\u000a",_fdcg );
-};_bbde ,_aefa :=_fdcg .EncodeBytes (streamObj .Stream );if _aefa !=nil {_bd .Log .Debug ("\u0053\u0074\u0072\u0065\u0061\u006d\u0020\u0065\u006e\u0063\u006fd\u0069\u006e\u0067\u0020\u0066\u0061\u0069\u006c\u0065\u0064:\u0020\u0025\u0076",_aefa );return _aefa ;
-};streamObj .Stream =_bbde ;streamObj .Set ("\u004c\u0065\u006e\u0067\u0074\u0068",MakeInteger (int64 (len (_bbde ))));return nil ;};
-
-// NewASCII85Encoder makes a new ASCII85 encoder.
-func NewASCII85Encoder ()*ASCII85Encoder {_ebd :=&ASCII85Encoder {};return _ebd };
-
-// UpdateParams updates the parameter values of the encoder.
-func (_ffac *JPXEncoder )UpdateParams (params *PdfObjectDictionary ){};
-
-// SetFileOffset sets the file to an offset position and resets buffer.
-func (_gaf *bufferedReadSeeker )SetFileOffset (offset int64 ){if offset < 0{offset =0;};_gaf .Seek (offset ,_ce .SeekStart );};var _gbd =[...]int {_gge ,_fbb ,_ddd ,_ceg ,_gac ,_fga };
-
-// Version represents a version of a PDF standard.
-type Version struct{Major int ;Minor int ;};
-
-// Write outputs the object as it is to be written to file.
-func (_eacg *PdfObjectFloat )Write ()[]byte {return []byte (_c .FormatFloat (float64 (*_eacg ),'f',-1,64));};func (_caaa *PdfParser )traceStreamLength (_dgdgc PdfObject )(PdfObject ,error ){_ffcg ,_bdfeb :=_dgdgc .(*PdfObjectReference );if _bdfeb {_gaaa ,_ggdd :=_caaa ._eaba [_ffcg .ObjectNumber ];
-if _ggdd &&_gaaa {_bd .Log .Debug ("\u0053t\u0072\u0065a\u006d\u0020\u004c\u0065n\u0067\u0074\u0068 \u0072\u0065\u0066\u0065\u0072\u0065\u006e\u0063\u0065 u\u006e\u0072\u0065s\u006f\u006cv\u0065\u0064\u0020\u0028\u0069\u006cl\u0065\u0067a\u006c\u0029");
-return nil ,_de .New ("\u0069\u006c\u006c\u0065ga\u006c\u0020\u0072\u0065\u0063\u0075\u0072\u0073\u0069\u0076\u0065\u0020\u006c\u006fo\u0070");};_caaa ._eaba [_ffcg .ObjectNumber ]=true ;};_gcab ,_gfdc :=_caaa .Resolve (_dgdgc );if _gfdc !=nil {return nil ,_gfdc ;
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0053\u0074\u0072\u0065\u0061\u006d\u0020\u006c\u0065\u006e\u0067\u0074h\u003f\u0020\u0025\u0073",_gcab );};if _bdfeb {_caaa ._eaba [_ffcg .ObjectNumber ]=false ;};return _gcab ,nil ;};
-
-
-// Elements returns a slice of the PdfObject elements in the array.
-// Preferred over accessing the array directly as type may be changed in future major versions (v3).
-func (_cfecc *PdfObjectStreams )Elements ()[]PdfObject {if _cfecc ==nil {return nil ;};return _cfecc ._egfda ;};
-
-// HasNonConformantStream implements core.ParserMetadata.
-func (_bfe ParserMetadata )HasNonConformantStream ()bool {return _bfe ._gbacd };
-
-// NewMultiEncoder returns a new instance of MultiEncoder.
-func NewMultiEncoder ()*MultiEncoder {_egbc :=MultiEncoder {};_egbc ._gdgb =[]StreamEncoder {};return &_egbc ;};
-
-// Buffered returns the number of bytes currently buffered.
-func (_efe *bufferedReadSeeker )Buffered ()int {return _efe ._cad .Buffered ()};
-
-// DecodeBytes decodes a slice of Flate encoded bytes and returns the result.
-func (_dgab *FlateEncoder )DecodeBytes (encoded []byte )([]byte ,error ){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0046\u006c\u0061\u0074\u0065\u0044\u0065\u0063\u006f\u0064\u0065\u0020b\u0079\u0074\u0065\u0073");};if len (encoded )==0{_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0065\u006d\u0070\u0074\u0079\u0020\u0046\u006c\u0061\u0074\u0065 e\u006ec\u006f\u0064\u0065\u0064\u0020\u0062\u0075\u0066\u0066\u0065\u0072\u002e \u0052\u0065\u0074\u0075\u0072\u006e\u0069\u006e\u0067\u0020\u0065\u006d\u0070\u0074\u0079\u0020\u0062y\u0074\u0065\u0020\u0073\u006c\u0069\u0063\u0065\u002e");
-return []byte {},nil ;};_cecc :=_f .NewReader (encoded );_age ,_gcb :=_eegf (_cecc );if _gcb !=nil {_bd .Log .Debug ("\u0044e\u0063o\u0064\u0069\u006e\u0067\u0020e\u0072\u0072o\u0072\u0020\u0025\u0076\u000a",_gcb );_bd .Log .Debug ("\u0053t\u0072e\u0061\u006d\u0020\u0028\u0025\u0064\u0029\u0020\u0025\u0020\u0078",len (encoded ),encoded );
-return nil ,_gcb ;};_acag :=_fgc ();_acag .ReadFrom (_age );_ebeg .Put (_age );_ddcf :=AcquireBytes (_acag .Len ());copy (_ddcf ,_acag .Bytes ());_cd (_acag );return _ddcf ,nil ;};
-
-// DecodeBytes decodes the CCITTFax encoded image data.
-func (_accc *CCITTFaxEncoder )DecodeBytes (encoded []byte )([]byte ,error ){_gab ,_ebbbd :=_fef .NewDecoder (encoded ,_fef .DecodeOptions {Columns :_accc .Columns ,Rows :_accc .Rows ,K :_accc .K ,EncodedByteAligned :_accc .EncodedByteAlign ,BlackIsOne :_accc .BlackIs1 ,EndOfBlock :_accc .EndOfBlock ,EndOfLine :_accc .EndOfLine ,DamagedRowsBeforeError :_accc .DamagedRowsBeforeError });
-if _ebbbd !=nil {return nil ,_ebbbd ;};_dfbb ,_ebbbd :=_ce .ReadAll (_gab );if _ebbbd !=nil {return nil ,_ebbbd ;};return _dfbb ,nil ;};
-
-// MakeStringFromBytes creates an PdfObjectString from a byte array.
-// This is more natural than MakeString as `data` is usually not utf-8 encoded.
-func MakeStringFromBytes (data []byte )*PdfObjectString {return MakeString (string (data ))};
-
-// Encrypt an object with specified key. For numbered objects,
-// the key argument is not used and a new one is generated based
-// on the object and generation number.
-// Traverses through all the subobjects (recursive).
-//
-// Does not look up references..  That should be done prior to calling.
-func (_eccb *PdfCrypt )Encrypt (obj PdfObject ,parentObjNum ,parentGenNum int64 )error {if _eccb .isEncrypted (obj ){return nil ;};switch _edc :=obj .(type ){case *PdfIndirectObject :_eccb ._dfa [_edc ]=true ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0045\u006e\u0063\u0072\u0079\u0070\u0074\u0069\u006e\u0067 \u0069\u006e\u0064\u0069\u0072\u0065\u0063t\u0020\u0025\u0064\u0020\u0025\u0064\u0020\u006f\u0062\u006a\u0021",_edc .ObjectNumber ,_edc .GenerationNumber );
-};_ffg :=_edc .ObjectNumber ;_cfgf :=_edc .GenerationNumber ;_ddc :=_eccb .Encrypt (_edc .PdfObject ,_ffg ,_cfgf );if _ddc !=nil {return _ddc ;};return nil ;case *PdfObjectStream :_eccb ._dfa [_edc ]=true ;_dffd :=_edc .PdfObjectDictionary ;if _fdad ,_ebbd :=_dffd .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );
-_ebbd &&*_fdad =="\u0058\u0052\u0065\u0066"{return nil ;};_bgcf :=_edc .ObjectNumber ;_bgeg :=_edc .GenerationNumber ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0045n\u0063\u0072\u0079\u0070t\u0069\u006e\u0067\u0020\u0073t\u0072e\u0061m\u0020\u0025\u0064\u0020\u0025\u0064\u0020!",_bgcf ,_bgeg );
-};_fffe :=_fcab ;if _eccb ._aff .V >=4{_fffe =_eccb ._dcg ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0074\u0068\u0069\u0073.s\u0074\u0072\u0065\u0061\u006d\u0046\u0069\u006c\u0074\u0065\u0072\u0020\u003d\u0020%\u0073",_eccb ._dcg );
-};if _fgab ,_abda :=_dffd .Get ("\u0046\u0069\u006c\u0074\u0065\u0072").(*PdfObjectArray );_abda {if _egeb ,_dgcd :=GetName (_fgab .Get (0));_dgcd {if *_egeb =="\u0043\u0072\u0079p\u0074"{_fffe ="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079";if _gbac ,_acef :=_dffd .Get ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073").(*PdfObjectDictionary );
-_acef {if _gdf ,_cbg :=_gbac .Get ("\u004e\u0061\u006d\u0065").(*PdfObjectName );_cbg {if _ ,_acab :=_eccb ._edb [string (*_gdf )];_acab {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0055\u0073\u0069\u006eg \u0073\u0074\u0072\u0065\u0061\u006d\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0020%\u0073",*_gdf );
-};_fffe =string (*_gdf );};};};};};};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0077\u0069\u0074\u0068\u0020\u0025\u0073\u0020\u0066i\u006c\u0074\u0065\u0072",_fffe );};if _fffe =="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079"{return nil ;
-};};_ecb :=_eccb .Encrypt (_edc .PdfObjectDictionary ,_bgcf ,_bgeg );if _ecb !=nil {return _ecb ;};_dca ,_ecb :=_eccb .makeKey (_fffe ,uint32 (_bgcf ),uint32 (_bgeg ),_eccb ._eab );if _ecb !=nil {return _ecb ;};_edc .Stream ,_ecb =_eccb .encryptBytes (_edc .Stream ,_fffe ,_dca );
-if _ecb !=nil {return _ecb ;};_dffd .Set ("\u004c\u0065\u006e\u0067\u0074\u0068",MakeInteger (int64 (len (_edc .Stream ))));return nil ;case *PdfObjectString :if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0045n\u0063r\u0079\u0070\u0074\u0069\u006eg\u0020\u0073t\u0072\u0069\u006e\u0067\u0021");
-};_eddc :=_fcab ;if _eccb ._aff .V >=4{if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0077\u0069\u0074\u0068\u0020\u0025\u0073\u0020\u0066i\u006c\u0074\u0065\u0072",_eccb ._eabe );};if _eccb ._eabe =="\u0049\u0064\u0065\u006e\u0074\u0069\u0074\u0079"{return nil ;
-};_eddc =_eccb ._eabe ;};_fdde ,_daefb :=_eccb .makeKey (_eddc ,uint32 (parentObjNum ),uint32 (parentGenNum ),_eccb ._eab );if _daefb !=nil {return _daefb ;};_aaga :=_edc .Str ();_aea :=make ([]byte ,len (_aaga ));for _ecab :=0;_ecab < len (_aaga );_ecab ++{_aea [_ecab ]=_aaga [_ecab ];
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0045n\u0063\u0072\u0079\u0070\u0074\u0020\u0073\u0074\u0072\u0069\u006eg\u003a\u0020\u0025\u0073\u0020\u003a\u0020\u0025\u0020\u0078",_aea ,_aea );};_aea ,_daefb =_eccb .encryptBytes (_aea ,_eddc ,_fdde );
-if _daefb !=nil {return _daefb ;};_edc ._fadd =string (_aea );return nil ;case *PdfObjectArray :for _ ,_fcaba :=range _edc .Elements (){_cbdc :=_eccb .Encrypt (_fcaba ,parentObjNum ,parentGenNum );if _cbdc !=nil {return _cbdc ;};};return nil ;case *PdfObjectDictionary :_eefb :=false ;
-if _aecg :=_edc .Get ("\u0054\u0079\u0070\u0065");_aecg !=nil {_bagd ,_fdce :=_aecg .(*PdfObjectName );if _fdce &&*_bagd =="\u0053\u0069\u0067"{_eefb =true ;};};for _ ,_cba :=range _edc .Keys (){_eafe :=_edc .Get (_cba );if _eefb &&string (_cba )=="\u0043\u006f\u006e\u0074\u0065\u006e\u0074\u0073"{continue ;
-};if string (_cba )!="\u0050\u0061\u0072\u0065\u006e\u0074"&&string (_cba )!="\u0050\u0072\u0065\u0076"&&string (_cba )!="\u004c\u0061\u0073\u0074"{_edef :=_eccb .Encrypt (_eafe ,parentObjNum ,parentGenNum );if _edef !=nil {return _edef ;};};};return nil ;
-};return nil ;};
-
-// LookupByReference looks up a PdfObject by a reference.
-func (_cbe *PdfParser )LookupByReference (ref PdfObjectReference )(PdfObject ,error ){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004c\u006f\u006fki\u006e\u0067\u0020\u0075\u0070\u0020\u0072\u0065\u0066\u0065\u0072\u0065\u006e\u0063\u0065\u0020\u0025\u0073",ref .String ());
-};return _cbe .LookupByNumber (int (ref .ObjectNumber ));};func _fgee (_cbge _ce .ReadSeeker ,_bgfg int64 )(*offsetReader ,error ){_aeccd :=&offsetReader {_ffdf :_cbge ,_baccd :_bgfg };_ ,_cadc :=_aeccd .Seek (0,_ce .SeekStart );return _aeccd ,_cadc ;};
-func (_dbbc *ASCII85Encoder )base256Tobase85 (_ffbf uint32 )[5]byte {_cecce :=[5]byte {0,0,0,0,0};_gggeb :=_ffbf ;for _cceg :=0;_cceg < 5;_cceg ++{_fcbb :=uint32 (1);for _eade :=0;_eade < 4-_cceg ;_eade ++{_fcbb *=85;};_dagd :=_gggeb /_fcbb ;_gggeb =_gggeb %_fcbb ;
-_cecce [_cceg ]=byte (_dagd );};return _cecce ;};
-
-// Str returns the string value of the PdfObjectString. Defined in addition to String() function to clarify that
-// this function returns the underlying string directly, whereas the String function technically could include
-// debug info.
-func (_abgad *PdfObjectString )Str ()string {return _abgad ._fadd };
-
-// GetFilterName returns the name of the encoding filter.
-func (_eefd *JPXEncoder )GetFilterName ()string {return StreamEncodingFilterNameJPX };
-
-// ASCIIHexEncoder implements ASCII hex encoder/decoder.
-type ASCIIHexEncoder struct{};func (_edgc *PdfCrypt )decryptBytes (_efed []byte ,_cfgb string ,_cec []byte )([]byte ,error ){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0044\u0065\u0063\u0072\u0079\u0070\u0074\u0020\u0062\u0079\u0074\u0065\u0073");
-};_gdce ,_dea :=_edgc ._edb [_cfgb ];if !_dea {return nil ,_ee .Errorf ("\u0075n\u006b\u006e\u006f\u0077n\u0020\u0063\u0072\u0079\u0070t\u0020f\u0069l\u0074\u0065\u0072\u0020\u0028\u0025\u0073)",_cfgb );};return _gdce .DecryptBytes (_efed ,_cec );};type emptyReader struct{};
-func (_cdgf *PdfParser )skipComments ()error {if _ ,_cgcd :=_cdgf .skipSpaces ();_cgcd !=nil {return _cgcd ;};_ffga :=true ;for {_dgcc ,_dfbg :=_cdgf ._fgaa .Peek (1);if _dfbg !=nil {_bd .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u0020\u0025\u0073",_dfbg .Error ());
-return _dfbg ;};if _ffga &&_dgcc [0]!='%'{return nil ;};_ffga =false ;if (_dgcc [0]!='\r')&&(_dgcc [0]!='\n'){_cdgf ._fgaa .ReadByte ();}else {break ;};};return _cdgf .skipComments ();};
-
-// GetFilterName returns the name of the encoding filter.
-func (_afcd *RunLengthEncoder )GetFilterName ()string {return StreamEncodingFilterNameRunLength };
-
-// DecodeReader returns a reader that ASCIIHex-decodes from r. Whitespace is
-// skipped, pairs of hex digits become one output byte, and decoding stops
-// at the '>' EOD marker. An odd trailing digit before '>' is padded with
-// '0' to match DecodeBytes. An input that ends without '>' surfaces as
-// io.ErrUnexpectedEOF, matching DecodeBytes' error return for that case.
-func (_bcdf *ASCIIHexEncoder )DecodeReader (r _ce .Reader )_ce .Reader {return &asciiHexReader {_cgbc :_egce (r )};};
-
-// DecodeBytes decodes byte array with ASCII85. 5 ASCII characters -> 4 raw binary bytes
-func (_ffeg *ASCII85Encoder )DecodeBytes (encoded []byte )([]byte ,error ){var _afced []byte ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0041\u0053\u0043\u0049\u0049\u0038\u0035\u0020\u0044e\u0063\u006f\u0064\u0065");};_geag :=0;
-_aeac :=false ;for _geag < len (encoded )&&!_aeac {_dfge :=[5]byte {0,0,0,0,0};_eccd :=0;_adb :=0;_ebfgb :=4;for _adb < 5+_eccd {if _geag +_adb ==len (encoded ){break ;};_dabf :=encoded [_geag +_adb ];if IsWhiteSpace (_dabf ){_eccd ++;_adb ++;continue ;
-}else if _dabf =='~'&&_geag +_adb +1< len (encoded )&&encoded [_geag +_adb +1]=='>'{_ebfgb =(_adb -_eccd )-1;if _ebfgb < 0{_ebfgb =0;};_aeac =true ;break ;}else if _dabf >='!'&&_dabf <='u'{_dabf -='!';}else if _dabf =='z'&&_adb -_eccd ==0{_ebfgb =4;_adb ++;
-break ;}else {_bd .Log .Error ("\u0046\u0061i\u006c\u0065\u0064\u0020\u0064\u0065\u0063\u006f\u0064\u0069\u006e\u0067\u002c\u0020\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020co\u0064\u0065");return nil ,_de .New ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0063\u006f\u0064\u0065\u0020e\u006e\u0063\u006f\u0075\u006e\u0074\u0065\u0072\u0065\u0064");
-};_dfge [_adb -_eccd ]=_dabf ;_adb ++;};_geag +=_adb ;for _bfae :=_ebfgb +1;_bfae < 5;_bfae ++{_dfge [_bfae ]=84;};_ebgd :=uint32 (_dfge [0])*85*85*85*85+uint32 (_dfge [1])*85*85*85+uint32 (_dfge [2])*85*85+uint32 (_dfge [3])*85+uint32 (_dfge [4]);_dgbeg :=[]byte {byte ((_ebgd >>24)&0xff),byte ((_ebgd >>16)&0xff),byte ((_ebgd >>8)&0xff),byte (_ebgd &0xff)};
-_afced =append (_afced ,_dgbeg [:_ebfgb ]...);};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("A\u0053\u0043\u0049\u004985\u002c \u0065\u006e\u0063\u006f\u0064e\u0064\u003a\u0020\u0025\u0020\u0058",encoded );};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("A\u0053\u0043\u0049\u004985\u002c \u0064\u0065\u0063\u006f\u0064e\u0064\u003a\u0020\u0025\u0020\u0058",_afced );
-};return _afced ,nil ;};
-
-// String returns a descriptive information string about the encryption method used.
-func (_ggb *PdfCrypt )String ()string {if _ggb ==nil {return "";};_fca :=_ggb ._aff .Filter +"\u0020\u002d\u0020";if _ggb ._aff .V ==0{_fca +="\u0055\u006e\u0064\u006fcu\u006d\u0065\u006e\u0074\u0065\u0064\u0020\u0061\u006c\u0067\u006f\u0072\u0069\u0074h\u006d";
-}else if _ggb ._aff .V ==1{_fca +="\u0052\u0043\u0034:\u0020\u0034\u0030\u0020\u0062\u0069\u0074\u0073";}else if _ggb ._aff .V ==2{_fca +=_ee .Sprintf ("\u0052\u0043\u0034:\u0020\u0025\u0064\u0020\u0062\u0069\u0074\u0073",_ggb ._aff .Length );}else if _ggb ._aff .V ==3{_fca +="U\u006e\u0070\u0075\u0062li\u0073h\u0065\u0064\u0020\u0061\u006cg\u006f\u0072\u0069\u0074\u0068\u006d";
-}else if _ggb ._aff .V >=4{_fca +=_ee .Sprintf ("\u0053\u0074r\u0065\u0061\u006d\u0020f\u0069\u006ct\u0065\u0072\u003a\u0020\u0025\u0073\u0020\u002d \u0053\u0074\u0072\u0069\u006e\u0067\u0020\u0066\u0069\u006c\u0074\u0065r\u003a\u0020\u0025\u0073",_ggb ._dcg ,_ggb ._eabe );
-_fca +="\u003b\u0020C\u0072\u0079\u0070t\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0073\u003a";for _gba ,_ggbd :=range _ggb ._edb {_fca +=_ee .Sprintf ("\u0020\u002d\u0020\u0025\u0073\u003a\u0020\u0025\u0073 \u0028\u0025\u0064\u0029",_gba ,_ggbd .Name (),_ggbd .KeyLength ());
-};};_eeg :=_ggb .GetAccessPermissions ();_fca +=_ee .Sprintf ("\u0020\u002d\u0020\u0025\u0023\u0076",_eeg );return _fca ;};
-
-// GetXrefTable returns the PDFs xref table.
-func (_egdf *PdfParser )GetXrefTable ()XrefTable {return _egdf ._gabb };
-
-// PdfObjectString represents the primitive PDF string object.
-type PdfObjectString struct{_fadd string ;_gfedc bool ;_efdc bool ;};
-
-// MakeHexStringFromHexNumber creates an PdfObjectString from a numeric value intended for output as a hexadecimal string.
-// The value is formatted as a hex string with padding to match the specified byte width (byteWidth * 2 digits).
-func MakeHexStringFromHexNumber (val uint32 ,byteWidth int )*PdfObjectString {_dfecb :=_ee .Sprintf ("\u0025\u0030\u002a\u0078",byteWidth *2,val );_fffd :=PdfObjectString {_fadd :_dfecb ,_gfedc :true ,_efdc :true };return &_fffd ;};
-
-// Set sets the PdfObject at index i of the array. An error is returned if the index is outside bounds.
-func (_agda *PdfObjectArray )Set (i int ,obj PdfObject )error {if i < 0||i >=len (_agda ._bgegc ){return _de .New ("\u006f\u0075\u0074\u0073\u0069\u0064\u0065\u0020\u0062o\u0075\u006e\u0064\u0073");};_agda ._bgegc [i ]=obj ;return nil ;};type objectStreams map[int ]objectStream ;
-var _adfbg _gb .Map ;func (_bddgg *PdfObjectFloat )String ()string {return _ee .Sprintf ("\u0025\u0066",*_bddgg )};
-
-// PdfObjectDictionary represents the primitive PDF dictionary/map object.
-type PdfObjectDictionary struct{_abada map[PdfObjectName ]PdfObject ;_ggeeg []PdfObjectName ;_cagec _gb .RWMutex ;_gacbc *PdfParser ;};
-
-// NewEncoderFromStream creates a StreamEncoder based on the stream's dictionary.
-func NewEncoderFromStream (streamObj *PdfObjectStream )(StreamEncoder ,error ){_fdaf :=TraceToDirectObject (streamObj .Get ("\u0046\u0069\u006c\u0074\u0065\u0072"));if _fdaf ==nil {return NewRawEncoder (),nil ;};if _ ,_fbbd :=_fdaf .(*PdfObjectNull );_fbbd {return NewRawEncoder (),nil ;
-};_eddgb ,_dbbg :=_fdaf .(*PdfObjectName );if !_dbbg {_aefc ,_eegff :=_fdaf .(*PdfObjectArray );if !_eegff {return nil ,_ee .Errorf ("\u0066\u0069\u006c\u0074\u0065\u0072 \u006e\u006f\u0074\u0020\u0061\u0020\u004e\u0061\u006d\u0065\u0020\u006f\u0072 \u0041\u0072\u0072\u0061\u0079\u0020\u006fb\u006a\u0065\u0063\u0074");
-};if _aefc .Len ()==0{return NewRawEncoder (),nil ;};if _aefc .Len ()!=1{_ffebf ,_ecbc :=_eebe (streamObj );if _ecbc !=nil {_bd .Log .Error ("\u0046\u0061\u0069\u006c\u0065\u0064 \u0063\u0072\u0065\u0061\u0074\u0069\u006e\u0067\u0020\u006d\u0075\u006c\u0074i\u0020\u0065\u006e\u0063\u006f\u0064\u0065r\u003a\u0020\u0025\u0076",_ecbc );
-return nil ,_ecbc ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004d\u0075\u006c\u0074\u0069\u0020\u0065\u006e\u0063:\u0020\u0025\u0073\u000a",_ffebf );};return _ffebf ,nil ;};_fdaf =_aefc .Get (0);_eddgb ,_eegff =_fdaf .(*PdfObjectName );
-if !_eegff {return nil ,_ee .Errorf ("\u0066\u0069l\u0074\u0065\u0072\u0020a\u0072\u0072a\u0079\u0020\u006d\u0065\u006d\u0062\u0065\u0072 \u006e\u006f\u0074\u0020\u0061\u0020\u004e\u0061\u006d\u0065\u0020\u006fb\u006a\u0065\u0063\u0074");};};if _bdbe ,_dada :=_adfbg .Load (_eddgb .String ());
-_dada {return _bdbe .(StreamEncoder ),nil ;};switch *_eddgb {case StreamEncodingFilterNameFlate :return _baf (streamObj ,nil );case StreamEncodingFilterNameLZW :return _agbd (streamObj ,nil );case StreamEncodingFilterNameDCT :return _edde (streamObj ,nil );
-case StreamEncodingFilterNameRunLength :return _fbbe (streamObj ,nil );case StreamEncodingFilterNameASCIIHex :return NewASCIIHexEncoder (),nil ;case StreamEncodingFilterNameASCII85 ,"\u0041\u0038\u0035":return NewASCII85Encoder (),nil ;case StreamEncodingFilterNameCCITTFax :return _eaff (streamObj ,nil );
-case StreamEncodingFilterNameJBIG2 :return _begc (streamObj ,nil );case StreamEncodingFilterNameJPX :return NewJPXEncoder (),nil ;};_bd .Log .Debug ("E\u0052\u0052\u004f\u0052\u003a\u0020U\u006e\u0073\u0075\u0070\u0070\u006fr\u0074\u0065\u0064\u0020\u0065\u006e\u0063o\u0064\u0069\u006e\u0067\u0020\u006d\u0065\u0074\u0068\u006fd\u0021");
-return nil ,_ee .Errorf ("\u0075\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0065\u006e\u0063o\u0064i\u006e\u0067\u0020\u006d\u0065\u0074\u0068\u006f\u0064\u0020\u0028\u0025\u0073\u0029",*_eddgb );};const _fcab ="\u0053\u0074\u0064C\u0046";
-
+// Get returns the PdfObject corresponding to the specified key.
+// Returns a nil value if the key is not set.
+func (_cgdg *PdfObjectDictionary )Get (key PdfObjectName )PdfObject {_cgdg ._egfe .RLock ();defer _cgdg ._egfe .RUnlock ();_efcc ,_fgab :=_cgdg ._dbcd [key ];if !_fgab {return nil ;};return _efcc ;};
 
 // MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
-func (_afac *JBIG2Encoder )MakeStreamDict ()*PdfObjectDictionary {_ebda :=MakeDict ();_ebda .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_afac .GetFilterName ()));return _ebda ;};const _aeeeg =6;func (_ddege *PdfObjectDictionary )setWithLock (_geggg PdfObjectName ,_gaefg PdfObject ,_aggafb bool ){if _aggafb {_ddege ._cagec .Lock ();
-defer _ddege ._cagec .Unlock ();};_ ,_fggbb :=_ddege ._abada [_geggg ];if !_fggbb {_ddege ._ggeeg =append (_ddege ._ggeeg ,_geggg );};_ddege ._abada [_geggg ]=_gaefg ;};func (_abacg *PdfParser )parseXrefTable ()(*PdfObjectDictionary ,error ){var _deab *PdfObjectDictionary ;
-_eadcg ,_cgggb :=_abacg .readTextLine ();if _cgggb !=nil {return nil ,_cgggb ;};if _abacg ._egbdb &&_fa .Count (_fa .TrimPrefix (_eadcg ,"\u0078\u0072\u0065\u0066"),"\u0020")> 0{_abacg ._dafba ._cfdb =true ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0078\u0072\u0065\u0066 f\u0069\u0072\u0073\u0074\u0020\u006c\u0069\u006e\u0065\u003a\u0020\u0025\u0073",_eadcg );
-};_ffff :=-1;_aacf :=0;_aefd :=false ;_cdcaf :="";for {_abacg .skipSpaces ();_ ,_aga :=_abacg ._fgaa .Peek (1);if _aga !=nil {return nil ,_aga ;};_eadcg ,_aga =_abacg .readTextLine ();if _aga !=nil {return nil ,_aga ;};_cfdd :=_gdff .FindStringSubmatch (_eadcg );
-if len (_cfdd )==0{_fbae :=len (_cdcaf )> 0;_cdcaf +=_eadcg +"\u000a";if _fbae {_cfdd =_gdff .FindStringSubmatch (_cdcaf );};};if len (_cfdd )==3{if _abacg ._egbdb &&!_abacg ._dafba ._ddef {var (_cegcc bool ;_eddg int ;);for _ ,_dgcdf :=range _eadcg {if _ab .IsDigit (_dgcdf ){if _cegcc {break ;
-};continue ;};if !_cegcc {_cegcc =true ;};_eddg ++;};if _eddg > 1{_abacg ._dafba ._ddef =true ;};};_bbbad ,_ :=_c .Atoi (_cfdd [1]);_dcdc ,_ :=_c .Atoi (_cfdd [2]);_ffff =_bbbad ;_aacf =_dcdc ;_aefd =true ;_cdcaf ="";if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0078r\u0065\u0066 \u0073\u0075\u0062s\u0065\u0063\u0074\u0069\u006f\u006e\u003a \u0066\u0069\u0072\u0073\u0074\u0020o\u0062\u006a\u0065\u0063\u0074\u003a\u0020\u0025\u0064\u0020\u006fb\u006a\u0065\u0063\u0074\u0073\u003a\u0020\u0025\u0064",_ffff ,_aacf );
-};continue ;};_adde :=_efeca .FindStringSubmatch (_eadcg );if len (_adde )==4{if !_aefd {_bd .Log .Debug ("E\u0052\u0052\u004f\u0052\u0020\u0058r\u0065\u0066\u0020\u0069\u006e\u0076\u0061\u006c\u0069d\u0020\u0066\u006fr\u006da\u0074\u0021\u000a");return nil ,_de .New ("\u0078\u0072\u0065\u0066 i\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0066\u006f\u0072\u006d\u0061\u0074");
-};_efff ,_ :=_c .ParseInt (_adde [1],10,64);_cfea ,_ :=_c .Atoi (_adde [2]);_fadb :=_adde [3];_cdcaf ="";if _fa .ToLower (_fadb )=="\u006e"&&_efff > 1{_abga ,_cefcd :=_abacg ._gabb .ObjectMap [_ffff ];if !_cefcd ||_cfea > _abga .Generation {_dfebf :=XrefObject {ObjectNumber :_ffff ,XType :XrefTypeTableEntry ,Offset :_efff ,Generation :_cfea };
-_abacg ._gabb .ObjectMap [_ffff ]=_dfebf ;};};_ffff ++;continue ;};if (len (_eadcg )> 6)&&(_eadcg [:7]=="\u0074r\u0061\u0069\u006c\u0065\u0072"){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0046o\u0075n\u0064\u0020\u0074\u0072\u0061i\u006c\u0065r\u0020\u002d\u0020\u0025\u0073",_eadcg );
-};if len (_eadcg )> 9{_dfbe :=_abacg .GetFileOffset ();_abacg .SetFileOffset (_dfbe -int64 (len (_eadcg ))+7);};_abacg .skipSpaces ();_abacg .skipComments ();if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("R\u0065\u0061\u0064\u0069ng\u0020t\u0072\u0061\u0069\u006c\u0065r\u0020\u0064\u0069\u0063\u0074\u0021");
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0070\u0065\u0065\u006b\u003a\u0020\u0022\u0025\u0073\u0022",_eadcg );};_deab ,_aga =_abacg .ParseDict ();if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0045O\u0046\u0020\u0072\u0065a\u0064\u0069\u006e\u0067\u0020t\u0072a\u0069l\u0065\u0072\u0020\u0064\u0069\u0063\u0074!");
-};if _aga !=nil {_bd .Log .Debug ("\u0045\u0072\u0072o\u0072\u0020\u0070\u0061r\u0073\u0069\u006e\u0067\u0020\u0074\u0072a\u0069\u006c\u0065\u0072\u0020\u0064\u0069\u0063\u0074\u0020\u0028\u0025\u0073\u0029",_aga );return nil ,_aga ;};break ;};if _eadcg =="\u0025\u0025\u0045O\u0046"{_bd .Log .Debug ("E\u0052\u0052\u004f\u0052\u003a\u0020\u0065\u006e\u0064 \u006f\u0066\u0020\u0066\u0069\u006c\u0065 -\u0020\u0074\u0072\u0061i\u006c\u0065\u0072\u0020\u006e\u006f\u0074\u0020\u0066ou\u006e\u0064 \u002d\u0020\u0065\u0072\u0072\u006f\u0072\u0021");
-return nil ,_de .New ("\u0065\u006e\u0064 \u006f\u0066\u0020\u0066i\u006c\u0065\u0020\u002d\u0020\u0074\u0072a\u0069\u006c\u0065\u0072\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064");};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0078\u0072\u0065\u0066\u0020\u006d\u006f\u0072\u0065 \u003a\u0020\u0025\u0073",_eadcg );
-};};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0045\u004f\u0046 p\u0061\u0072\u0073\u0069\u006e\u0067\u0020\u0078\u0072\u0065\u0066\u0020\u0074\u0061\u0062\u006c\u0065\u0021");};if _abacg ._cefef ==nil {_gdbbb :=XrefTypeTableEntry ;
-_abacg ._cefef =&_gdbbb ;};return _deab ,nil ;};func (_dcef *asciiHexReader )Read (p []byte )(int ,error ){_eadc :=0;for _eadc < len (p ){if _dcef ._cfcf !=nil {if _eadc > 0{return _eadc ,nil ;};return 0,_dcef ._cfcf ;};_gafg ,_dbdg :=_dcef .nextDigit ();
-if !_dbdg {continue ;};_fceg ,_dbdg :=_dcef .nextDigit ();if !_dbdg {if _dcef ._cfcf ==_ce .EOF {p [_eadc ]=_gdbbg (_gafg )<<4;_eadc ++;};continue ;};p [_eadc ]=_gdbbg (_gafg )<<4|_gdbbg (_fceg );_eadc ++;};return _eadc ,nil ;};var _abcbe =_de .New ("\u0045\u004f\u0046\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064");
-type objectCache map[int ]PdfObject ;
+func (_eedf *JPXEncoder )MakeStreamDict ()*PdfObjectDictionary {return MakeDict ()};type offsetReader struct{_acfb _g .ReadSeeker ;_egee int64 ;};
 
-// PdfCryptNewDecrypt makes the document crypt handler based on the encryption dictionary
-// and trailer dictionary. Returns an error on failure to process.
-func PdfCryptNewDecrypt (parser *PdfParser ,ed ,trailer *PdfObjectDictionary )(*PdfCrypt ,error ){_egc :=&PdfCrypt {_ccc :false ,_aae :make (map[PdfObject ]bool ),_dfa :make (map[PdfObject ]bool ),_afea :make (map[int ]struct{}),_acbf :parser };_ecaa ,_fec :=ed .Get ("\u0046\u0069\u006c\u0074\u0065\u0072").(*PdfObjectName );
-if !_fec {_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020\u0043\u0072\u0079\u0070\u0074 \u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061r\u0079 \u006d\u0069\u0073\u0073\u0069\u006e\u0067\u0020\u0072\u0065\u0071\u0075\u0069\u0072\u0065\u0064\u0020\u0046i\u006c\u0074\u0065\u0072\u0020\u0066\u0069\u0065\u006c\u0064\u0021");
-return _egc ,_de .New ("r\u0065\u0071\u0075\u0069\u0072\u0065d\u0020\u0063\u0072\u0079\u0070\u0074 \u0066\u0069\u0065\u006c\u0064\u0020\u0046i\u006c\u0074\u0065\u0072\u0020\u006d\u0069\u0073\u0073\u0069n\u0067");};if *_ecaa !="\u0053\u0074\u0061\u006e\u0064\u0061\u0072\u0064"{_bd .Log .Debug ("\u0045\u0052R\u004f\u0052\u0020\u0055\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0020(%\u0073\u0029",*_ecaa );
-return _egc ,_de .New ("\u0075n\u0073u\u0070\u0070\u006f\u0072\u0074e\u0064\u0020F\u0069\u006c\u0074\u0065\u0072");};_egc ._aff .Filter =string (*_ecaa );if _gfbf ,_bcgb :=ed .Get ("\u0053u\u0062\u0046\u0069\u006c\u0074\u0065r").(*PdfObjectString );_bcgb {_egc ._aff .SubFilter =_gfbf .Str ();
-_bd .Log .Debug ("\u0055s\u0069n\u0067\u0020\u0073\u0075\u0062f\u0069\u006ct\u0065\u0072\u0020\u0025\u0073",_gfbf );};if L ,_bge :=ed .Get ("\u004c\u0065\u006e\u0067\u0074\u0068").(*PdfObjectInteger );_bge {if (*L %8)!=0{_bd .Log .Debug ("\u0045\u0052\u0052O\u0052\u0020\u0049\u006ev\u0061\u006c\u0069\u0064\u0020\u0065\u006ec\u0072\u0079\u0070\u0074\u0069\u006f\u006e\u0020\u006c\u0065\u006e\u0067\u0074\u0068");
-return _egc ,_de .New ("\u0069n\u0076\u0061\u006c\u0069d\u0020\u0065\u006e\u0063\u0072y\u0070t\u0069o\u006e\u0020\u006c\u0065\u006e\u0067\u0074h");};_egc ._aff .Length =int (*L );}else {_egc ._aff .Length =40;};_egc ._aff .V =0;if _bce ,_fdd :=ed .Get ("\u0056").(*PdfObjectInteger );
-_fdd {V :=int (*_bce );_egc ._aff .V =V ;if V >=1&&V <=2{_egc ._edb =_agb (_egc ._aff .Length );}else if V >=4&&V <=5{if _aac :=_egc .loadCryptFilters (ed );_aac !=nil {return _egc ,_aac ;};}else {_bd .Log .Debug ("E\u0052\u0052\u004f\u0052\u0020\u0055\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0065n\u0063\u0072\u0079\u0070\u0074\u0069\u006f\u006e\u0020\u0061lg\u006f\u0020\u0056 \u003d \u0025\u0064",V );
-return _egc ,_de .New ("u\u006e\u0073\u0075\u0070po\u0072t\u0065\u0064\u0020\u0061\u006cg\u006f\u0072\u0069\u0074\u0068\u006d");};};if _ebfb :=_bgd (&_egc ._dfb ,ed );_ebfb !=nil {return _egc ,_ebfb ;};_gcf :="";if _eada ,_fgf :=trailer .Get ("\u0049\u0044").(*PdfObjectArray );
-_fgf &&_eada .Len ()>=1{_cebb ,_aeeef :=GetString (_eada .Get (0));if !_aeeef {return _egc ,_de .New ("\u0069n\u0076a\u006c\u0069\u0064\u0020\u0074r\u0061\u0069l\u0065\u0072\u0020\u0049\u0044");};_gcf =_cebb .Str ();}else {_bd .Log .Debug ("\u0054\u0072ai\u006c\u0065\u0072 \u0049\u0044\u0020\u0061rra\u0079 m\u0069\u0073\u0073\u0069\u006e\u0067\u0020or\u0020\u0069\u006e\u0076\u0061\u006c\u0069d\u0021");
-};_egc ._fcd =_gcf ;return _egc ,nil ;};
+// NewEncoderFromStream creates a StreamEncoder based on the stream's dictionary.
+func NewEncoderFromStream (streamObj *PdfObjectStream )(StreamEncoder ,error ){_dgde :=TraceToDirectObject (streamObj .Get ("\u0046\u0069\u006c\u0074\u0065\u0072"));if _dgde ==nil {return NewRawEncoder (),nil ;};if _ ,_dddb :=_dgde .(*PdfObjectNull );_dddb {return NewRawEncoder (),nil ;
+};_dgeg ,_ecdfd :=_dgde .(*PdfObjectName );if !_ecdfd {_abegd ,_baffa :=_dgde .(*PdfObjectArray );if !_baffa {return nil ,_ebc .Errorf ("\u0066\u0069\u006c\u0074\u0065\u0072 \u006e\u006f\u0074\u0020\u0061\u0020\u004e\u0061\u006d\u0065\u0020\u006f\u0072 \u0041\u0072\u0072\u0061\u0079\u0020\u006fb\u006a\u0065\u0063\u0074");
+};if _abegd .Len ()==0{return NewRawEncoder (),nil ;};if _abegd .Len ()!=1{_fgdag ,_cdebd :=_eaag (streamObj );if _cdebd !=nil {_be .Log .Error ("\u0046\u0061\u0069\u006c\u0065\u0064 \u0063\u0072\u0065\u0061\u0074\u0069\u006e\u0067\u0020\u006d\u0075\u006c\u0074i\u0020\u0065\u006e\u0063\u006f\u0064\u0065r\u003a\u0020\u0025\u0076",_cdebd );
+return nil ,_cdebd ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004d\u0075\u006c\u0074\u0069\u0020\u0065\u006e\u0063:\u0020\u0025\u0073\u000a",_fgdag );};return _fgdag ,nil ;};_dgde =_abegd .Get (0);_dgeg ,_baffa =_dgde .(*PdfObjectName );
+if !_baffa {return nil ,_ebc .Errorf ("\u0066\u0069l\u0074\u0065\u0072\u0020a\u0072\u0072a\u0079\u0020\u006d\u0065\u006d\u0062\u0065\u0072 \u006e\u006f\u0074\u0020\u0061\u0020\u004e\u0061\u006d\u0065\u0020\u006fb\u006a\u0065\u0063\u0074");};};if _fdecf ,_aecgg :=_cgaf .Load (_dgeg .String ());
+_aecgg {return _fdecf .(StreamEncoder ),nil ;};switch *_dgeg {case StreamEncodingFilterNameFlate :return _cbd (streamObj ,nil );case StreamEncodingFilterNameLZW :return _gdg (streamObj ,nil );case StreamEncodingFilterNameDCT :return _fdbc (streamObj ,nil );
+case StreamEncodingFilterNameRunLength :return _gafe (streamObj ,nil );case StreamEncodingFilterNameASCIIHex :return NewASCIIHexEncoder (),nil ;case StreamEncodingFilterNameASCII85 ,"\u0041\u0038\u0035":return NewASCII85Encoder (),nil ;case StreamEncodingFilterNameCCITTFax :return _dccf (streamObj ,nil );
+case StreamEncodingFilterNameJBIG2 :return _bced (streamObj ,nil );case StreamEncodingFilterNameJPX :return NewJPXEncoder (),nil ;};_be .Log .Debug ("E\u0052\u0052\u004f\u0052\u003a\u0020U\u006e\u0073\u0075\u0070\u0070\u006fr\u0074\u0065\u0064\u0020\u0065\u006e\u0063o\u0064\u0069\u006e\u0067\u0020\u006d\u0065\u0074\u0068\u006fd\u0021");
+return nil ,_ebc .Errorf ("\u0075\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0065\u006e\u0063o\u0064i\u006e\u0067\u0020\u006d\u0065\u0074\u0068\u006f\u0064\u0020\u0028\u0025\u0073\u0029",*_dgeg );};
 
-// MakeDecodeParams makes a new instance of an encoding dictionary based on
-// the current encoder settings.
-func (_bacc *CCITTFaxEncoder )MakeDecodeParams ()PdfObject {_fdgcf :=MakeDict ();_fdgcf .Set ("\u004b",MakeInteger (int64 (_bacc .K )));_fdgcf .Set ("\u0043o\u006c\u0075\u006d\u006e\u0073",MakeInteger (int64 (_bacc .Columns )));if _bacc .BlackIs1 {_fdgcf .Set ("\u0042\u006c\u0061\u0063\u006b\u0049\u0073\u0031",MakeBool (_bacc .BlackIs1 ));
-};if _bacc .EncodedByteAlign {_fdgcf .Set ("\u0045\u006ec\u006f\u0064\u0065d\u0042\u0079\u0074\u0065\u0041\u006c\u0069\u0067\u006e",MakeBool (_bacc .EncodedByteAlign ));};if _bacc .EndOfLine &&_bacc .K >=0{_fdgcf .Set ("\u0045n\u0064\u004f\u0066\u004c\u0069\u006ee",MakeBool (_bacc .EndOfLine ));
-};if _bacc .Rows !=0&&!_bacc .EndOfBlock {_fdgcf .Set ("\u0052\u006f\u0077\u0073",MakeInteger (int64 (_bacc .Rows )));};if !_bacc .EndOfBlock {_fdgcf .Set ("\u0045\u006e\u0064\u004f\u0066\u0042\u006c\u006f\u0063\u006b",MakeBool (_bacc .EndOfBlock ));};
-if _bacc .DamagedRowsBeforeError !=0{_fdgcf .Set ("\u0044\u0061\u006d\u0061ge\u0064\u0052\u006f\u0077\u0073\u0042\u0065\u0066\u006f\u0072\u0065\u0045\u0072\u0072o\u0072",MakeInteger (int64 (_bacc .DamagedRowsBeforeError )));};return _fdgcf ;};func (_egcd *PdfParser )parseString ()(*PdfObjectString ,error ){_egcd ._fgaa .ReadByte ();
-_dega :=_fgc ();defer _cd (_dega );_bbcc :=1;for {_ecga ,_eadb :=_egcd ._fgaa .Peek (1);if _eadb !=nil {return MakeString (_dega .String ()),_eadb ;};if _ecga [0]=='\\'{_egcd ._fgaa .ReadByte ();_aece ,_edaa :=_egcd ._fgaa .ReadByte ();if _edaa !=nil {return MakeString (_dega .String ()),_edaa ;
-};if IsOctalDigit (_aece ){_cabe ,_agfa :=_egcd ._fgaa .Peek (2);if _agfa !=nil {return MakeString (_dega .String ()),_agfa ;};var _ecbgec []byte ;_ecbgec =append (_ecbgec ,_aece );for _ ,_adefc :=range _cabe {if IsOctalDigit (_adefc ){_ecbgec =append (_ecbgec ,_adefc );
-}else {break ;};};_egcd ._fgaa .Discard (len (_ecbgec )-1);if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004e\u0075\u006d\u0065ri\u0063\u0020\u0073\u0074\u0072\u0069\u006e\u0067\u0020\u0022\u0025\u0073\u0022",_ecbgec );};_cbaa ,_agfa :=_c .ParseUint (string (_ecbgec ),8,32);
-if _agfa !=nil {return MakeString (_dega .String ()),_agfa ;};_dega .WriteByte (byte (_cbaa ));continue ;};switch _aece {case 'n':_dega .WriteRune ('\n');case 'r':_dega .WriteRune ('\r');case 't':_dega .WriteRune ('\t');case 'b':_dega .WriteRune ('\b');
-case 'f':_dega .WriteRune ('\f');case '(':_dega .WriteRune ('(');case ')':_dega .WriteRune (')');case '\\':_dega .WriteRune ('\\');};continue ;}else if _ecga [0]=='('{_bbcc ++;}else if _ecga [0]==')'{_bbcc --;if _bbcc ==0{_egcd ._fgaa .ReadByte ();break ;
-};};_feaf ,_ :=_egcd ._fgaa .ReadByte ();_dega .WriteByte (_feaf );};return MakeString (_dega .String ()),nil ;};func _egce (_gccd _ce .Reader )byteReader {if _ggef ,_fgdb :=_gccd .(byteReader );_fgdb {return _ggef ;};return _fae .NewReader (_gccd );};
+// String returns a string describing `d`.
+func (_dfefb *PdfObjectDictionary )String ()string {_dfefb ._egfe .RLock ();defer _dfefb ._egfe .RUnlock ();var _agfcd _ff .Builder ;_agfcd .WriteString ("\u0044\u0069\u0063t\u0028");for _ ,_afcea :=range _dfefb ._gaga {_ccgffa :=_dfefb ._dbcd [_afcea ];
+_agfcd .WriteString ("\u0022"+_afcea .String ()+"\u0022\u003a\u0020");_agfcd .WriteString (_ccgffa .String ());_agfcd .WriteString ("\u002c\u0020");};_agfcd .WriteString ("\u0029");return _agfcd .String ();};func _eaag (_effb *PdfObjectStream )(*MultiEncoder ,error ){_febf :=NewMultiEncoder ();
+_eaee :=_effb .PdfObjectDictionary ;if _eaee ==nil {return _febf ,nil ;};var _dfgcd *PdfObjectDictionary ;var _edbe []PdfObject ;_fbgg :=_eaee .Get ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073");if _fbgg !=nil {_dcb ,_geef :=_fbgg .(*PdfObjectDictionary );
+if _geef {_dfgcd =_dcb ;};_efcae ,_eef :=_fbgg .(*PdfObjectArray );if _eef {for _ ,_cggcb :=range _efcae .Elements (){_cggcb =TraceToDirectObject (_cggcb );if _dbgb ,_deag :=_cggcb .(*PdfObjectDictionary );_deag {_edbe =append (_edbe ,_dbgb );}else {_edbe =append (_edbe ,MakeDict ());
+};};};};_fbgg =_eaee .Get ("\u0046\u0069\u006c\u0074\u0065\u0072");if _fbgg ==nil {return nil ,_ebc .Errorf ("\u0066\u0069\u006c\u0074\u0065\u0072\u0020\u006d\u0069s\u0073\u0069\u006e\u0067");};_cgfc ,_ggbe :=_fbgg .(*PdfObjectArray );if !_ggbe {return nil ,_ebc .Errorf ("m\u0075\u006c\u0074\u0069\u0020\u0066\u0069\u006c\u0074\u0065\u0072\u0020\u0063\u0061\u006e\u0020\u006f\u006el\u0079\u0020\u0062\u0065\u0020\u006d\u0061\u0064\u0065\u0020fr\u006f\u006d\u0020a\u0072r\u0061\u0079");
+};for _dgga ,_fbcgd :=range _cgfc .Elements (){_cafa ,_gbgf :=_fbcgd .(*PdfObjectName );if !_gbgf {return nil ,_ebc .Errorf ("\u006d\u0075l\u0074\u0069\u0020\u0066i\u006c\u0074e\u0072\u0020\u0061\u0072\u0072\u0061\u0079\u0020e\u006c\u0065\u006d\u0065\u006e\u0074\u0020\u006e\u006f\u0074\u0020\u0061 \u006e\u0061\u006d\u0065");
+};var _bggg PdfObject ;if _dfgcd !=nil {_bggg =_dfgcd ;}else {if len (_edbe )> 0{if _dgga >=len (_edbe ){return nil ,_ebc .Errorf ("\u006d\u0069\u0073\u0073\u0069\u006e\u0067\u0020\u0065\u006c\u0065\u006d\u0065n\u0074\u0073\u0020\u0069\u006e\u0020d\u0065\u0063\u006f\u0064\u0065\u0020\u0070\u0061\u0072\u0061\u006d\u0073\u0020a\u0072\u0072\u0061\u0079");
+};_bggg =_edbe [_dgga ];};};var _cbdc *PdfObjectDictionary ;if _gdgccc ,_ggcfe :=_bggg .(*PdfObjectDictionary );_ggcfe {_cbdc =_gdgccc ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004e\u0065\u0078t \u006e\u0061\u006d\u0065\u003a\u0020\u0025\u0073\u002c \u0064p\u003a \u0025v\u002c\u0020\u0064\u0050\u0061\u0072\u0061\u006d\u0073\u003a\u0020\u0025\u0076",*_cafa ,_bggg ,_cbdc );
+};switch *_cafa {case StreamEncodingFilterNameFlate :_adca ,_acgd :=_cbd (_effb ,_cbdc );if _acgd !=nil {return nil ,_acgd ;};_febf .AddEncoder (_adca );case StreamEncodingFilterNameLZW :_aabf ,_cfbg :=_gdg (_effb ,_cbdc );if _cfbg !=nil {return nil ,_cfbg ;
+};_febf .AddEncoder (_aabf );case StreamEncodingFilterNameASCIIHex :_bafc :=NewASCIIHexEncoder ();_febf .AddEncoder (_bafc );case StreamEncodingFilterNameASCII85 :_eafd :=NewASCII85Encoder ();_febf .AddEncoder (_eafd );case StreamEncodingFilterNameDCT :_dgaa ,_daca :=_fdbc (_effb ,_febf );
+if _daca !=nil {return nil ,_daca ;};_febf .AddEncoder (_dgaa );if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("A\u0064d\u0065\u0064\u0020\u0044\u0043\u0054\u0020\u0065n\u0063\u006f\u0064\u0065r.\u002e\u002e");};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004du\u006ct\u0069\u0020\u0065\u006e\u0063o\u0064\u0065r\u003a\u0020\u0025\u0023\u0076",_febf );
+};case StreamEncodingFilterNameCCITTFax :_fgegb ,_cadc :=_dccf (_effb ,_cbdc );if _cadc !=nil {return nil ,_cadc ;};_febf .AddEncoder (_fgegb );default:_be .Log .Error ("U\u006e\u0073\u0075\u0070po\u0072t\u0065\u0064\u0020\u0066\u0069l\u0074\u0065\u0072\u0020\u0025\u0073",*_cafa );
+return nil ,_ebc .Errorf ("\u0069\u006eva\u006c\u0069\u0064 \u0066\u0069\u006c\u0074er \u0069n \u006d\u0075\u006c\u0074\u0069\u0020\u0066il\u0074\u0065\u0072\u0020\u0061\u0072\u0072a\u0079");};};return _febf ,nil ;};
 
+// GetNumbersAsFloat converts a list of pdf objects representing floats or integers to a slice of
+// float64 values.
+func GetNumbersAsFloat (objects []PdfObject )(_gacf []float64 ,_aede error ){for _ ,_ccga :=range objects {_gcedf ,_feccgb :=GetNumberAsFloat (_ccga );if _feccgb !=nil {return nil ,_feccgb ;};_gacf =append (_gacf ,_gcedf );};return _gacf ,nil ;};func (_adbd *PdfCrypt )makeKey (_dgg string ,_fff ,_ggd uint32 ,_ffdbe []byte )([]byte ,error ){_abcd ,_fddc :=_adbd ._fege [_dgg ];
+if !_fddc {return nil ,_ebc .Errorf ("\u0075n\u006b\u006e\u006f\u0077n\u0020\u0063\u0072\u0079\u0070t\u0020f\u0069l\u0074\u0065\u0072\u0020\u0028\u0025\u0073)",_dgg );};return _abcd .MakeKey (_fff ,_ggd ,_ffdbe );};func (_dggae *offsetReader )Read (p []byte )(_aeadb int ,_fcab error ){return _dggae ._acfb .Read (p )};
+func _gddf (_ageg _g .Reader )byteReader {if _abefb ,_ebd :=_ageg .(byteReader );_ebd {return _abefb ;};return _ecd .NewReader (_ageg );};
 
-// GetEncryptObj returns the PdfIndirectObject which has information about the PDFs encryption details.
-func (_gadee *PdfParser )GetEncryptObj ()*PdfIndirectObject {return _gadee ._afdd };func _gf (_abd func (*_f .Buffer ))[]byte {_fdc :=_fgc ();defer _cd (_fdc );_abd (_fdc );_aec :=_fdc .Bytes ();_db :=make ([]byte ,len (_aec ));copy (_db ,_aec );return _db ;
-};func (_eedeca *PdfParser )repairSeekXrefMarker ()error {_abgac ,_gbbe :=_eedeca ._fgaa .Seek (0,_ce .SeekEnd );if _gbbe !=nil {return _gbbe ;};_gfggb :=_fe .MustCompile ("\u005cs\u0078\u0072\u0065\u0066\u005c\u0073*");var _abbg int64 ;var _bcagf int64 =1000;
-for _abbg < _abgac {if _abgac <=(_bcagf +_abbg ){_bcagf =_abgac -_abbg ;};_ ,_dfaa :=_eedeca ._fgaa .Seek (-_abbg -_bcagf ,_ce .SeekEnd );if _dfaa !=nil {return _dfaa ;};_aadc :=make ([]byte ,_bcagf );_eedeca ._fgaa .Read (_aadc );if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004c\u006f\u006fki\u006e\u0067\u0020\u0066\u006f\u0072\u0020\u0078\u0072\u0065\u0066\u0020\u003a\u0020\u0022\u0025\u0073\u0022",string (_aadc ));
-};_faabf :=_gfggb .FindAllStringIndex (string (_aadc ),-1);if _faabf !=nil {_ddde :=_faabf [len (_faabf )-1];if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0049\u006e\u0064\u003a\u0020\u0025\u0020\u0064",_faabf );};_eedeca ._fgaa .Seek (-_abbg -_bcagf +int64 (_ddde [0]),_ce .SeekEnd );
-for {_bcab ,_ccad :=_eedeca ._fgaa .Peek (1);if _ccad !=nil {return _ccad ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0042\u003a\u0020\u0025\u0064\u0020\u0025\u0063",_bcab [0],_bcab [0]);};if !IsWhiteSpace (_bcab [0]){break ;};
-_eedeca ._fgaa .Discard (1);};return nil ;};_bd .Log .Debug ("\u0057\u0061\u0072\u006e\u0069\u006eg\u003a\u0020\u0045\u004f\u0046\u0020\u006d\u0061\u0072\u006b\u0065\u0072\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075n\u0064\u0021\u0020\u002d\u0020\u0063\u006f\u006e\u0074\u0069\u006e\u0075\u0065\u0020s\u0065e\u006b\u0069\u006e\u0067");
-_abbg +=_bcagf ;};_bd .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u003a\u0020\u0058\u0072\u0065\u0066\u0020\u0074a\u0062\u006c\u0065\u0020\u006d\u0061r\u006b\u0065\u0072\u0020\u0077\u0061\u0073\u0020\u006e\u006f\u0074\u0020\u0066o\u0075\u006e\u0064\u002e");
-return _de .New ("\u0078r\u0065f\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064\u0020");};
+// DecodeStream decodes a LZW encoded stream and returns the result as a
+// slice of bytes.
+func (_ebeb *LZWEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004c\u005a\u0057 \u0044\u0065\u0063\u006f\u0064\u0069\u006e\u0067");};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0050\u0072\u0065\u0064\u0069\u0063\u0074\u006f\u0072\u003a\u0020\u0025\u0064",_ebeb .Predictor );
+};_dcdf ,_gadc :=_ebeb .DecodeBytes (streamObj .Stream );if _gadc !=nil {return nil ,_gadc ;};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0020\u0049\u004e\u003a\u0020\u0028\u0025\u0064\u0029\u0020\u0025\u0020\u0078",len (streamObj .Stream ),streamObj .Stream );
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004f\u0055\u0054\u003a\u0020\u0028\u0025\u0064\u0029\u0020\u0025\u0020\u0078",len (_dcdf ),_dcdf );};if _ebeb .Predictor > 1{if _ebeb .Predictor ==2{defer ReleaseBytes (_dcdf );if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0054\u0069\u0066\u0066\u0020\u0065\u006e\u0063\u006f\u0064\u0069\u006e\u0067");
+};_cafc :=_ebeb .Columns *_ebeb .Colors ;if _cafc < 1{return []byte {},nil ;};_aaab :=len (_dcdf )/_cafc ;if len (_dcdf )%_cafc !=0{_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020T\u0049\u0046\u0046 \u0065\u006e\u0063\u006fd\u0069\u006e\u0067\u003a\u0020\u0049\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u006f\u0077\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u002e\u002e\u002e");
+return nil ,_ebc .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u006f\u0077 \u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064/\u0025\u0064\u0029",len (_dcdf ),_cafc );};if _cafc %_ebeb .Colors !=0{return nil ,_ebc .Errorf ("\u0069\u006ev\u0061\u006c\u0069\u0064 \u0072\u006fw\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u0020(\u0025\u0064\u0029\u0020\u0066\u006f\u0072\u0020\u0063\u006f\u006c\u006fr\u0073\u0020\u0025\u0064",_cafc ,_ebeb .Colors );
+};if _cafc > len (_dcdf ){_be .Log .Debug ("\u0052\u006fw\u0020\u006c\u0065\u006e\u0067t\u0068\u0020\u0063\u0061\u006en\u006f\u0074\u0020\u0062\u0065\u0020\u006c\u006f\u006e\u0067\u0065\u0072\u0020\u0074\u0068\u0061\u006e\u0020\u0064\u0061\u0074\u0061\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064\u002f\u0025\u0064\u0029",_cafc ,len (_dcdf ));
+return nil ,_bc .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("i\u006e\u0070\u0020\u006fut\u0044a\u0074\u0061\u0020\u0028\u0025d\u0029\u003a\u0020\u0025\u0020\u0078",len (_dcdf ),_dcdf );
+};_ecf :=_ad .NewBuffer (nil );for _ebbfe :=0;_ebbfe < _aaab ;_ebbfe ++{_efedb :=_dcdf [_cafc *_ebbfe :_cafc *(_ebbfe +1)];for _bec :=_ebeb .Colors ;_bec < _cafc ;_bec ++{_efedb [_bec ]=byte (int (_efedb [_bec ]+_efedb [_bec -_ebeb .Colors ])%256);};_ecf .Write (_efedb );
+};_fcbg :=_ecf .Bytes ();if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0050O\u0075t\u0044\u0061\u0074\u0061\u0020(\u0025\u0064)\u003a\u0020\u0025\u0020\u0078",len (_fcbg ),_fcbg );};return _fcbg ,nil ;}else if _ebeb .Predictor >=10&&_ebeb .Predictor <=15{defer ReleaseBytes (_dcdf );
+if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0050\u004e\u0047 \u0045\u006e\u0063\u006f\u0064\u0069\u006e\u0067");};_cbfga :=_ebeb .Columns *_ebeb .Colors +1;if _cbfga < 1{return []byte {},nil ;};_cdbe :=len (_dcdf )/_cbfga ;if len (_dcdf )%_cbfga !=0{return nil ,_ebc .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0072\u006f\u0077 \u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064/\u0025\u0064\u0029",len (_dcdf ),_cbfga );
+};if _cbfga > len (_dcdf ){_be .Log .Debug ("\u0052\u006fw\u0020\u006c\u0065\u006e\u0067t\u0068\u0020\u0063\u0061\u006en\u006f\u0074\u0020\u0062\u0065\u0020\u006c\u006f\u006e\u0067\u0065\u0072\u0020\u0074\u0068\u0061\u006e\u0020\u0064\u0061\u0074\u0061\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u0020\u0028\u0025\u0064\u002f\u0025\u0064\u0029",_cbfga ,len (_dcdf ));
+return nil ,_bc .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};_eced :=_ad .NewBuffer (nil );if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("P\u0072\u0065\u0064\u0069ct\u006fr\u0020\u0063\u006f\u006c\u0075m\u006e\u0073\u003a\u0020\u0025\u0064",_ebeb .Columns );
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u004ce\u006e\u0067\u0074\u0068:\u0020\u0025\u0064\u0020\u002f \u0025d\u0020=\u0020\u0025\u0064\u0020\u0072\u006f\u0077s",len (_dcdf ),_cbfga ,_cdbe );};_dec :=make ([]byte ,_cbfga );for _eddbe :=0;
+_eddbe < _cbfga ;_eddbe ++{_dec [_eddbe ]=0;};for _gaed :=0;_gaed < _cdbe ;_gaed ++{_deba :=_dcdf [_cbfga *_gaed :_cbfga *(_gaed +1)];_eed :=_deba [0];switch _eed {case 0:case 1:for _dffb :=2;_dffb < _cbfga ;_dffb ++{_deba [_dffb ]=byte (int (_deba [_dffb ]+_deba [_dffb -1])%256);
+};case 2:for _gggg :=1;_gggg < _cbfga ;_gggg ++{_deba [_gggg ]=byte (int (_deba [_gggg ]+_dec [_gggg ])%256);};default:_be .Log .Debug ("\u0045\u0052\u0052O\u0052\u003a\u0020\u0049n\u0076\u0061\u006c\u0069\u0064\u0020\u0066i\u006c\u0074\u0065\u0072\u0020\u0062\u0079\u0074\u0065\u0020\u0028\u0025\u0064\u0029",_eed );
+return nil ,_ebc .Errorf ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0066\u0069\u006c\u0074\u0065r\u0020\u0062\u0079\u0074\u0065\u0020\u0028\u0025\u0064\u0029",_eed );};for _dfca :=0;_dfca < _cbfga ;_dfca ++{_dec [_dfca ]=_deba [_dfca ];};_eced .Write (_deba [1:]);
+};_ffeg :=_eced .Bytes ();return _ffeg ,nil ;}else {ReleaseBytes (_dcdf );_be .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0055\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0070r\u0065\u0064\u0069\u0063\u0074\u006f\u0072 \u0028\u0025\u0064\u0029",_ebeb .Predictor );
+return nil ,_ebc .Errorf ("\u0075\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064 \u0070\u0072\u0065\u0064\u0069\u0063\u0074\u006f\u0072\u0020(\u0025\u0064\u0029",_ebeb .Predictor );};};return _dcdf ,nil ;};
 
-// DrawableImage is same as golang image/draw's Image interface that allow drawing images.
-type DrawableImage interface{ColorModel ()_ag .Model ;Bounds ()_b .Rectangle ;At (_ged ,_ebbb int )_ag .Color ;Set (_dagab ,_dceb int ,_gada _ag .Color );};
+// CheckAccessRights checks access rights and permissions for a specified password. If either user/owner password is
+// specified, full rights are granted, otherwise the access rights are specified by the Permissions flag.
+//
+// The bool flag indicates that the user can access and view the file.
+// The AccessPermissions shows what access the user has for editing etc.
+// An error is returned if there was a problem performing the authentication.
+func (_eggcf *PdfParser )CheckAccessRights (password []byte )(bool ,_ce .Permissions ,error ){if _eggcf ._aebd ==nil {return true ,_ce .PermOwner ,nil ;};return _eggcf ._aebd .checkAccessRights (password );};
 
-// GetFilterName returns the names of the underlying encoding filters,
-// separated by spaces.
-// Note: This is just a string, should not be used in /Filter dictionary entry. Use GetFilterArray for that.
-// TODO(v4): Refactor to GetFilter() which can be used for /Filter (either Name or Array), this can be
-// renamed to String() as a pretty string to use in debugging etc.
-func (_ddcg *MultiEncoder )GetFilterName ()string {_dgdc :="";for _bcae ,_adcf :=range _ddcg ._gdgb {_dgdc +=_adcf .GetFilterName ();if _bcae < len (_ddcg ._gdgb )-1{_dgdc +="\u0020";};};return _dgdc ;};
+// Peek returns the next n bytes from the buffered reader without advancing the reader.
+func (_bbg *bufferedReadSeeker )Peek (n int )([]byte ,error ){return _bbg ._df .Peek (n )};func (_cdfa *PdfParser )traceStreamLength (_feba PdfObject )(PdfObject ,error ){_cega ,_cbgd :=_feba .(*PdfObjectReference );if _cbgd {_dffaa ,_fedf :=_cdfa ._cacd [_cega .ObjectNumber ];
+if _fedf &&_dffaa {_be .Log .Debug ("\u0053t\u0072\u0065a\u006d\u0020\u004c\u0065n\u0067\u0074\u0068 \u0072\u0065\u0066\u0065\u0072\u0065\u006e\u0063\u0065 u\u006e\u0072\u0065s\u006f\u006cv\u0065\u0064\u0020\u0028\u0069\u006cl\u0065\u0067a\u006c\u0029");
+return nil ,_bc .New ("\u0069\u006c\u006c\u0065ga\u006c\u0020\u0072\u0065\u0063\u0075\u0072\u0073\u0069\u0076\u0065\u0020\u006c\u006fo\u0070");};_cdfa ._cacd [_cega .ObjectNumber ]=true ;};_abbc ,_faag :=_cdfa .Resolve (_feba );if _faag !=nil {return nil ,_faag ;
+};if _be .Log .IsLogLevel (_be .LogLevelTrace ){_be .Log .Trace ("\u0053\u0074\u0072\u0065\u0061\u006d\u0020\u006c\u0065\u006e\u0067\u0074h\u003f\u0020\u0025\u0073",_abbc );};if _cbgd {_cdfa ._cacd [_cega .ObjectNumber ]=false ;};return _abbc ,nil ;};
 
-// Write outputs the object as it is to be written to file.
-func (_aeeagd *PdfObjectStream )Write ()[]byte {return _gf (func (_dedad *_f .Buffer ){_dedad .WriteString (_c .FormatInt (_aeeagd .ObjectNumber ,10));_dedad .WriteString ("\u0020\u0030\u0020\u0052");});};func _eegf (_cbcd _ce .Reader )(_ce .ReadCloser ,error ){_dcgb :=_ebeg .Get ().(_ce .ReadCloser );
-if _efa :=_dcgb .(_ae .Resetter ).Reset (_cbcd ,nil );_efa !=nil {_ebeg .Put (_dcgb );return nil ,_efa ;};return _dcgb ,nil ;};
-
-// HeaderCommentBytes gets the header comment bytes.
-func (_ega ParserMetadata )HeaderCommentBytes ()[4]byte {return _ega ._ddea };type encryptDict struct{Filter string ;V int ;SubFilter string ;Length int ;StmF string ;StrF string ;EFF string ;CF map[string ]_bff .FilterDict ;};
-
-// TraceToDirectObject traces a PdfObject to a direct object.  For example direct objects contained
-// in indirect objects (can be double referenced even).
-func TraceToDirectObject (obj PdfObject )PdfObject {if _fefba ,_eadcb :=obj .(*PdfObjectReference );_eadcb {obj =_fefba .Resolve ();};_dgcfe ,_geaaa :=obj .(*PdfIndirectObject );_fefdg :=0;for _geaaa {obj =_dgcfe .PdfObject ;_dgcfe ,_geaaa =GetIndirect (obj );
-_fefdg ++;if _fefdg > _ecbeb {_bd .Log .Error ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0054\u0072\u0061\u0063\u0065\u0020\u0064\u0065p\u0074\u0068\u0020\u006c\u0065\u0076\u0065\u006c\u0020\u0062\u0065\u0079\u006fn\u0064\u0020\u0025\u0064\u0020\u002d\u0020\u006e\u006f\u0074\u0020\u0067oi\u006e\u0067\u0020\u0064\u0065\u0065\u0070\u0065\u0072\u0021",_ecbeb );
-return nil ;};};return obj ;};
-
-// EncodeBytes encodes the passed in slice of bytes by passing it through the
-// EncodeBytes method of the underlying encoders.
-func (_ebaf *MultiEncoder )EncodeBytes (data []byte )([]byte ,error ){_aaeac :=data ;var _dcgg error ;for _fbgbb :=len (_ebaf ._gdgb )-1;_fbgbb >=0;_fbgbb --{_cbbdb :=_ebaf ._gdgb [_fbgbb ];_aaeac ,_dcgg =_cbbdb .EncodeBytes (_aaeac );if _dcgg !=nil {return nil ,_dcgg ;
-};};return _aaeac ,nil ;};func (_effb *PdfParser )readComment ()(string ,error ){var _ceccg _f .Buffer ;_ ,_begcb :=_effb .skipSpaces ();if _begcb !=nil {return _ceccg .String (),_begcb ;};_ecg :=true ;for {_bbdb ,_baae :=_effb ._fgaa .Peek (1);if _baae !=nil {_bd .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u0020\u0025\u0073",_baae .Error ());
-return _ceccg .String (),_baae ;};if _ecg &&_bbdb [0]!='%'{return _ceccg .String (),_de .New ("c\u006f\u006d\u006d\u0065\u006e\u0074 \u0073\u0068\u006f\u0075\u006c\u0064\u0020\u0073\u0074a\u0072\u0074\u0020w\u0069t\u0068\u0020\u0025");};_ecg =false ;if (_bbdb [0]!='\r')&&(_bbdb [0]!='\n'){_fddea ,_ :=_effb ._fgaa .ReadByte ();
-_ceccg .WriteByte (_fddea );}else {break ;};};return _ceccg .String (),nil ;};
-
-// EncodeBytes implements support for LZW encoding.  Currently not supporting predictors (raw compressed data only).
-// Only supports the Early change = 1 algorithm (compress/lzw) as the other implementation
-// does not have a write method.
-// TODO: Consider refactoring compress/lzw to allow both.
-func (_abf *LZWEncoder )EncodeBytes (data []byte )([]byte ,error ){if _abf .Predictor !=1{return nil ,_ee .Errorf ("\u004c\u005aW \u0050\u0072\u0065d\u0069\u0063\u0074\u006fr =\u00201 \u006f\u006e\u006c\u0079\u0020\u0073\u0075pp\u006f\u0072\u0074\u0065\u0064\u0020\u0079e\u0074");
-};if _abf .EarlyChange ==1{return nil ,_ee .Errorf ("\u004c\u005a\u0057\u0020\u0045\u0061\u0072\u006c\u0079\u0020\u0043\u0068\u0061n\u0067\u0065\u0020\u003d\u0020\u0030 \u006f\u006e\u006c\u0079\u0020\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065d\u0020\u0079\u0065\u0074");
-};var _fedd _f .Buffer ;_dfgd :=_d .NewWriter (&_fedd ,_d .MSB ,8);_dfgd .Write (data );_dfgd .Close ();return _fedd .Bytes (),nil ;};
-
-// String returns a string describing `stream`.
-func (_bcfga *PdfObjectStream )String ()string {return _ee .Sprintf ("O\u0062j\u0065\u0063\u0074\u0020\u0073\u0074\u0072\u0065a\u006d\u0020\u0025\u0064: \u0025\u0073",_bcfga .ObjectNumber ,_bcfga .PdfObjectDictionary );};var _facf =_fe .MustCompile ("\u0028\u005c\u0064\u002b)\\\u0073\u002b\u0028\u005c\u0064\u002b\u0029\u005c\u0073\u002b\u006f\u0062\u006a");
-type cryptFilters map[string ]_bff .Filter ;func _ba (_gg _ce .ReadSeeker )*bufferedReadSeeker {return &bufferedReadSeeker {_dbe :_gg ,_cad :_fae .NewReader (_gg )};};type byteReader interface{_ce .Reader ;_ce .ByteReader ;};func _cd (_gbb *_f .Buffer ){_gbb .Reset ();
-_eef .Put (_gbb )};
-
-// SetImage sets the image base for given flate encoder.
-func (_caaf *FlateEncoder )SetImage (img *_fd .ImageBase ){_caaf ._fbc =img };
-
-// XrefObject defines a cross reference entry which is a map between object number (with generation number) and the
-// location of the actual object, either as a file offset (xref table entry), or as a location within an xref
-// stream object (xref object stream).
-type XrefObject struct{XType xrefType ;ObjectNumber int ;Generation int ;
-
-// For normal xrefs (defined by OFFSET)
-Offset int64 ;
-
-// For xrefs to object streams.
-OsObjNumber int ;OsObjIndex int ;};
+// DecodeBytes decodes a slice of LZW encoded bytes and returns the result.
+func (_cecb *LZWEncoder )DecodeBytes (encoded []byte )([]byte ,error ){var _afaa _ad .Buffer ;_cagd :=_ad .NewReader (encoded );var _cggc _g .ReadCloser ;if _cecb .EarlyChange ==1{_cggc =_ag .NewReader (_cagd ,_ag .MSB ,8);}else {_cggc =_caa .NewReader (_cagd ,_caa .MSB ,8);
+};defer _cggc .Close ();if _ ,_dbad :=_afaa .ReadFrom (_cggc );_dbad !=nil {if _dbad !=_g .ErrUnexpectedEOF ||_afaa .Len ()==0{return nil ,_dbad ;};_be .Log .Debug ("\u0057\u0041\u0052\u004e\u003a\u0020\u004c\u005a\u0057\u0020\u0064\u0065\u0063\u006f\u0064i\u006e\u0067\u0020\u0065\u0072\u0072\u006f\u0072\u003a\u0020\u0025\u0076\u002e \u004f\u0075\u0074\u0070\u0075\u0074\u0020\u006d\u0061\u0079\u0020\u0062e \u0069\u006e\u0063\u006f\u0072\u0072\u0065\u0063\u0074\u002e",_dbad );
+};_bda :=AcquireBytes (_afaa .Len ());copy (_bda ,_afaa .Bytes ());return _bda ,nil ;};
 
 // UpdateParams updates the parameter values of the encoder.
-func (_fedg *DCTEncoder )UpdateParams (params *PdfObjectDictionary ){_bdde ,_ccg :=GetNumberAsInt64 (params .Get ("\u0043o\u006co\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074\u0073"));if _ccg ==nil {_fedg .ColorComponents =int (_bdde );};
-_acefb ,_ccg :=GetNumberAsInt64 (params .Get ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074"));if _ccg ==nil {_fedg .BitsPerComponent =int (_acefb );};_dccb ,_ccg :=GetNumberAsInt64 (params .Get ("\u0057\u0069\u0064t\u0068"));
-if _ccg ==nil {_fedg .Width =int (_dccb );};_gced ,_ccg :=GetNumberAsInt64 (params .Get ("\u0048\u0065\u0069\u0067\u0068\u0074"));if _ccg ==nil {_fedg .Height =int (_gced );};_eafbg ,_ccg :=GetNumberAsInt64 (params .Get ("\u0051u\u0061\u006c\u0069\u0074\u0079"));
-if _ccg ==nil {_fedg .Quality =int (_eafbg );};_agdd ,_cccg :=GetArray (params .Get ("\u0044\u0065\u0063\u006f\u0064\u0065"));if _cccg {_fedg .Decode ,_ccg =_agdd .ToFloat64Array ();if _ccg !=nil {_bd .Log .Error ("F\u0061\u0069\u006c\u0065\u0064\u0020\u0063\u006f\u006ev\u0065\u0072\u0074\u0069\u006e\u0067\u0020de\u0063\u006f\u0064\u0065 \u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0069\u006eto\u0020\u0061r\u0072\u0061\u0079\u0073\u003a\u0020\u0025\u0076",_ccg );
-};};};
-
-// GetStringVal returns the string value represented by the PdfObject directly or indirectly if
-// contained within an indirect object. On type mismatch the found bool flag returned is false and
-// an empty string is returned.
-func GetStringVal (obj PdfObject )(_fgdg string ,_gegge bool ){_dgcbc ,_gegge :=TraceToDirectObject (obj ).(*PdfObjectString );if _gegge {return _dgcbc .Str (),true ;};return ;};
-
-// Clear resets the dictionary to an empty state.
-func (_dfcec *PdfObjectDictionary )Clear (){_dfcec ._cagec .Lock ();defer _dfcec ._cagec .Unlock ();_dfcec ._ggeeg =[]PdfObjectName {};_dfcec ._abada =map[PdfObjectName ]PdfObject {};};func (_acac *PdfParser )parseXrefStream (_dcfd *PdfObjectInteger )(*PdfObjectDictionary ,error ){if _dcfd !=nil {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0058\u0052\u0065f\u0053\u0074\u006d\u0020x\u0072\u0065\u0066\u0020\u0074\u0061\u0062l\u0065\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0061\u0074\u0020\u0025\u0064",_dcfd );
-};_acac ._fgaa .Seek (int64 (*_dcfd ),_ce .SeekStart );};_adcc :=_acac .GetFileOffset ();_babb ,_geea :=_acac .ParseIndirectObject ();if _geea !=nil {_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0046\u0061\u0069\u006c\u0065\u0064\u0020\u0074\u006f\u0020\u0072\u0065\u0061d\u0020\u0078\u0072\u0065\u0066\u0020\u006fb\u006a\u0065\u0063\u0074");
-return nil ,_de .New ("\u0066\u0061\u0069\u006c\u0065\u0064\u0020\u0074\u006f\u0020\u0072e\u0061\u0064\u0020\u0078\u0072\u0065\u0066\u0020\u006f\u0062j\u0065\u0063\u0074");};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0058R\u0065f\u0053\u0074\u006d\u0020\u006fb\u006a\u0065c\u0074\u003a\u0020\u0025\u0073",_babb );
-};_dbag ,_dfgea :=_babb .(*PdfObjectStream );if !_dfgea {_bd .Log .Debug ("\u0045R\u0052\u004fR\u003a\u0020\u0058R\u0065\u0066\u0053\u0074\u006d\u0020\u0070o\u0069\u006e\u0074\u0069\u006e\u0067 \u0074\u006f\u0020\u006e\u006f\u006e\u002d\u0073\u0074\u0072\u0065a\u006d\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0021");
-return nil ,_de .New ("\u0058\u0052\u0065\u0066\u0053\u0074\u006d\u0020\u0070\u006f\u0069\u006e\u0074i\u006e\u0067\u0020\u0074\u006f\u0020a\u0020\u006e\u006f\u006e\u002d\u0073\u0074\u0072\u0065\u0061\u006d\u0020\u006fb\u006a\u0065\u0063\u0074");};_cacd :=_dbag .PdfObjectDictionary ;
-_fafa ,_dfgea :=_dbag .Get ("\u0053\u0069\u007a\u0065").(*PdfObjectInteger );if !_dfgea {_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u004d\u0069\u0073\u0073\u0069\u006e\u0067\u0020\u0073\u0069\u007a\u0065\u0020f\u0072\u006f\u006d\u0020\u0078\u0072\u0065f\u0020\u0073\u0074\u006d");
-return nil ,_de .New ("\u006d\u0069\u0073\u0073\u0069\u006e\u0067\u0020\u0053\u0069\u007ae\u0020\u0066\u0072\u006f\u006d\u0020\u0078\u0072\u0065\u0066 \u0073\u0074\u006d");};if int64 (*_fafa )> 8388607{_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0078\u0072\u0065\u0066\u0020\u0053\u0069\u007a\u0065\u0020\u0065x\u0063\u0065\u0065\u0064\u0065\u0064\u0020l\u0069\u006d\u0069\u0074\u002c\u0020\u006f\u0076\u0065\u0072\u00208\u0033\u0038\u0038\u0036\u0030\u0037\u0020\u0028\u0025\u0064\u0029",*_fafa );
-return nil ,_de .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};_deggd :=_dbag .Get ("\u0057");_cgcf ,_dfgea :=_deggd .(*PdfObjectArray );if !_dfgea {return nil ,_de .New ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0057\u0020\u0069\u006e\u0020x\u0072\u0065\u0066\u0020\u0073\u0074\u0072\u0065\u0061\u006d");
-};_dbfd :=_cgcf .Len ();if _dbfd !=3{_bd .Log .Debug ("\u0045\u0052R\u004f\u0052\u003a\u0020\u0055\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0078\u0072\u0065\u0066\u0020\u0073\u0074\u006d\u0020\u0028\u006c\u0065\u006e\u0028\u0057\u0029\u0020\u0021\u003d\u0020\u0033\u0020\u002d\u0020\u0025\u0064\u0029",_dbfd );
-return nil ,_de .New ("\u0075\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064\u0020\u0078\u0072\u0065f\u0020s\u0074\u006d\u0020\u006c\u0065\u006e\u0028\u0057\u0029\u0020\u0021\u003d\u0020\u0033");};var _abcff []int64 ;for _acbg :=0;_acbg < 3;
-_acbg ++{_agac ,_fedgg :=GetInt (_cgcf .Get (_acbg ));if !_fedgg {return nil ,_de .New ("i\u006e\u0076\u0061\u006cid\u0020w\u0020\u006f\u0062\u006a\u0065c\u0074\u0020\u0074\u0079\u0070\u0065");};_abcff =append (_abcff ,int64 (*_agac ));};_bcgc ,_geea :=DecodeStream (_dbag );
-if _geea !=nil {_bd .Log .Debug ("\u0045\u0052\u0052OR\u003a\u0020\u0055\u006e\u0061\u0062\u006c\u0065\u0020t\u006f \u0064e\u0063o\u0064\u0065\u0020\u0073\u0074\u0072\u0065\u0061\u006d\u003a\u0020\u0025\u0076",_geea );return nil ,_geea ;};_bbf :=int (_abcff [0]);
-_agecb :=int (_abcff [0]+_abcff [1]);_dbgd :=int (_abcff [0]+_abcff [1]+_abcff [2]);_eaecf :=int (_abcff [0]+_abcff [1]+_abcff [2]);if _bbf < 0||_agecb < 0||_dbgd < 0{_bd .Log .Debug ("\u0045\u0072\u0072\u006fr\u0020\u0073\u0020\u0076\u0061\u006c\u0075\u0065\u0020\u003c \u0030 \u0028\u0025\u0064\u002c\u0025\u0064\u002c%\u0064\u0029",_bbf ,_agecb ,_dbgd );
-return nil ,_de .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};if _eaecf ==0{_bd .Log .Debug ("\u004e\u006f\u0020\u0078\u0072\u0065\u0066\u0020\u006f\u0062\u006a\u0065\u0063t\u0073\u0020\u0069\u006e\u0020\u0073t\u0072\u0065\u0061\u006d\u0020\u0028\u0064\u0065\u006c\u0074\u0061\u0062\u0020=\u003d\u0020\u0030\u0029");
-return _cacd ,nil ;};_cgaf :=len (_bcgc )/_eaecf ;_eceb :=0;_gaef :=_dbag .Get ("\u0049\u006e\u0064e\u0078");var _ccba []int ;if _gaef !=nil {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0049n\u0064\u0065\u0078\u003a\u0020\u0025b",_gaef );
-};_edfeb ,_cbcb :=_gaef .(*PdfObjectArray );if !_cbcb {_bd .Log .Debug ("\u0049\u006e\u0076\u0061\u006ci\u0064\u0020\u0049\u006e\u0064\u0065\u0078\u0020\u006f\u0062\u006a\u0065\u0063t\u0020\u0028\u0073\u0068\u006f\u0075\u006c\u0064\u0020\u0062\u0065\u0020\u0061\u006e\u0020\u0061\u0072\u0072\u0061\u0079\u0029");
-return nil ,_de .New ("i\u006ev\u0061\u006c\u0069\u0064\u0020\u0049\u006e\u0064e\u0078\u0020\u006f\u0062je\u0063\u0074");};if _edfeb .Len ()%2!=0{_bd .Log .Debug ("\u0057\u0041\u0052\u004eI\u004e\u0047\u0020\u0046\u0061\u0069\u006c\u0075\u0072e\u0020\u006c\u006f\u0061\u0064\u0069\u006e\u0067\u0020\u0078\u0072\u0065\u0066\u0020\u0073\u0074\u006d\u0020i\u006e\u0064\u0065\u0078\u0020n\u006f\u0074\u0020\u006d\u0075\u006c\u0074\u0069\u0070\u006c\u0065\u0020\u006f\u0066\u0020\u0032\u002e");
-return nil ,_de .New ("\u0072\u0061\u006e\u0067\u0065\u0020\u0063\u0068\u0065\u0063\u006b\u0020e\u0072\u0072\u006f\u0072");};_eceb =0;_ecgg ,_fddba :=_edfeb .ToIntegerArray ();if _fddba !=nil {_bd .Log .Debug ("\u0045\u0072\u0072\u006f\u0072 \u0067\u0065\u0074\u0074\u0069\u006e\u0067\u0020\u0069\u006e\u0064\u0065\u0078 \u0061\u0072\u0072\u0061\u0079\u0020\u0061\u0073\u0020\u0069\u006e\u0074\u0065\u0067\u0065\u0072\u0073\u003a\u0020\u0025\u0076",_fddba );
-return nil ,_fddba ;};for _bfdf :=0;_bfdf < len (_ecgg );_bfdf +=2{_aagg :=_ecgg [_bfdf ];_ceeg :=_ecgg [_bfdf +1];for _cbeg :=0;_cbeg < _ceeg ;_cbeg ++{_ccba =append (_ccba ,_aagg +_cbeg );};_eceb +=_ceeg ;};}else {for _gafgc :=0;_gafgc < int (*_fafa );
-_gafgc ++{_ccba =append (_ccba ,_gafgc );};_eceb =int (*_fafa );};if _cgaf ==_eceb +1{_bd .Log .Debug ("\u0049n\u0063\u006f\u006d\u0070ati\u0062\u0069\u006c\u0069t\u0079\u003a\u0020\u0049\u006e\u0064\u0065\u0078\u0020\u006di\u0073\u0073\u0069\u006e\u0067\u0020\u0063\u006f\u0076\u0065\u0072\u0061\u0067\u0065\u0020\u006f\u0066\u0020\u0031\u0020\u006f\u0062\u006ae\u0063\u0074\u0020\u002d\u0020\u0061\u0070\u0070en\u0064\u0069\u006eg\u0020\u006f\u006e\u0065\u0020-\u0020M\u0061\u0079\u0020\u006c\u0065\u0061\u0064\u0020\u0074o\u0020\u0070\u0072\u006f\u0062\u006c\u0065\u006d\u0073");
-_bfbd :=_eceb -1;for _ ,_gdgg :=range _ccba {if _gdgg > _bfbd {_bfbd =_gdgg ;};};_ccba =append (_ccba ,_bfbd +1);_eceb ++;};if _cgaf !=len (_ccba ){_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020x\u0072\u0065\u0066 \u0073\u0074\u006d:\u0020\u006eu\u006d\u0020\u0065\u006e\u0074\u0072i\u0065s \u0021\u003d\u0020\u006c\u0065\u006e\u0028\u0069\u006e\u0064\u0069\u0063\u0065\u0073\u0029\u0020\u0028\u0025\u0064\u0020\u0021\u003d\u0020\u0025\u0064\u0029",_cgaf ,len (_ccba ));
-return nil ,_de .New ("\u0078\u0072ef\u0020\u0073\u0074m\u0020\u006e\u0075\u006d en\u0074ri\u0065\u0073\u0020\u0021\u003d\u0020\u006cen\u0028\u0069\u006e\u0064\u0069\u0063\u0065s\u0029");};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004f\u0062j\u0065\u0063\u0074s\u0020\u0063\u006f\u0075\u006e\u0074\u0020\u0025\u0064",_eceb );
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0049\u006e\u0064i\u0063\u0065\u0073\u003a\u0020\u0025\u0020\u0064",_ccba );};_abad :=func (_acg []byte )int64 {var _afed int64 ;for _dbedg :=0;_dbedg < len (_acg );_dbedg ++{_afed +=int64 (_acg [_dbedg ])*(1<<uint (8*(len (_acg )-_dbedg -1)));
-};return _afed ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0044e\u0063\u006f\u0064\u0065d\u0020\u0073\u0074\u0072\u0065a\u006d \u006ce\u006e\u0067\u0074\u0068\u003a\u0020\u0025d",len (_bcgc ));};_eabab :=0;for _aaggf :=0;_aaggf < len (_bcgc );
-_aaggf +=_eaecf {_eafbb :=_cggdd (len (_bcgc ),_aaggf ,_aaggf +_bbf );if _eafbb !=nil {_bd .Log .Debug ("\u0049\u006e\u0076al\u0069\u0064\u0020\u0073\u006c\u0069\u0063\u0065\u0020\u0072\u0061\u006e\u0067\u0065\u003a\u0020\u0025\u0076",_eafbb );return nil ,_eafbb ;
-};_degab :=_bcgc [_aaggf :_aaggf +_bbf ];_eafbb =_cggdd (len (_bcgc ),_aaggf +_bbf ,_aaggf +_agecb );if _eafbb !=nil {_bd .Log .Debug ("\u0049\u006e\u0076al\u0069\u0064\u0020\u0073\u006c\u0069\u0063\u0065\u0020\u0072\u0061\u006e\u0067\u0065\u003a\u0020\u0025\u0076",_eafbb );
-return nil ,_eafbb ;};_gbfb :=_bcgc [_aaggf +_bbf :_aaggf +_agecb ];_eafbb =_cggdd (len (_bcgc ),_aaggf +_agecb ,_aaggf +_dbgd );if _eafbb !=nil {_bd .Log .Debug ("\u0049\u006e\u0076al\u0069\u0064\u0020\u0073\u006c\u0069\u0063\u0065\u0020\u0072\u0061\u006e\u0067\u0065\u003a\u0020\u0025\u0076",_eafbb );
-return nil ,_eafbb ;};_bcfgd :=_bcgc [_aaggf +_agecb :_aaggf +_dbgd ];_bbfd :=_abad (_degab );_beac :=_abad (_gbfb );_gcdcb :=_abad (_bcfgd );if _abcff [0]==0{_bbfd =1;};if _eabab >=len (_ccba ){_bd .Log .Debug ("X\u0052\u0065\u0066\u0020\u0073\u0074\u0072\u0065\u0061\u006d\u0020\u002d\u0020\u0054\u0072\u0079\u0069\u006e\u0067\u0020\u0074\u006f\u0020\u0061\u0063\u0063e\u0073s\u0020\u0069\u006e\u0064e\u0078\u0020o\u0075\u0074\u0020\u006f\u0066\u0020\u0062\u006f\u0075\u006e\u0064\u0073\u0020\u002d\u0020\u0062\u0072\u0065\u0061\u006b\u0069\u006e\u0067");
-break ;};_dbff :=_ccba [_eabab ];_eabab ++;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("%\u0064\u002e\u0020\u0070\u0031\u003a\u0020\u0025\u0020\u0078",_dbff ,_degab );};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("%\u0064\u002e\u0020\u0070\u0032\u003a\u0020\u0025\u0020\u0078",_dbff ,_gbfb );
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("%\u0064\u002e\u0020\u0070\u0033\u003a\u0020\u0025\u0020\u0078",_dbff ,_bcfgd );};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0025d\u002e \u0078\u0072\u0065\u0066\u003a \u0025\u0064 \u0025\u0064\u0020\u0025\u0064",_dbff ,_bbfd ,_beac ,_gcdcb );
-};switch _bbfd {case 0:if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("-\u0020\u0046\u0072\u0065\u0065\u0020o\u0062\u006a\u0065\u0063\u0074\u0020-\u0020\u0063\u0061\u006e\u0020\u0070\u0072o\u0062\u0061\u0062\u006c\u0079\u0020\u0069\u0067\u006e\u006fr\u0065");
-};case 1:if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d\u0020I\u006e\u0020\u0075\u0073e\u0020\u002d \u0075\u006e\u0063\u006f\u006d\u0070\u0072\u0065s\u0073\u0065\u0064\u0020\u0076\u0069\u0061\u0020\u006f\u0066\u0066\u0073e\u0074\u0020\u0025\u0062",_gbfb );
-};if _beac ==_adcc {_bd .Log .Debug ("\u0055\u0070d\u0061\u0074\u0069\u006e\u0067\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u006e\u0075\u006d\u0062\u0065\u0072\u0020\u0066\u006f\u0072\u0020\u0058\u0052\u0065\u0066\u0020\u0074\u0061\u0062\u006c\u0065\u0020\u0025\u0064\u0020\u002d\u003e\u0020\u0025\u0064",_dbff ,_dbag .ObjectNumber );
-_dbff =int (_dbag .ObjectNumber );};if _afgfc ,_gddd :=_acac ._gabb .ObjectMap [_dbff ];!_gddd ||int (_gcdcb )> _afgfc .Generation {_beade :=XrefObject {ObjectNumber :_dbff ,XType :XrefTypeTableEntry ,Offset :_beac ,Generation :int (_gcdcb )};_acac ._gabb .ObjectMap [_dbff ]=_beade ;
-};case 2:if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d\u0020\u0049\u006e \u0075\u0073\u0065\u0020\u002d\u0020\u0063\u006f\u006d\u0070r\u0065s\u0073\u0065\u0064\u0020\u006f\u0062\u006ae\u0063\u0074");};if _ ,_dfff :=_acac ._gabb .ObjectMap [_dbff ];
-!_dfff {_bcag :=XrefObject {ObjectNumber :_dbff ,XType :XrefTypeObjectStream ,OsObjNumber :int (_beac ),OsObjIndex :int (_gcdcb )};_acac ._gabb .ObjectMap [_dbff ]=_bcag ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0065\u006e\u0074\u0072\u0079\u003a\u0020\u0025\u002b\u0076",_bcag );
-};};default:_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052:\u0020\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u0049\u004e\u0056\u0041L\u0049\u0044\u0020\u0054\u0059\u0050\u0045\u0020\u0058\u0072\u0065\u0066\u0053\u0074\u006d\u0020\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u003f\u002d\u002d\u002d\u002d\u002d\u002d-");
-continue ;};};if _acac ._cefef ==nil {_afae :=XrefTypeObjectStream ;_acac ._cefef =&_afae ;};return _cacd ,nil ;};
-
-// MakeStream creates an PdfObjectStream with specified contents and encoding. If encoding is nil, then raw encoding
-// will be used (i.e. no encoding applied).
-func MakeStream (contents []byte ,encoder StreamEncoder )(*PdfObjectStream ,error ){_ddbc :=&PdfObjectStream {};if encoder ==nil {encoder =NewRawEncoder ();};_ddbc .PdfObjectDictionary =encoder .MakeStreamDict ();_ddfg ,_aebd :=encoder .EncodeBytes (contents );
-if _aebd !=nil {return nil ,_aebd ;};_ddbc .Set ("\u004c\u0065\u006e\u0067\u0074\u0068",MakeInteger (int64 (len (_ddfg ))));_ddbc .Stream =_ddfg ;return _ddbc ,nil ;};
-
-// GetName returns the *PdfObjectName represented by the PdfObject directly or indirectly within an indirect
-// object. On type mismatch the found bool flag is false and a nil pointer is returned.
-func GetName (obj PdfObject )(_gedd *PdfObjectName ,_dggf bool ){_gedd ,_dggf =TraceToDirectObject (obj ).(*PdfObjectName );return _gedd ,_dggf ;};
-
-// GetIndirect returns the *PdfIndirectObject represented by the PdfObject. On type mismatch the found bool flag is
-// false and a nil pointer is returned.
-func GetIndirect (obj PdfObject )(_ecde *PdfIndirectObject ,_fgca bool ){obj =ResolveReference (obj );_ecde ,_fgca =obj .(*PdfIndirectObject );return _ecde ,_fgca ;};func (_aeddb *PdfParser )inspect ()(map[string ]int ,error ){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u0049\u004e\u0053P\u0045\u0043\u0054\u0020\u002d\u002d\u002d\u002d\u002d\u002d-\u002d\u002d\u002d");
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("X\u0072\u0065\u0066\u0020\u0074\u0061\u0062\u006c\u0065\u003a");};_bded :=map[string ]int {};_baaa :=0;_gdac :=0;var _edgf []int ;for _bebe :=range _aeddb ._gabb .ObjectMap {_edgf =append (_edgf ,_bebe );
-};_ef .Ints (_edgf );_afegc :=0;for _ ,_egda :=range _edgf {_gfffg :=_aeddb ._gabb .ObjectMap [_egda ];if _gfffg .ObjectNumber ==0{continue ;};_baaa ++;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d");
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004c\u006f\u006f\u006bi\u006e\u0067\u0020\u0075\u0070\u0020\u006f\u0062\u006a\u0065c\u0074 \u006e\u0075\u006d\u0062\u0065\u0072\u003a \u0025\u0064",_gfffg .ObjectNumber );};_gefc ,_eeacb :=_aeddb .LookupByNumber (_gfffg .ObjectNumber );
-if _eeacb !=nil {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0045\u0052\u0052\u004f\u0052\u003a \u0046\u0061\u0069\u006c\u0020\u0074\u006f\u0020\u006c\u006f\u006f\u006b\u0075p\u0020\u006f\u0062\u006a\u0020\u0025\u0064 \u0028\u0025\u0073\u0029",_gfffg .ObjectNumber ,_eeacb );
-};_gdac ++;continue ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u006fb\u006a\u003a\u0020\u0025\u0073",_gefc );};_cffg ,_cccgg :=_gefc .(*PdfIndirectObject );if _cccgg {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0049N\u0044 \u004f\u004f\u0042\u004a\u0020\u0025\u0064\u003a\u0020\u0025\u0073",_gfffg .ObjectNumber ,_cffg );
-};_fcfd ,_bdge :=_cffg .PdfObject .(*PdfObjectDictionary );if _bdge {if _dfadg ,_becg :=_fcfd .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );_becg {_afadc :=string (*_dfadg );if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d\u002d\u002d\u003e\u0020\u004f\u0062\u006a\u0020\u0074\u0079\u0070e\u003a\u0020\u0025\u0073",_afadc );
-};_ ,_dfbfc :=_bded [_afadc ];if _dfbfc {_bded [_afadc ]++;}else {_bded [_afadc ]=1;};}else if _daefa ,_cbege :=_fcfd .Get ("\u0053u\u0062\u0074\u0079\u0070\u0065").(*PdfObjectName );_cbege {_bfbfb :=string (*_daefa );if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("-\u002d-\u003e\u0020\u004f\u0062\u006a\u0020\u0073\u0075b\u0074\u0079\u0070\u0065: \u0025\u0073",_bfbfb );
-};_ ,_egfe :=_bded [_bfbfb ];if _egfe {_bded [_bfbfb ]++;}else {_bded [_bfbfb ]=1;};};if _gacg ,_cgfdf :=_fcfd .Get ("\u0053").(*PdfObjectName );_cgfdf &&*_gacg =="\u004a\u0061\u0076\u0061\u0053\u0063\u0072\u0069\u0070\u0074"{_ ,_gabbb :=_bded ["\u004a\u0061\u0076\u0061\u0053\u0063\u0072\u0069\u0070\u0074"];
-if _gabbb {_bded ["\u004a\u0061\u0076\u0061\u0053\u0063\u0072\u0069\u0070\u0074"]++;}else {_bded ["\u004a\u0061\u0076\u0061\u0053\u0063\u0072\u0069\u0070\u0074"]=1;};};};}else if _ccgb ,_bgdg :=_gefc .(*PdfObjectStream );_bgdg {if _afddc ,_fegde :=_ccgb .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );
-_fegde {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d\u002d\u003e\u0020\u0053\u0074\u0072\u0065\u0061\u006d\u0020o\u0062\u006a\u0065\u0063\u0074\u0020\u0074\u0079\u0070\u0065:\u0020\u0025\u0073",*_afddc );};_dgcgb :=string (*_afddc );
-_bded [_dgcgb ]++;};}else {_acgb ,_bcccd :=_gefc .(*PdfObjectDictionary );if _bcccd {_dbbgc ,_dcaeg :=_acgb .Get ("\u0054\u0079\u0070\u0065").(*PdfObjectName );if _dcaeg {_gebcd :=string (*_dbbgc );if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d-\u002d \u006f\u0062\u006a\u0020\u0074\u0079\u0070\u0065\u0020\u0025\u0073",_gebcd );
-};_bded [_gebcd ]++;};};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0044\u0049\u0052\u0045\u0043\u0054\u0020\u004f\u0042\u004a\u0020\u0025d\u003a\u0020\u0025\u0073",_gfffg .ObjectNumber ,_gefc );};};_afegc ++;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u0045\u004fF\u0020\u0049\u004e\u0053\u0050\u0045\u0043T\u0020\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u002d\u002d");
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u003d=\u003d\u003d\u003d\u003d\u003d");};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004f\u0062j\u0065\u0063\u0074 \u0063\u006f\u0075\u006e\u0074\u003a\u0020\u0025\u0064",_baaa );
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0046\u0061\u0069\u006c\u0065\u0064\u0020\u006c\u006f\u006f\u006b\u0075p\u003a\u0020\u0025\u0064",_gdac );};for _cffef ,_aeeg :=range _bded {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0025\u0073\u003a\u0020\u0025\u0064",_cffef ,_aeeg );
-};};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u003d=\u003d\u003d\u003d\u003d\u003d");};if len (_aeddb ._gabb .ObjectMap )< 1{_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0054\u0068\u0069\u0073 \u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074 \u0069s\u0020\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0028\u0078\u0072\u0065\u0066\u0020\u0074\u0061\u0062l\u0065\u0020\u006d\u0069\u0073\u0073\u0069\u006e\u0067\u0021\u0029");
-return nil ,_ee .Errorf ("\u0069\u006ev\u0061\u006c\u0069\u0064 \u0064\u006fc\u0075\u006d\u0065\u006e\u0074\u0020\u0028\u0078r\u0065\u0066\u0020\u0074\u0061\u0062\u006c\u0065\u0020\u006d\u0069\u0073s\u0069\u006e\u0067\u0029");};_abfe ,_eadaf :=_bded ["\u0046\u006f\u006e\u0074"];
-if !_eadaf ||_abfe < 2{if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0054\u0068\u0069s \u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u0020i\u0073 \u0070r\u006fb\u0061\u0062\u006c\u0079\u0020\u0073\u0063\u0061\u006e\u006e\u0065\u0064\u0021");
-};}else {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0054\u0068\u0069\u0073\u0020\u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u0020\u0069\u0073\u0020\u0076\u0061\u006c\u0069\u0064\u0020\u0066o\u0072\u0020\u0065\u0078\u0074r\u0061\u0063t\u0069\u006f\u006e\u0021");
-};};return _bded ,nil ;};
-
-// MakeIndirectObject creates an PdfIndirectObject with a specified direct object PdfObject.
-func MakeIndirectObject (obj PdfObject )*PdfIndirectObject {_caebe :=&PdfIndirectObject {};_caebe .PdfObject =obj ;return _caebe ;};
-
-// NewParserWithOpts creates and initializes a new PdfParser using the provided options.
-// It creates a parser that tolerates certain non-critical PDF errors.
-// Returns a PdfParser or an error if initialization fails.
-func NewParserWithOpts (rs _ce .ReadSeeker ,opts ParserOpts )(*PdfParser ,error ){_dccbg :=&PdfParser {_fgaa :_ba (rs ),ObjCache :make (objectCache ),_eaba :map[int64 ]bool {},_ddfe :make ([]int64 ,0),_bfab :make (map[*PdfParser ]*PdfParser ),Opts :&opts };
-_ggefa :=_dccbg .initParser ();if _ggefa !=nil {return nil ,_ggefa ;};return _dccbg ,nil ;};func (_decd *PdfParser )parseNumber ()(PdfObject ,error ){return ParseNumber (_decd ._fgaa ._cad )};
-
-// Write outputs the object as it is to be written to file.
-func (_gef *PdfObjectArray )Write ()[]byte {return _gf (func (_edga *_f .Buffer ){_edga .WriteString ("\u005b");for _dadb ,_efabb :=range _gef .Elements (){_edga .Write (_efabb .Write ());if _dadb < (_gef .Len ()-1){_edga .WriteString ("\u0020");};};_edga .WriteString ("\u005d");
-});};
-
-// ParseIndirectObject parses an indirect object from the input stream. Can also be an object stream.
-// Returns the indirect object (*PdfIndirectObject) or the stream object (*PdfObjectStream).
-func (_fcbe *PdfParser )ParseIndirectObject ()(PdfObject ,error ){_ccfcb :=PdfIndirectObject {};_ccfcb ._eebb =_fcbe ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u002dR\u0065a\u0064\u0020\u0069\u006e\u0064i\u0072\u0065c\u0074\u0020\u006f\u0062\u006a");
-};_eedgd ,_fcda :=_fcbe ._fgaa .Peek (20);if _fcda !=nil {if _fcda !=_ce .EOF {_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0046\u0061\u0069\u006c\u0020\u0074\u006f\u0020r\u0065a\u0064\u0020\u0069\u006e\u0064\u0069\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a");
-return &_ccfcb ,_fcda ;};};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0028\u0069\u006edi\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a\u0020\u0070\u0065\u0065\u006b\u0020\u0022\u0025\u0073\u0022",string (_eedgd ));};_cagb :=_facf .FindStringSubmatchIndex (string (_eedgd ));
-if len (_cagb )< 6{if _fcda ==_ce .EOF {return nil ,_fcda ;};_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020U\u006e\u0061\u0062l\u0065\u0020\u0074\u006f \u0066\u0069\u006e\u0064\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0073\u0069\u0067\u006e\u0061\u0074\u0075\u0072\u0065\u0020\u0028\u0025\u0073\u0029",string (_eedgd ));
-return &_ccfcb ,_de .New ("\u0075\u006e\u0061b\u006c\u0065\u0020\u0074\u006f\u0020\u0064\u0065\u0074\u0065\u0063\u0074\u0020\u0069\u006e\u0064\u0069\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020s\u0069\u0067\u006e\u0061\u0074\u0075\u0072\u0065");
-};_fcbe ._fgaa .Discard (_cagb [0]);if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("O\u0066\u0066\u0073\u0065\u0074\u0073\u0020\u0025\u0020\u0064",_cagb );};_cbbf :=_cagb [1]-_cagb [0];_ecae :=make ([]byte ,_cbbf );_ ,_fcda =_fcbe .ReadAtLeast (_ecae ,_cbbf );
-if _fcda !=nil {_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0075\u006e\u0061\u0062l\u0065\u0020\u0074\u006f\u0020\u0072\u0065\u0061\u0064\u0020-\u0020\u0025\u0073",_fcda );return nil ,_fcda ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0074\u0065\u0078t\u006c\u0069\u006e\u0065\u003a\u0020\u0025\u0073",_ecae );
-};_fgabe :=_facf .FindStringSubmatch (string (_ecae ));if len (_fgabe )< 3{_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020U\u006e\u0061\u0062l\u0065\u0020\u0074\u006f \u0066\u0069\u006e\u0064\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0073\u0069\u0067\u006e\u0061\u0074\u0075\u0072\u0065\u0020\u0028\u0025\u0073\u0029",string (_ecae ));
-return &_ccfcb ,_de .New ("\u0075\u006e\u0061b\u006c\u0065\u0020\u0074\u006f\u0020\u0064\u0065\u0074\u0065\u0063\u0074\u0020\u0069\u006e\u0064\u0069\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020s\u0069\u0067\u006e\u0061\u0074\u0075\u0072\u0065");
-};_eeeb ,_ :=_c .Atoi (_fgabe [1]);_fccd ,_ :=_c .Atoi (_fgabe [2]);_ccfcb .ObjectNumber =int64 (_eeeb );_ccfcb .GenerationNumber =int64 (_fccd );for {_egdg ,_abgdg :=_fcbe ._fgaa .Peek (2);if _abgdg !=nil {return &_ccfcb ,_abgdg ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("I\u006ed\u002e\u0020\u0070\u0065\u0065\u006b\u003a\u0020%\u0073\u0020\u0028\u0025 x\u0029\u0021",string (_egdg ),string (_egdg ));
-};if IsWhiteSpace (_egdg [0]){_fcbe .skipSpaces ();}else if _egdg [0]=='%'{_fcbe .skipComments ();}else if (_egdg [0]=='<')&&(_egdg [1]=='<'){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0043\u0061\u006c\u006c\u0020\u0050\u0061\u0072\u0073e\u0044\u0069\u0063\u0074");
-};_ccfcb .PdfObject ,_abgdg =_fcbe .ParseDict ();if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0045\u004f\u0046\u0020Ca\u006c\u006c\u0020\u0050\u0061\u0072\u0073\u0065\u0044\u0069\u0063\u0074\u003a\u0020%\u0076",_abgdg );};if _abgdg !=nil {return &_ccfcb ,_abgdg ;
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0050\u0061\u0072\u0073\u0065\u0064\u0020\u0064\u0069\u0063t\u0069\u006f\u006e\u0061\u0072\u0079\u002e.\u002e\u0020\u0066\u0069\u006e\u0069\u0073\u0068\u0065\u0064\u002e");};}else if (_egdg [0]=='/')||(_egdg [0]=='(')||(_egdg [0]=='[')||(_egdg [0]=='<'){_ccfcb .PdfObject ,_abgdg =_fcbe .parseObject ();
-if _abgdg !=nil {return &_ccfcb ,_abgdg ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("P\u0061\u0072\u0073\u0065\u0064\u0020o\u0062\u006a\u0065\u0063\u0074\u0020\u002e\u002e\u002e \u0066\u0069\u006ei\u0073h\u0065\u0064\u002e");};}else if _egdg [0]==']'{_bd .Log .Debug ("\u0057\u0041\u0052\u004e\u0049N\u0047\u003a\u0020\u0027\u005d\u0027 \u0063\u0068\u0061\u0072\u0061\u0063\u0074e\u0072\u0020\u006eo\u0074\u0020\u0062\u0065i\u006e\u0067\u0020\u0075\u0073\u0065d\u0020\u0061\u0073\u0020\u0061\u006e\u0020\u0061\u0072\u0072\u0061\u0079\u0020\u0065\u006e\u0064\u0069n\u0067\u0020\u006d\u0061\u0072\u006b\u0065\u0072\u002e\u0020\u0053\u006b\u0069\u0070\u0070\u0069\u006e\u0067\u002e");
-_fcbe ._fgaa .Discard (1);}else {if _egdg [0]=='e'{_ebaa ,_bcda :=_fcbe .readTextLine ();if _bcda !=nil {return nil ,_bcda ;};if len (_ebaa )>=6&&_ebaa [0:6]=="\u0065\u006e\u0064\u006f\u0062\u006a"{break ;};}else if _egdg [0]=='s'{_egdg ,_ =_fcbe ._fgaa .Peek (10);
-if string (_egdg [:6])=="\u0073\u0074\u0072\u0065\u0061\u006d"{_eadeg :=6;if len (_egdg )> 6{if IsWhiteSpace (_egdg [_eadeg ])&&_egdg [_eadeg ]!='\r'&&_egdg [_eadeg ]!='\n'{_bd .Log .Debug ("\u004e\u006fn\u002d\u0063\u006f\u006e\u0066\u006f\u0072\u006d\u0061\u006e\u0074\u0020\u0050\u0044\u0046\u0020\u006e\u006f\u0074 \u0065\u006e\u0064\u0069\u006e\u0067 \u0073\u0074\u0072\u0065\u0061\u006d\u0020\u006c\u0069\u006e\u0065\u0020\u0070\u0072o\u0070\u0065r\u006c\u0079\u0020\u0077i\u0074\u0068\u0020\u0045\u004fL\u0020\u006d\u0061\u0072\u006b\u0065\u0072");
-_fcbe ._dafba ._gbacd =true ;_eadeg ++;};switch _egdg [_eadeg ]{case '\r':_eadeg ++;if _egdg [_eadeg ]=='\n'{_eadeg ++;};case '\n':_eadeg ++;default:_fcbe ._dafba ._gbacd =true ;};};_fcbe ._fgaa .Discard (_eadeg );_dbda ,_gcefa :=_ccfcb .PdfObject .(*PdfObjectDictionary );
-if !_gcefa {return nil ,_de .New ("\u0073\u0074\u0072\u0065\u0061\u006d\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u006di\u0073s\u0069\u006e\u0067\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079");};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0053\u0074\u0072\u0065\u0061\u006d\u0020\u0064\u0069c\u0074\u0020\u0025\u0073",_dbda );
-};_febd ,_dddge :=_fcbe .traceStreamLength (_dbda .Get ("\u004c\u0065\u006e\u0067\u0074\u0068"));if _dddge !=nil {_bd .Log .Debug ("\u0046\u0061\u0069l\u0020\u0074\u006f\u0020t\u0072\u0061\u0063\u0065\u0020\u0073\u0074r\u0065\u0061\u006d\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u003a\u0020\u0025\u0076",_dddge );
-return nil ,_dddge ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0053\u0074\u0072\u0065\u0061\u006d\u0020\u006c\u0065\u006e\u0067\u0074h\u003f\u0020\u0025\u0073",_febd );};_cdab ,_edfa :=_febd .(*PdfObjectInteger );if !_edfa {return nil ,_de .New ("\u0073\u0074re\u0061\u006d\u0020l\u0065\u006e\u0067\u0074h n\u0065ed\u0073\u0020\u0074\u006f\u0020\u0062\u0065 a\u006e\u0020\u0069\u006e\u0074\u0065\u0067e\u0072");
-};_gdgd :=*_cdab ;if _gdgd < 0{return nil ,_de .New ("\u0073\u0074\u0072\u0065\u0061\u006d\u0020\u006e\u0065\u0065\u0064\u0073\u0020\u0074\u006f \u0062e\u0020\u006c\u006f\u006e\u0067\u0065\u0072\u0020\u0074\u0068\u0061\u006e\u0020\u0030");};_fcdcb :=_fcbe .GetFileOffset ();
-_ddfa :=_fcbe .xrefNextObjectOffset (_fcdcb );if _fcdcb +int64 (_gdgd )> _ddfa &&_ddfa > _fcdcb {_bd .Log .Debug ("E\u0078\u0070\u0065\u0063te\u0064 \u0065\u006e\u0064\u0069\u006eg\u0020\u0061\u0074\u0020\u0025\u0064",_fcdcb +int64 (_gdgd ));_bd .Log .Debug ("\u004e\u0065\u0078\u0074\u0020\u006f\u0062\u006a\u0065\u0063\u0074 \u0073\u0074\u0061\u0072\u0074\u0069\u006e\u0067\u0020\u0061t\u0020\u0025\u0064",_ddfa );
-_daac :=_ddfa -_fcdcb -17;if _daac < 0{return nil ,_de .New ("\u0069n\u0076\u0061l\u0069\u0064\u0020\u0073t\u0072\u0065\u0061m\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u002c\u0020go\u0069\u006e\u0067 \u0070\u0061s\u0074\u0020\u0062\u006f\u0075\u006ed\u0061\u0072i\u0065\u0073");
-};_bd .Log .Debug ("\u0041\u0074\u0074\u0065\u006d\u0070\u0074\u0069\u006e\u0067\u0020\u0061\u0020l\u0065\u006e\u0067\u0074\u0068\u0020c\u006f\u0072\u0072\u0065\u0063\u0074\u0069\u006f\u006e\u0020\u0074\u006f\u0020%\u0064\u002e\u002e\u002e",_daac );_gdgd =PdfObjectInteger (_daac );
-_dbda .Set ("\u004c\u0065\u006e\u0067\u0074\u0068",MakeInteger (_daac ));};if int64 (_gdgd )> _fcbe ._fcbfc {_bd .Log .Debug ("\u0045\u0052R\u004f\u0052\u003a\u0020\u0053t\u0072\u0065\u0061\u006d\u0020l\u0065\u006e\u0067\u0074\u0068\u0020\u0063\u0061\u006e\u006e\u006f\u0074\u0020\u0062\u0065\u0020\u006c\u0061\u0072\u0067\u0065\u0072\u0020\u0074\u0068\u0061\u006e\u0020\u0066\u0069\u006c\u0065\u0020\u0073\u0069\u007a\u0065");
-return nil ,_de .New ("\u0069n\u0076\u0061l\u0069\u0064\u0020\u0073t\u0072\u0065\u0061m\u0020\u006c\u0065\u006e\u0067\u0074\u0068\u002c\u0020la\u0072\u0067\u0065r\u0020\u0074h\u0061\u006e\u0020\u0066\u0069\u006ce\u0020\u0073i\u007a\u0065");};_ddebc :=make ([]byte ,_gdgd );
-_ ,_dddge =_fcbe .ReadAtLeast (_ddebc ,int (_gdgd ));if _dddge !=nil {_bd .Log .Debug ("E\u0052\u0052\u004f\u0052 s\u0074r\u0065\u0061\u006d\u0020\u0028%\u0064\u0029\u003a\u0020\u0025\u0058",len (_ddebc ),_ddebc );_bd .Log .Debug ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_dddge );
-return nil ,_dddge ;};_cebdd :=PdfObjectStream {};_cebdd .Stream =_ddebc ;_cebdd .PdfObjectDictionary =_ccfcb .PdfObject .(*PdfObjectDictionary );_cebdd .ObjectNumber =_ccfcb .ObjectNumber ;_cebdd .GenerationNumber =_ccfcb .GenerationNumber ;_cebdd .PdfObjectReference ._eebb =_fcbe ;
-_fcbe .skipSpaces ();_fcbe ._fgaa .Discard (9);_fcbe .skipSpaces ();return &_cebdd ,nil ;};};if _ccfcb .PdfObject !=nil &&_egdg [0]>='0'&&_egdg [0]<='9'{_adfba :=_egdg ;if len (_egdg )< 20{_adfba ,_ =_fcbe ._fgaa .Peek (20);};if _facf .Match (_adfba ){_bd .Log .Debug ("WA\u0052\u004eI\u004e\u0047\u003a\u0020\u004d\u0069\u0073\u0073\u0069n\u0067\u0020\u0065\u006e\u0064\u006f\u0062\u006a\u0020\u006d\u0061\u0072\u006b\u0065\u0072\u002c\u0020\u0064\u0065\u0074\u0065\u0063\u0074\u0065\u0064\u0020\u006e\u0065w\u0020o\u0062\u006a\u0065\u0063\u0074\u0020\u0073\u0074a\u0072t\u0069\u006eg");
-break ;};};_ccfcb .PdfObject ,_abgdg =_fcbe .parseObject ();if _ccfcb .PdfObject ==nil {_bd .Log .Debug ("\u0049N\u0043\u004f\u004dP\u0041\u0054\u0049B\u0049LI\u0054\u0059\u003a\u0020\u0049\u006e\u0064i\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u006e\u006f\u0074\u0020\u0063\u006f\u006e\u0074\u0061\u0069\u006e\u0069\u006e\u0067\u0020\u0061n \u006fb\u006a\u0065\u0063\u0074\u0020\u002d \u0061\u0073\u0073\u0075\u006di\u006e\u0067\u0020\u006e\u0075\u006c\u006c\u0020\u006f\u0062\u006ae\u0063\u0074");
-_ccfcb .PdfObject =MakeNull ();};return &_ccfcb ,_abgdg ;};};if _ccfcb .PdfObject ==nil {_bd .Log .Debug ("\u0049N\u0043\u004f\u004dP\u0041\u0054\u0049B\u0049LI\u0054\u0059\u003a\u0020\u0049\u006e\u0064i\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u006e\u006f\u0074\u0020\u0063\u006f\u006e\u0074\u0061\u0069\u006e\u0069\u006e\u0067\u0020\u0061n \u006fb\u006a\u0065\u0063\u0074\u0020\u002d \u0061\u0073\u0073\u0075\u006di\u006e\u0067\u0020\u006e\u0075\u006c\u006c\u0020\u006f\u0062\u006ae\u0063\u0074");
-_ccfcb .PdfObject =MakeNull ();};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0052\u0065\u0074\u0075rn\u0069\u006e\u0067\u0020\u0069\u006e\u0064\u0069\u0072\u0065\u0063\u0074\u0021");};return &_ccfcb ,nil ;};
-
-// JPXEncoder implements JPX encoder/decoder (dummy, for now)
-// FIXME: implement
-type JPXEncoder struct{};
-
-// Len returns the number of elements in the streams.
-func (_gdfe *PdfObjectStreams )Len ()int {if _gdfe ==nil {return 0;};return len (_gdfe ._egfda );};
-
-// GetAccessPermissions returns the PDF access permissions as an AccessPermissions object.
-func (_daeg *PdfCrypt )GetAccessPermissions ()_gbg .Permissions {return _daeg ._dfb .P };
+func (_abcda *CCITTFaxEncoder )UpdateParams (params *PdfObjectDictionary ){if _decc ,_fecf :=GetNumberAsInt64 (params .Get ("\u004b"));_fecf ==nil {_abcda .K =int (_decc );};if _fcggb ,_ceed :=GetNumberAsInt64 (params .Get ("\u0043o\u006c\u0075\u006d\u006e\u0073"));
+_ceed ==nil {_abcda .Columns =int (_fcggb );}else if _fcggb ,_ceed =GetNumberAsInt64 (params .Get ("\u0057\u0069\u0064t\u0068"));_ceed ==nil {_abcda .Columns =int (_fcggb );};if _cegf ,_gbgef :=GetNumberAsInt64 (params .Get ("\u0042\u006c\u0061\u0063\u006b\u0049\u0073\u0031"));
+_gbgef ==nil {_abcda .BlackIs1 =_cegf > 0;}else {if _fbgb ,_aacba :=GetBoolVal (params .Get ("\u0042\u006c\u0061\u0063\u006b\u0049\u0073\u0031"));_aacba {_abcda .BlackIs1 =_fbgb ;}else {if _dbga ,_fgecc :=GetArray (params .Get ("\u0044\u0065\u0063\u006f\u0064\u0065"));
+_fgecc {_fbgf ,_gfdcd :=_dbga .ToIntegerArray ();if _gfdcd ==nil {_abcda .BlackIs1 =_fbgf [0]==1&&_fbgf [1]==0;};};};};if _begc ,_abde :=GetNumberAsInt64 (params .Get ("\u0045\u006ec\u006f\u0064\u0065d\u0042\u0079\u0074\u0065\u0041\u006c\u0069\u0067\u006e"));
+_abde ==nil {_abcda .EncodedByteAlign =_begc > 0;}else {if _gdgcc ,_edee :=GetBoolVal (params .Get ("\u0045\u006ec\u006f\u0064\u0065d\u0042\u0079\u0074\u0065\u0041\u006c\u0069\u0067\u006e"));_edee {_abcda .EncodedByteAlign =_gdgcc ;};};if _afb ,_gdge :=GetNumberAsInt64 (params .Get ("\u0045n\u0064\u004f\u0066\u004c\u0069\u006ee"));
+_gdge ==nil {_abcda .EndOfLine =_afb > 0;}else {if _gfa ,_dbbe :=GetBoolVal (params .Get ("\u0045n\u0064\u004f\u0066\u004c\u0069\u006ee"));_dbbe {_abcda .EndOfLine =_gfa ;};};if _bagc ,_fbbg :=GetNumberAsInt64 (params .Get ("\u0052\u006f\u0077\u0073"));
+_fbbg ==nil {_abcda .Rows =int (_bagc );}else if _bagc ,_fbbg =GetNumberAsInt64 (params .Get ("\u0048\u0065\u0069\u0067\u0068\u0074"));_fbbg ==nil {_abcda .Rows =int (_bagc );};if _adg ,_dbba :=GetNumberAsInt64 (params .Get ("\u0045\u006e\u0064\u004f\u0066\u0042\u006c\u006f\u0063\u006b"));
+_dbba ==nil {_abcda .EndOfBlock =_adg > 0;}else {if _affbe ,_fdge :=GetBoolVal (params .Get ("\u0045\u006e\u0064\u004f\u0066\u0042\u006c\u006f\u0063\u006b"));_fdge {_abcda .EndOfBlock =_affbe ;};};if _bbcf ,_edec :=GetNumberAsInt64 (params .Get ("\u0044\u0061\u006d\u0061ge\u0064\u0052\u006f\u0077\u0073\u0042\u0065\u0066\u006f\u0072\u0065\u0045\u0072\u0072o\u0072"));
+_edec !=nil {_abcda .DamagedRowsBeforeError =int (_bbcf );};};func (_dagf *PdfObjectFloat )String ()string {return _ebc .Sprintf ("\u0025\u0066",*_dagf )};func (_fbdbb *PdfParser )xrefTableHealthCheck (_cecdc *PdfObjectDictionary )error {if _egae ,_gbfgd :=_cecdc .Get ("\u0053\u0069\u007a\u0065").(*PdfObjectInteger );
+_gbfgd {_bcbg :=int64 (*_egae )/2;if int64 (len (_fbdbb ._dggd .ObjectMap ))< _bcbg {return _bc .New ("\u006d\u0061\u0070\u0070\u0065\u0064\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0074o\u006f\u0020\u006c\u006f\u0077\u0020\u0063\u006f\u006d\u0070\u0061\u0072\u0065d\u0020\u0077\u0069\u0074\u0068\u0020\u0074\u006f\u0074\u0061\u006c\u0020tr\u0061\u0069\u006c\u0065\u0072\u0020\u0073\u0069\u007a\u0065");
+};};_cedaad :=_cecdc .Get ("\u0052\u006f\u006f\u0074");if _cedaad ==nil {return _bc .New ("\u0072\u006f\u006f\u0074 o\u0062\u006a\u0065\u0063\u0074\u0020\u0069\u0073\u0020\u006d\u0069\u0073\u0073\u0069n\u0067");};_dabc ,_baef :=_fbdbb .Resolve (_cedaad );
+if _baef !=nil {return _baef ;};if _ ,_gdfd :=_dabc .(*PdfObjectDictionary );!_gdfd {return _bc .New ("\u0063\u0061\u0074al\u006f\u0067\u0020\u006f\u0062\u006a\u0065\u0063\u0074 \u0069s\u0020n\u006ft\u0020\u0061\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079");
+};_caagd :=_dabc .(*PdfObjectDictionary ).Get ("\u0050\u0061\u0067e\u0073");if _caagd ==nil {return _bc .New ("\u0070\u0061\u0067\u0065\u0073\u0020o\u0062\u006a\u0065\u0063\u0074\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075n\u0064\u0020\u0069\u006e\u0020\u0063\u0061t\u0061\u006c\u006f\u0067");
+};_bbdc ,_baef :=_fbdbb .Resolve (_caagd );if _baef !=nil {return _baef ;};if _ ,_bgbe :=_bbdc .(*PdfObjectDictionary );!_bgbe {return _bc .New ("\u0070\u0061\u0067\u0065\u0073\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0069\u0073 \u006eo\u0074\u0020\u0061\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079");
+};return nil ;};
 
 // LZWEncoder provides LZW encoding/decoding functionality.
 type LZWEncoder struct{Predictor int ;BitsPerComponent int ;
@@ -1313,526 +2030,12 @@ type LZWEncoder struct{Predictor int ;BitsPerComponent int ;
 Columns int ;Colors int ;
 
 // LZW algorithm setting.
-EarlyChange int ;};func _agbd (_dbcd *PdfObjectStream ,_bab *PdfObjectDictionary )(*LZWEncoder ,error ){_gff :=NewLZWEncoder ();_eegg :=_dbcd .PdfObjectDictionary ;if _eegg ==nil {return _gff ,nil ;};if _bab ==nil {_ddeb :=TraceToDirectObject (_eegg .Get ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073"));
-if _ddeb !=nil {if _efbe ,_cgff :=_ddeb .(*PdfObjectDictionary );_cgff {_bab =_efbe ;}else if _cccb ,_bfg :=_ddeb .(*PdfObjectArray );_bfg {if _cccb .Len ()==1{if _ceeb ,_fddb :=GetDict (_cccb .Get (0));_fddb {_bab =_ceeb ;};};};if _bab ==nil {_bd .Log .Error ("\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073\u0020\u006e\u006f\u0074 \u0061 \u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079\u0020\u0025\u0023\u0076",_ddeb );
-return nil ,_ee .Errorf ("\u0069\u006e\u0076\u0061li\u0064\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073");};};};_bedg :=_eegg .Get ("E\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065");if _bedg !=nil {_ecbe ,_cgaa :=_bedg .(*PdfObjectInteger );
-if !_cgaa {_bd .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u003a \u0045\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069\u0065d\u0020\u0062\u0075\u0074\u0020\u006e\u006f\u0074\u0020\u006e\u0075\u006d\u0065\u0072i\u0063 \u0028\u0025\u0054\u0029",_bedg );
-return nil ,_ee .Errorf ("\u0069\u006e\u0076\u0061li\u0064\u0020\u0045\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065");};if *_ecbe !=0&&*_ecbe !=1{return nil ,_ee .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0045\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065\u0020\u0076\u0061\u006c\u0075e\u0020\u0028\u006e\u006f\u0074 \u0030\u0020o\u0072\u0020\u0031\u0029");
-};_gff .EarlyChange =int (*_ecbe );}else {_gff .EarlyChange =1;};if _bab ==nil {return _gff ,nil ;};if _dbgc ,_becf :=GetIntVal (_bab .Get ("E\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065"));_becf {if _dbgc ==0||_dbgc ==1{_gff .EarlyChange =_dbgc ;
-}else {_bd .Log .Debug ("W\u0041\u0052\u004e\u003a\u0020\u0069n\u0076\u0061\u006c\u0069\u0064\u0020E\u0061\u0072\u006c\u0079\u0043\u0068\u0061n\u0067\u0065\u0020\u0076\u0061\u006c\u0075\u0065\u003a\u0020%\u0064",_dbgc );};};_bedg =_bab .Get ("\u0050r\u0065\u0064\u0069\u0063\u0074\u006fr");
-if _bedg !=nil {_bgcec ,_cbbd :=_bedg .(*PdfObjectInteger );if !_cbbd {_bd .Log .Debug ("E\u0072\u0072\u006f\u0072\u003a\u0020\u0050\u0072\u0065d\u0069\u0063\u0074\u006f\u0072\u0020\u0073pe\u0063\u0069\u0066\u0069e\u0064\u0020\u0062\u0075\u0074\u0020\u006e\u006f\u0074 n\u0075\u006de\u0072\u0069\u0063\u0020\u0028\u0025\u0054\u0029",_bedg );
-return nil ,_ee .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0050\u0072\u0065\u0064i\u0063\u0074\u006f\u0072");};_gff .Predictor =int (*_bgcec );};_bedg =_bab .Get ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074");
-if _bedg !=nil {_ccf ,_bfc :=_bedg .(*PdfObjectInteger );if !_bfc {_bd .Log .Debug ("\u0045\u0052\u0052O\u0052\u003a\u0020\u0049n\u0076\u0061\u006c\u0069\u0064\u0020\u0042i\u0074\u0073\u0050\u0065\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074");
-return nil ,_ee .Errorf ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0042\u0069\u0074\u0073\u0050e\u0072\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074");};_gff .BitsPerComponent =int (*_ccf );};if _gff .Predictor > 1{_gff .Columns =1;_bedg =_bab .Get ("\u0043o\u006c\u0075\u006d\u006e\u0073");
-if _bedg !=nil {_dcde ,_dccf :=_bedg .(*PdfObjectInteger );if !_dccf {return nil ,_ee .Errorf ("\u0070r\u0065\u0064\u0069\u0063\u0074\u006f\u0072\u0020\u0063\u006f\u006cu\u006d\u006e\u0020\u0069\u006e\u0076\u0061\u006c\u0069\u0064");};_gff .Columns =int (*_dcde );
-};_gff .Colors =1;_bedg =_bab .Get ("\u0043\u006f\u006c\u006f\u0072\u0073");if _bedg !=nil {_bddd ,_fdbg :=_bedg .(*PdfObjectInteger );if !_fdbg {return nil ,_ee .Errorf ("\u0070\u0072\u0065d\u0069\u0063\u0074\u006fr\u0020\u0063\u006f\u006c\u006f\u0072\u0073 \u006e\u006f\u0074\u0020\u0061\u006e\u0020\u0069\u006e\u0074\u0065\u0067\u0065\u0072");
-};_gff .Colors =int (*_bddd );};};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0064\u0065\u0063\u006f\u0064\u0065\u0020\u0070\u0061\u0072\u0061\u006ds\u003a\u0020\u0025\u0073",_bab .String ());};return _gff ,nil ;};
-
-// Elements returns a slice of the PdfObject elements in the array.
-func (_bgcfe *PdfObjectArray )Elements ()[]PdfObject {if _bgcfe ==nil {return nil ;};return _bgcfe ._bgegc ;};const (_gge =16<<10;_fbb =64<<10;_ddd =256<<10;_ceg =1<<20;_gac =4<<20;_fga =16<<20;);
-
-// Write outputs the object as it is to be written to file.
-func (_bcdae *PdfObjectDictionary )Write ()[]byte {_bcdae ._cagec .RLock ();defer _bcdae ._cagec .RUnlock ();var _ggae _f .Buffer ;_ggae .WriteString ("\u003c\u003c");for _ ,_fecb :=range _bcdae ._ggeeg {_dbge :=_bcdae ._abada [_fecb ];_ggae .Write (_fecb .Write ());
-_ggae .WriteString ("\u0020");_ggae .Write (_dbge .Write ());};_ggae .WriteString ("\u003e\u003e");return _ggae .Bytes ();};
-
-// Write outputs the object as it is to be written to file.
-func (_bbafdf *PdfObjectReference )Write ()[]byte {return _gf (func (_gfcaf *_f .Buffer ){_gfcaf .WriteString (_c .FormatInt (_bbafdf .ObjectNumber ,10));_gfcaf .WriteString ("\u0020");_gfcaf .WriteString (_c .FormatInt (_bbafdf .GenerationNumber ,10));
-_gfcaf .WriteString ("\u0020\u0052");});};
-
-// UpdateParams updates the parameter values of the encoder.
-func (_ebdfd *MultiEncoder )UpdateParams (params *PdfObjectDictionary ){for _ ,_dcabf :=range _ebdfd ._gdgb {_dcabf .UpdateParams (params );};};type limitedReadSeeker struct{_eggb _ce .ReadSeeker ;_bdcg int64 ;};
-
-// HasInvalidSubsectionHeader implements core.ParserMetadata interface.
-func (_ccd ParserMetadata )HasInvalidSubsectionHeader ()bool {return _ccd ._ddef };
-
-// UnreadByte unreads the last byte read from the buffered reader.
-func (_dce *bufferedReadSeeker )UnreadByte ()error {return _dce ._cad .UnreadByte ()};func _dbfa (_efbcg _fd .Image )*JBIG2Image {_gcdb :=_efbcg .Base ();return &JBIG2Image {Data :_gcdb .Data ,Width :_gcdb .Width ,Height :_gcdb .Height ,HasPadding :true };
-};
-
-// CCITTFaxEncoder implements Group3 and Group4 facsimile (fax) encoder/decoder.
-type CCITTFaxEncoder struct{K int ;EndOfLine bool ;EncodedByteAlign bool ;Columns int ;Rows int ;EndOfBlock bool ;BlackIs1 bool ;DamagedRowsBeforeError int ;};func _ddda (_gc int )int {if _gc < _ec {return -1;};for _ed ,_aeb :=range _gbd {if _gc <=_aeb {return _ed ;
-};};return -1;};
-
-// PdfObjectNull represents the primitive PDF null object.
-type PdfObjectNull struct{};
-
-// MakeLazy create temporary file for stream to reduce memory usage.
-// It can be used for creating PDF with many images.
-// Temporary files are removed automatically when Write/WriteToFile is called for creator object.
-func (_ebadd *PdfObjectStream )MakeLazy ()error {if _ebadd .Lazy {return nil ;};_bagdg ,_cfdf :=_a .CreateTemp ("","\u0078o\u0062\u006a\u0065\u0063\u0074");if _cfdf !=nil {return _cfdf ;};defer _bagdg .Close ();_ ,_cfdf =_bagdg .Write (_ebadd .Stream );
-if _cfdf !=nil {return _cfdf ;};_ebadd .Lazy =true ;_ebadd .Stream =nil ;_ebadd .TempFile =_bagdg .Name ();return nil ;};func (_gcbb *PdfParser )repairLocateXref ()(int64 ,error ){_efffe :=int64 (1000);_gcbb ._fgaa .Seek (-_efffe ,_ce .SeekCurrent );_abab ,_ebbf :=_gcbb ._fgaa .Seek (0,_ce .SeekCurrent );
-if _ebbf !=nil {return 0,_ebbf ;};_cbec :=make ([]byte ,_efffe );_gcbb ._fgaa .Read (_cbec );_bedd :=_bbbda .FindAllStringIndex (string (_cbec ),-1);if len (_bedd )< 1{_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0052\u0065\u0070a\u0069\u0072\u003a\u0020\u0078\u0072\u0065f\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064\u0021");
-return 0,_de .New ("\u0072\u0065\u0070\u0061ir\u003a\u0020\u0078\u0072\u0065\u0066\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075n\u0064");};_agdb :=int64 (_bedd [len (_bedd )-1][0]);_edbcb :=_abab +_agdb ;return _edbcb ,nil ;};
-
-// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
-func (_faba *RunLengthEncoder )MakeStreamDict ()*PdfObjectDictionary {_geef :=MakeDict ();_geef .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_faba .GetFilterName ()));return _geef ;};type asciiHexReader struct{_cgbc byteReader ;_cfcf error ;};
-
-
-// DecodeStream implements ASCII hex decoding.
-func (_dcdb *ASCIIHexEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return _dcdb .DecodeBytes (streamObj .Stream );};
-
-// String returns a string describing `array`.
-func (_bdbc *PdfObjectArray )String ()string {_bcdfd :="\u005b";for _aefge ,_cece :=range _bdbc .Elements (){_bcdfd +=_cece .String ();if _aefge < (_bdbc .Len ()-1){_bcdfd +="\u002c\u0020";};};_bcdfd +="\u005d";return _bcdfd ;};func _cggdd (_cbda ,_cgfggc ,_ddccf int )error {if _cgfggc < 0||_cgfggc > _cbda {return _de .New ("s\u006c\u0069\u0063\u0065\u0020\u0069n\u0064\u0065\u0078\u0020\u0061\u0020\u006f\u0075\u0074 \u006f\u0066\u0020b\u006fu\u006e\u0064\u0073");
-};if _ddccf < _cgfggc {return _de .New ("\u0069n\u0076\u0061\u006c\u0069d\u0020\u0073\u006c\u0069\u0063e\u0020i\u006ed\u0065\u0078\u0020\u0062\u0020\u003c\u0020a");};if _ddccf > _cbda {return _de .New ("s\u006c\u0069\u0063\u0065\u0020\u0069n\u0064\u0065\u0078\u0020\u0062\u0020\u006f\u0075\u0074 \u006f\u0066\u0020b\u006fu\u006e\u0064\u0073");
-};return nil ;};
-
-// Append appends PdfObject(s) to the array.
-func (_cdff *PdfObjectArray )Append (objects ...PdfObject ){if _cdff ==nil {_bd .Log .Debug ("\u0057\u0061\u0072\u006e\u0020\u002d\u0020\u0041\u0074\u0074\u0065\u006d\u0070t\u0020\u0074\u006f\u0020\u0061\u0070p\u0065\u006e\u0064\u0020\u0074\u006f\u0020\u0061\u0020\u006e\u0069\u006c\u0020a\u0072\u0072\u0061\u0079");
-return ;};_cdff ._bgegc =append (_cdff ._bgegc ,objects ...);};
-
-// PdfObjectStream represents the primitive PDF Object stream.
-type PdfObjectStream struct{PdfObjectReference ;*PdfObjectDictionary ;Stream []byte ;Lazy bool ;TempFile string ;};const _ec =_gge /4;
-
-// GetTrailer returns the PDFs trailer dictionary. The trailer dictionary is typically the starting point for a PDF,
-// referencing other key objects that are important in the document structure.
-func (_gbge *PdfParser )GetTrailer ()*PdfObjectDictionary {return _gbge ._dbbf };func (_cebfc *PdfParser )rebuildXrefTable ()error {_ggbca :=XrefTable {};_ggbca .ObjectMap =map[int ]XrefObject {};_eaca :=make ([]int ,0,len (_cebfc ._gabb .ObjectMap ));
-for _ddfad :=range _cebfc ._gabb .ObjectMap {_eaca =append (_eaca ,_ddfad );};_ef .Ints (_eaca );for _ ,_eaeb :=range _eaca {_agab :=_cebfc ._gabb .ObjectMap [_eaeb ];_dbcf ,_ ,_dbdce :=_cebfc .lookupByNumberWrapper (_eaeb ,false );if _dbdce !=nil {_bd .Log .Debug ("\u0045\u0052RO\u0052\u003a\u0020U\u006e\u0061\u0062\u006ce t\u006f l\u006f\u006f\u006b\u0020\u0075\u0070\u0020ob\u006a\u0065\u0063\u0074\u0020\u0028\u0025s\u0029",_dbdce );
-_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0058\u0072\u0065\u0066\u0020\u0074\u0061\u0062\u006c\u0065\u0020\u0063\u006fm\u0070\u006c\u0065\u0074\u0065\u006c\u0079\u0020\u0062\u0072\u006f\u006b\u0065\u006e\u0020\u002d\u0020\u0061\u0074\u0074\u0065\u006d\u0070\u0074\u0069\u006e\u0067\u0020\u0074\u006f \u0072\u0065\u0070\u0061\u0069r\u0020");
-_faae ,_decae :=_cebfc .repairRebuildXrefsTopDown ();if _decae !=nil {_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0046\u0061\u0069\u006c\u0065\u0064\u0020\u0078\u0072\u0065\u0066\u0020\u0072\u0065\u0062\u0075\u0069l\u0064\u0020\u0072\u0065\u0070a\u0069\u0072 \u0028\u0025\u0073\u0029",_decae );
-return _decae ;};_cebfc ._gabb =*_faae ;_bd .Log .Debug ("\u0052e\u0070\u0061\u0069\u0072e\u0064\u0020\u0078\u0072\u0065f\u0020t\u0061b\u006c\u0065\u0020\u0062\u0075\u0069\u006ct");return nil ;};_bdaba ,_bffg ,_dbdce :=_dbd (_dbcf );if _dbdce !=nil {return _dbdce ;
-};_agab .ObjectNumber =int (_bdaba );_agab .Generation =int (_bffg );_ggbca .ObjectMap [int (_bdaba )]=_agab ;};_cebfc ._gabb =_ggbca ;_bd .Log .Debug ("N\u0065w\u0020\u0078\u0072\u0065\u0066\u0020\u0074\u0061b\u006c\u0065\u0020\u0062ui\u006c\u0074");_egb (_cebfc ._gabb );
-return nil ;};type multiFallbackReader struct{_feff _ce .Reader ;_ccgc []StreamEncoder ;_bbggc bool ;_caec error ;_ecbd []byte ;_ffeb int ;};
-
-// GetFilterName returns the name of the encoding filter.
-func (_fbec *ASCII85Encoder )GetFilterName ()string {return StreamEncodingFilterNameASCII85 };
-
-// UpdateParams updates the parameter values of the encoder.
-func (_beadg *ASCII85Encoder )UpdateParams (params *PdfObjectDictionary ){};
-
-// GetFilterName returns the name of the encoding filter.
-func (_ggdae *ASCIIHexEncoder )GetFilterName ()string {return StreamEncodingFilterNameASCIIHex };
-
-// RawEncoder implements Raw encoder/decoder (no encoding, pass through)
-type RawEncoder struct{};
-
-// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
-// Has the Filter set.  Some other parameters are generated elsewhere.
-func (_egcf *DCTEncoder )MakeStreamDict ()*PdfObjectDictionary {_bgad :=MakeDict ();_bgad .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_egcf .GetFilterName ()));return _bgad ;};
-
-// MakeDecodeParams makes a new instance of an encoding dictionary based on the current encoder settings.
-func (_ggfb *JBIG2Encoder )MakeDecodeParams ()PdfObject {return MakeDict ()};
-
-// GetBool returns the *PdfObjectBool object that is represented by a PdfObject directly or indirectly
-// within an indirect object. The bool flag indicates whether a match was found.
-func GetBool (obj PdfObject )(_aedec *PdfObjectBool ,_gfddb bool ){_aedec ,_gfddb =TraceToDirectObject (obj ).(*PdfObjectBool );return _aedec ,_gfddb ;};
-
-// Keys returns the list of keys in the dictionary.
-// If `d` is nil returns a nil slice.
-func (_agea *PdfObjectDictionary )Keys ()[]PdfObjectName {if _agea ==nil {return nil ;};_agea ._cagec .RLock ();defer _agea ._cagec .RUnlock ();_acgd :=make ([]PdfObjectName ,len (_agea ._ggeeg ));copy (_acgd ,_agea ._ggeeg );return _acgd ;};func (_aacc *multiFallbackReader )Read (p []byte )(int ,error ){if !_aacc ._bbggc {_aacc ._bbggc =true ;
-_dgcg ,_bbee :=_ce .ReadAll (_aacc ._feff );if _bbee !=nil {_aacc ._caec =_bbee ;return 0,_bbee ;};for _ ,_dcefa :=range _aacc ._ccgc {_dgcg ,_bbee =_dcefa .DecodeBytes (_dgcg );if _bbee !=nil {_aacc ._caec =_bbee ;return 0,_bbee ;};};_aacc ._ecbd =_dgcg ;
-};if _aacc ._caec !=nil {return 0,_aacc ._caec ;};if _aacc ._ffeb >=len (_aacc ._ecbd ){return 0,_ce .EOF ;};_efbde :=copy (p ,_aacc ._ecbd [_aacc ._ffeb :]);_aacc ._ffeb +=_efbde ;return _efbde ,nil ;};
-
-// PdfObjectName represents the primitive PDF name object.
-type PdfObjectName string ;
-
-// CheckAccessRights checks access rights and permissions for a specified password. If either user/owner password is
-// specified, full rights are granted, otherwise the access rights are specified by the Permissions flag.
-//
-// The bool flag indicates that the user can access and view the file.
-// The AccessPermissions shows what access the user has for editing etc.
-// An error is returned if there was a problem performing the authentication.
-func (_ffaa *PdfParser )CheckAccessRights (password []byte )(bool ,_gbg .Permissions ,error ){if _ffaa ._ggee ==nil {return true ,_gbg .PermOwner ,nil ;};return _ffaa ._ggee .checkAccessRights (password );};
-
-// Seek sets the offset for the next Read to offset, interpreted according to whence:
-// 0 means relative to the start of the file,
-// 1 means relative to the current offset, and 2 means relative to the end.
-func (_cg *bufferedReadSeeker )Seek (offset int64 ,whence int )(int64 ,error ){_ffe ,_bfff :=_cg ._dbe .Seek (offset ,whence );if _bfff !=nil {return _ffe ,_bfff ;};_cg ._cad =_fae .NewReader (_cg ._dbe );return _ffe ,nil ;};var _fadc =_fe .MustCompile ("\u0025P\u0044F\u002d\u0028\u005c\u0064\u0029\u005c\u002e\u0028\u005c\u0064\u0029");
-
-
-// GetString is a helper for Get that returns a string value.
-// Returns false if the key is missing or a value is not a string.
-func (_fcfc *PdfObjectDictionary )GetString (key PdfObjectName )(string ,bool ){_dade :=_fcfc .Get (key );if _dade ==nil {return "",false ;};_gfdd ,_gcba :=_dade .(*PdfObjectString );if !_gcba {return "",false ;};return _gfdd .Str (),true ;};func (_ddec *asciiHexReader )nextDigit ()(byte ,bool ){for {_ggbb ,_eaga :=_ddec ._cgbc .ReadByte ();
-if _eaga !=nil {if _eaga ==_ce .EOF {_eaga =_ce .ErrUnexpectedEOF ;};_ddec ._cfcf =_eaga ;return 0,false ;};if _ggbb =='>'{_ddec ._cfcf =_ce .EOF ;return 0,false ;};if IsWhiteSpace (_ggbb ){continue ;};if (_ggbb >='0'&&_ggbb <='9')||(_ggbb >='a'&&_ggbb <='f')||(_ggbb >='A'&&_ggbb <='F'){return _ggbb ,true ;
-};_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0049\u006e\u0076\u0061\u006c\u0069d\u0020\u0061\u0073\u0063\u0069\u0069 \u0068\u0065\u0078\u0020\u0063\u0068\u0061\u0072\u0061\u0063\u0074\u0065\u0072 \u0028\u0025\u0063\u0029",_ggbb );_ddec ._cfcf =_ee .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0061\u0073\u0063\u0069\u0069\u0020\u0068e\u0078 \u0063\u0068\u0061\u0072\u0061\u0063\u0074\u0065\u0072\u0020\u0028\u0025\u0063\u0029",_ggbb );
-return 0,false ;};};func _dgg (_egg *_gbg .StdEncryptDict ,_bfbf *PdfObjectDictionary ){_bfbf .Set ("\u0052",MakeInteger (int64 (_egg .R )));_bfbf .Set ("\u0050",MakeInteger (int64 (_egg .P )));_bfbf .Set ("\u004f",MakeStringFromBytes (_egg .O ));_bfbf .Set ("\u0055",MakeStringFromBytes (_egg .U ));
-if _egg .R >=5{_bfbf .Set ("\u004f\u0045",MakeStringFromBytes (_egg .OE ));_bfbf .Set ("\u0055\u0045",MakeStringFromBytes (_egg .UE ));_bfbf .Set ("\u0045n\u0063r\u0079\u0070\u0074\u004d\u0065\u0074\u0061\u0064\u0061\u0074\u0061",MakeBool (_egg .EncryptMetadata ));
-if _egg .R > 5{_bfbf .Set ("\u0050\u0065\u0072m\u0073",MakeStringFromBytes (_egg .Perms ));};};};var _bbbda =_fe .MustCompile ("\u005b\\\u0072\u005c\u006e\u005d\u005c\u0073\u002a\u0028\u0078\u0072\u0065f\u0029\u005c\u0073\u002a\u005b\u005c\u0072\u005c\u006e\u005d");
-
-
-// DecodeStream returns the passed in stream as a slice of bytes.
-// The purpose of the method is to satisfy the StreamEncoder interface.
-func (_dcbc *RawEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return streamObj .Stream ,nil ;};
-
-// MakeDecodeParams makes a new instance of an encoding dictionary based on
-// the current encoder settings.
-func (_afcdg *RawEncoder )MakeDecodeParams ()PdfObject {return nil };
-
-// GetFilterArray returns the names of the underlying encoding filters in an array that
-// can be used as /Filter entry.
-func (_feed *MultiEncoder )GetFilterArray ()*PdfObjectArray {_gcbf :=make ([]PdfObject ,len (_feed ._gdgb ));for _agbdg ,_gcbc :=range _feed ._gdgb {_gcbf [_agbdg ]=MakeName (_gcbc .GetFilterName ());};return MakeArray (_gcbf ...);};
-
-// PdfObject is an interface which all primitive PDF objects must implement.
-type PdfObject interface{
-
-// String outputs a string representation of the primitive (for debugging).
-String ()string ;
-
-// Write outputs the PDF primitive as written to file as expected by the standard.
-Write ()[]byte ;};func (_bgecg *PdfParser )parseName ()(PdfObjectName ,error ){_ddbe :=_fgc ();defer _cd (_ddbe );_fggb :=false ;for {_gaee ,_ggab :=_bgecg ._fgaa .Peek (1);if _ggab ==_ce .EOF {break ;};if _ggab !=nil {return PdfObjectName (_ddbe .String ()),_ggab ;
-};if !_fggb {switch _gaee [0]{case '/':_fggb =true ;_bgecg ._fgaa .ReadByte ();case '%':_bgecg .readComment ();_bgecg .skipSpaces ();default:_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u0020N\u0061\u006d\u0065\u0020\u0073\u0074\u0061\u0072\u0074\u0069\u006e\u0067\u0020w\u0069\u0074\u0068\u0020\u0025\u0073\u0020(\u0025\u0020\u0078\u0029",_gaee ,_gaee );
-return PdfObjectName (_ddbe .String ()),_ee .Errorf ("\u0069n\u0076a\u006c\u0069\u0064\u0020\u006ea\u006d\u0065:\u0020\u0028\u0025\u0063\u0029",_gaee [0]);};}else {if IsWhiteSpace (_gaee [0]){break ;}else if (_gaee [0]=='/')||(_gaee [0]=='[')||(_gaee [0]=='(')||(_gaee [0]==']')||(_gaee [0]=='<')||(_gaee [0]=='>'){break ;
-}else if _gaee [0]=='#'{_ceeba ,_dcaaf :=_bgecg ._fgaa .Peek (3);if _dcaaf !=nil {return PdfObjectName (_ddbe .String ()),_dcaaf ;};var _gebcg [1]byte ;_ ,_dcaaf =_abc .Decode (_gebcg [:],_ceeba [1:3]);if _dcaaf !=nil {_bd .Log .Debug ("\u0045\u0052\u0052\u004fR\u003a\u0020\u0049\u006ev\u0061\u006c\u0069d\u0020\u0068\u0065\u0078\u0020\u0066o\u006c\u006co\u0077\u0069\u006e\u0067 \u0027\u0023\u0027\u002c \u0063\u006f\u006e\u0074\u0069n\u0075\u0069\u006e\u0067\u0020\u0075\u0073i\u006e\u0067\u0020\u006c\u0069t\u0065\u0072\u0061\u006c\u0020\u002d\u0020\u004f\u0075t\u0070\u0075\u0074\u0020\u006d\u0061\u0079\u0020\u0062\u0065\u0020\u0069\u006e\u0063\u006f\u0072\u0072\u0065\u0063\u0074");
-_ddbe .WriteByte ('#');_bgecg ._fgaa .Discard (1);continue ;};_bgecg ._fgaa .Discard (3);_ddbe .WriteByte (_gebcg [0]);}else {_geaac ,_ :=_bgecg ._fgaa .ReadByte ();_ddbe .WriteByte (_geaac );};};};return PdfObjectName (_ddbe .String ()),nil ;};
-
-// Set sets the dictionary's key -> val mapping entry. Overwrites if key already set.
-func (_ffccd *PdfObjectDictionary )Set (key PdfObjectName ,val PdfObject ){_ffccd .setWithLock (key ,val ,true );};
-
-// DecodeReader returns r unchanged.
-func (_bbbae *RawEncoder )DecodeReader (r _ce .Reader )_ce .Reader {return r };
-
-// IsOctalDigit checks if a character can be part of an octal digit string.
-func IsOctalDigit (c byte )bool {return '0'<=c &&c <='7'};func _bcba (_gfb _bff .Filter ,_fbf _gbg .AuthEvent )*PdfObjectDictionary {if _fbf ==""{_fbf =_gbg .EventDocOpen ;};_fbg :=MakeDict ();_fbg .Set ("\u0054\u0079\u0070\u0065",MakeName ("C\u0072\u0079\u0070\u0074\u0046\u0069\u006c\u0074\u0065\u0072"));
-_fbg .Set ("\u0041u\u0074\u0068\u0045\u0076\u0065\u006et",MakeName (string (_fbf )));_fbg .Set ("\u0043\u0046\u004d",MakeName (_gfb .Name ()));_fbg .Set ("\u004c\u0065\u006e\u0067\u0074\u0068",MakeInteger (int64 (_gfb .KeyLength ())));return _fbg ;};
-
-// DecodeStream decodes RunLengthEncoded stream object and give back decoded bytes.
-func (_gegb *RunLengthEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return _gegb .DecodeBytes (streamObj .Stream );};func (_cfc *PdfCrypt )isEncrypted (_dba PdfObject )bool {_ ,_ede :=_cfc ._dfa [_dba ];if _ede {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0041\u006c\u0072\u0065\u0061\u0064\u0079\u0020\u0065\u006e\u0063\u0072y\u0070\u0074\u0065\u0064");
-};return true ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004e\u006f\u0074\u0020\u0065\u006e\u0063\u0072\u0079\u0070\u0074\u0065d\u0020\u0079\u0065\u0074");};return false ;};
-
-// SetPredictor sets the predictor function.  Specify the number of columns per row.
-// The columns indicates the number of samples per row.
-// Used for grouping data together for compression.
-func (_cfee *FlateEncoder )SetPredictor (columns int ){_cfee .Predictor =11;_cfee .Columns =columns };func _bgceg (_dfga string )(PdfObjectReference ,error ){_fbcad :=PdfObjectReference {};_befe :=_fcbc .FindStringSubmatch (_dfga );if len (_befe )< 3{_bd .Log .Debug ("\u0045\u0072\u0072or\u0020\u0070\u0061\u0072\u0073\u0069\u006e\u0067\u0020\u0072\u0065\u0066\u0065\u0072\u0065\u006e\u0063\u0065");
-return _fbcad ,_de .New ("\u0075n\u0061\u0062\u006c\u0065 \u0074\u006f\u0020\u0070\u0061r\u0073e\u0020r\u0065\u0066\u0065\u0072\u0065\u006e\u0063e");};_aagb ,_ :=_c .Atoi (_befe [1]);_cagc ,_ :=_c .Atoi (_befe [2]);_fbcad .ObjectNumber =int64 (_aagb );
-_fbcad .GenerationNumber =int64 (_cagc );return _fbcad ,nil ;};
-
-// Write outputs the object as it is to be written to file.
-func (_aega *PdfObjectStreams )Write ()[]byte {return _gf (func (_dfdb *_f .Buffer ){_dfdb .WriteString (_c .FormatInt (_aega .ObjectNumber ,10));_dfdb .WriteString ("\u0020\u0030\u0020\u0052");});};func _fbbe (_ *PdfObjectStream ,_ *PdfObjectDictionary )(*RunLengthEncoder ,error ){return NewRunLengthEncoder (),nil ;
-};
-
-// String returns a string describing `d`.
-func (_bdgf *PdfObjectDictionary )String ()string {_bdgf ._cagec .RLock ();defer _bdgf ._cagec .RUnlock ();var _agcfd _fa .Builder ;_agcfd .WriteString ("\u0044\u0069\u0063t\u0028");for _ ,_egebg :=range _bdgf ._ggeeg {_cccff :=_bdgf ._abada [_egebg ];
-_agcfd .WriteString ("\u0022"+_egebg .String ()+"\u0022\u003a\u0020");_agcfd .WriteString (_cccff .String ());_agcfd .WriteString ("\u002c\u0020");};_agcfd .WriteString ("\u0029");return _agcfd .String ();};
-
-// GetPreviousRevisionParser returns PdfParser for the previous version of the Pdf document.
-func (_beca *PdfParser )GetPreviousRevisionParser ()(*PdfParser ,error ){if _beca ._debg ==0{return nil ,_de .New ("\u0074\u0068\u0069\u0073 i\u0073\u0020\u0066\u0069\u0072\u0073\u0074\u0020\u0072\u0065\u0076\u0069\u0073\u0069o\u006e");};if _baab ,_cggdb :=_beca ._bfab [_beca ];
-_cggdb {return _baab ,nil ;};_ccea ,_eeda :=_beca .GetPreviousRevisionReadSeeker ();if _eeda !=nil {return nil ,_eeda ;};_ffdfa ,_eeda :=NewParser (_ccea );_ffdfa ._bfab =_beca ._bfab ;if _eeda !=nil {return nil ,_eeda ;};_beca ._bfab [_beca ]=_ffdfa ;
-return _ffdfa ,nil ;};type runLengthReader struct{_dacfe byteReader ;_gbbg error ;_abbbf [128]byte ;_ccgd int ;_dcegb int ;};
-
-// GetXrefType returns the type of the first xref object (table or stream).
-func (_bgde *PdfParser )GetXrefType ()*xrefType {return _bgde ._cefef };
-
-// IsDelimiter checks if a character represents a delimiter.
-func IsDelimiter (c byte )bool {return c =='('||c ==')'||c =='<'||c =='>'||c =='['||c ==']'||c =='{'||c =='}'||c =='/'||c =='%';};
-
-// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
-// Has the Filter set and the DecodeParms.
-func (_bcaa *LZWEncoder )MakeStreamDict ()*PdfObjectDictionary {_fag :=MakeDict ();_fag .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_bcaa .GetFilterName ()));_bedc :=_bcaa .MakeDecodeParams ();if _bedc !=nil {_fag .Set ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073",_bedc );
-};_fag .Set ("E\u0061\u0072\u006c\u0079\u0043\u0068\u0061\u006e\u0067\u0065",MakeInteger (int64 (_bcaa .EarlyChange )));return _fag ;};func _egb (_gfcf XrefTable ){_bd .Log .Debug ("\u003dX\u003d\u0058\u003d\u0058\u003d");_bd .Log .Debug ("X\u0072\u0065\u0066\u0020\u0074\u0061\u0062\u006c\u0065\u003a");
-_fdf :=0;for _ ,_faee :=range _gfcf .ObjectMap {_bd .Log .Debug ("i\u002b\u0031\u003a\u0020\u0025\u0064 \u0028\u006f\u0062\u006a\u0020\u006eu\u006d\u003a\u0020\u0025\u0064\u0020\u0067e\u006e\u003a\u0020\u0025\u0064\u0029\u0020\u002d\u003e\u0020%\u0064",_fdf +1,_faee .ObjectNumber ,_faee .Generation ,_faee .Offset );
-_fdf ++;};};
-
-// String returns a string describing `ref`.
-func (_deac *PdfObjectReference )String ()string {return _ee .Sprintf ("\u0052\u0065\u0066\u0028\u0025\u0064\u0020\u0025\u0064\u0029",_deac .ObjectNumber ,_deac .GenerationNumber );};func (_fege *limitedReadSeeker )getError (_gag int64 )error {switch {case _gag < 0:return _ee .Errorf ("\u0075\u006e\u0065\u0078\u0070\u0065\u0063\u0074\u0065\u0064 \u006e\u0065\u0067\u0061\u0074\u0069\u0076e\u0020\u006f\u0066\u0066\u0073\u0065\u0074\u003a\u0020\u0025\u0064",_gag );
-case _gag > _fege ._bdcg :return _ee .Errorf ("u\u006e\u0065\u0078\u0070ec\u0074e\u0064\u0020\u006f\u0066\u0066s\u0065\u0074\u003a\u0020\u0025\u0064",_gag );};return nil ;};
-
-// GetXrefOffset returns the offset of the xref table.
-func (_gabe *PdfParser )GetXrefOffset ()int64 {return _gabe ._fgeb };
-
-// String returns a string describing `ind`.
-func (_dgce *PdfIndirectObject )String ()string {return _ee .Sprintf ("\u0049\u004f\u0062\u006a\u0065\u0063\u0074\u003a\u0025\u0064",(*_dgce ).ObjectNumber );};
-
-// UpdateParams updates the parameter values of the encoder.
-func (_aegd *RunLengthEncoder )UpdateParams (params *PdfObjectDictionary ){};type ascii85Reader struct{_gecg byteReader ;_bbaae error ;_fcbd [4]byte ;_addf int ;_ecfbc int ;};
-
-// GoImageToJBIG2 creates a binary image on the base of 'i' golang image.Image.
-// If the image is not a black/white image then the function converts provided input into
-// JBIG2Image with 1bpp. For non grayscale images the function performs the conversion to the grayscale temp image.
-// Then it checks the value of the gray image value if it's within bounds of the black white threshold.
-// This 'bwThreshold' value should be in range (0.0, 1.0). The threshold checks if the grayscale pixel (uint) value
-// is greater or smaller than 'bwThreshold' * 255. Pixels inside the range will be white, and the others will be black.
-// If the 'bwThreshold' is equal to -1.0 - JB2ImageAutoThreshold then it's value would be set on the base of
-// it's histogram using Triangle method. For more information go to:
-//
-//	https://www.mathworks.com/matlabcentral/fileexchange/28047-gray-image-thresholding-using-the-triangle-method
-func GoImageToJBIG2 (i _b .Image ,bwThreshold float64 )(*JBIG2Image ,error ){const _ggdc ="\u0047\u006f\u0049\u006d\u0061\u0067\u0065\u0054\u006fJ\u0042\u0049\u0047\u0032";if i ==nil {return nil ,_eb .Error (_ggdc ,"i\u006d\u0061\u0067\u0065 '\u0069'\u0020\u006e\u006f\u0074\u0020d\u0065\u0066\u0069\u006e\u0065\u0064");
-};var (_gfba uint8 ;_gceg _fd .Image ;_dgcf error ;);if bwThreshold ==JB2ImageAutoThreshold {_gceg ,_dgcf =_fd .MonochromeConverter .Convert (i );}else if bwThreshold > 1.0||bwThreshold < 0.0{return nil ,_eb .Error (_ggdc ,"p\u0072\u006f\u0076\u0069\u0064\u0065\u0064\u0020\u0074h\u0072\u0065\u0073\u0068\u006f\u006c\u0064 i\u0073\u0020\u006e\u006ft\u0020\u0069\u006e\u0020\u0061\u0020\u0072\u0061\u006ege\u0020\u007b0\u002e\u0030\u002c\u0020\u0031\u002e\u0030\u007d");
-}else {_gfba =uint8 (255*bwThreshold );_gceg ,_dgcf =_fd .MonochromeThresholdConverter (_gfba ).Convert (i );};if _dgcf !=nil {return nil ,_dgcf ;};return _dbfa (_gceg ),nil ;};
-
-// NewLZWEncoder makes a new LZW encoder with default parameters.
-func NewLZWEncoder ()*LZWEncoder {_bfaf :=&LZWEncoder {};_bfaf .Predictor =1;_bfaf .BitsPerComponent =8;_bfaf .Colors =1;_bfaf .Columns =1;_bfaf .EarlyChange =1;return _bfaf ;};
-
-// MakeDecodeParams makes a new instance of an encoding dictionary based on
-// the current encoder settings.
-func (_bbae *MultiEncoder )MakeDecodeParams ()PdfObject {if len (_bbae ._gdgb )==0{return nil ;};if len (_bbae ._gdgb )==1{return _bbae ._gdgb [0].MakeDecodeParams ();};_aedg :=MakeArray ();_eafg :=true ;for _ ,_ddba :=range _bbae ._gdgb {_acagg :=_ddba .MakeDecodeParams ();
-if _acagg ==nil {_aedg .Append (MakeNull ());}else {_eafg =false ;_aedg .Append (_acagg );};};if _eafg {return nil ;};return _aedg ;};func (_dgcce *PdfParser )parseArray ()(*PdfObjectArray ,error ){_eddf :=MakeArray ();_dgcce ._fgaa .ReadByte ();for {_dgcce .skipSpaces ();
-_agddb ,_cgac :=_dgcce ._fgaa .Peek (1);if _cgac !=nil {return _eddf ,_cgac ;};if _agddb [0]==']'{_dgcce ._fgaa .ReadByte ();break ;};_degc ,_cgac :=_dgcce .parseObject ();if _cgac !=nil {return _eddf ,_cgac ;};_eddf .Append (_degc );};return _eddf ,nil ;
-};
-
-// GetFloat returns the *PdfObjectFloat represented by the PdfObject directly or indirectly within an indirect
-// object. On type mismatch the found bool flag is false and a nil pointer is returned.
-func GetFloat (obj PdfObject )(_bbbd *PdfObjectFloat ,_fcfff bool ){_bbbd ,_fcfff =TraceToDirectObject (obj ).(*PdfObjectFloat );return _bbbd ,_fcfff ;};func (_bcfcb *PdfParser )resolveReference (_gdcb *PdfObjectReference )(PdfObject ,bool ,error ){_eegb ,_faad :=_bcfcb .ObjCache [int (_gdcb .ObjectNumber )];
-if _faad {return _eegb ,true ,nil ;};_gbafc ,_deca :=_bcfcb .LookupByReference (*_gdcb );if _deca !=nil {return nil ,false ,_deca ;};_bcfcb .ObjCache [int (_gdcb .ObjectNumber )]=_gbafc ;return _gbafc ,false ,nil ;};func (_eaee *PdfObjectInteger )String ()string {return _ee .Sprintf ("\u0025\u0064",*_eaee )};
-
-
-// IsDecimalDigit checks if the character is a part of a decimal number string.
-func IsDecimalDigit (c byte )bool {return '0'<=c &&c <='9'};
-
-// GetString returns the *PdfObjectString represented by the PdfObject directly or indirectly within an indirect
-// object. On type mismatch the found bool flag is false and a nil pointer is returned.
-func GetString (obj PdfObject )(_dabd *PdfObjectString ,_gcad bool ){_dabd ,_gcad =TraceToDirectObject (obj ).(*PdfObjectString );return _dabd ,_gcad ;};func (_fbfb *ascii85Reader )fillGroup ()error {var _fffa [5]byte ;_aeba :=0;_gcfd :=false ;for _aeba < 5{_cfabc ,_cfag :=_fbfb ._gecg .ReadByte ();
-if _cfag !=nil {if _cfag ==_ce .EOF {if _aeba ==0{return _ce .EOF ;};_gcfd =true ;break ;};return _cfag ;};if IsWhiteSpace (_cfabc ){continue ;};if _cfabc =='~'{_bbdg ,_egba :=_fbfb ._gecg .ReadByte ();if _egba !=nil ||_bbdg !='>'{return _de .New ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0063\u006f\u0064\u0065\u0020e\u006e\u0063\u006f\u0075\u006e\u0074\u0065\u0072\u0065\u0064");
-};_gcfd =true ;break ;};if _cfabc =='z'&&_aeba ==0{_fbfb ._fcbd =[4]byte {0,0,0,0};_fbfb ._addf =4;_fbfb ._ecfbc =0;return nil ;};if _cfabc >='!'&&_cfabc <='u'{_fffa [_aeba ]=_cfabc -'!';_aeba ++;continue ;};return _de .New ("\u0069n\u0076\u0061\u006c\u0069\u0064\u0020\u0063\u006f\u0064\u0065\u0020e\u006e\u0063\u006f\u0075\u006e\u0074\u0065\u0072\u0065\u0064");
-};_bgfc :=4;if _gcfd {_bgfc =_aeba -1;if _bgfc < 0{_bgfc =0;};};for _bfac :=_aeba ;_bfac < 5;_bfac ++{_fffa [_bfac ]=84;};_bfaea :=uint32 (_fffa [0])*85*85*85*85+uint32 (_fffa [1])*85*85*85+uint32 (_fffa [2])*85*85+uint32 (_fffa [3])*85+uint32 (_fffa [4]);
-_fbfb ._fcbd [0]=byte (_bfaea >>24);_fbfb ._fcbd [1]=byte (_bfaea >>16);_fbfb ._fcbd [2]=byte (_bfaea >>8);_fbfb ._fcbd [3]=byte (_bfaea );_fbfb ._addf =_bgfc ;_fbfb ._ecfbc =0;if _gcfd {return _ce .EOF ;};return nil ;};
-
-// FlateEncoder represents Flate encoding.
-type FlateEncoder struct{Predictor int ;BitsPerComponent int ;
-
-// For predictors
-Columns int ;Rows int ;Colors int ;_fbc *_fd .ImageBase ;};func _begc (_febb *PdfObjectStream ,_dgfc *PdfObjectDictionary )(*JBIG2Encoder ,error ){const _eecc ="\u006ee\u0077\u004a\u0042\u0049G\u0032\u0044\u0065\u0063\u006fd\u0065r\u0046r\u006f\u006d\u0053\u0074\u0072\u0065\u0061m";
-_gcdec :=NewJBIG2Encoder ();_facd :=_febb .PdfObjectDictionary ;if _facd ==nil {return _gcdec ,nil ;};if _dgfc ==nil {_adeb :=_facd .Get ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073");if _adeb !=nil {switch _efcd :=_adeb .(type ){case *PdfObjectDictionary :_dgfc =_efcd ;
-case *PdfObjectArray :if _efcd .Len ()==1{if _abbe ,_fdbaf :=GetDict (_efcd .Get (0));_fdbaf {_dgfc =_abbe ;};};default:_bd .Log .Error ("\u0044\u0065\u0063\u006f\u0064\u0065P\u0061\u0072\u0061\u006d\u0073\u0020\u006e\u006f\u0074\u0020\u0061\u0020\u0064i\u0063\u0074\u0069\u006f\u006e\u0061\u0072y\u0020\u0025\u0023\u0076",_adeb );
-return nil ,_eb .Errorf (_eecc ,"\u0069\u006e\u0076\u0061l\u0069\u0064\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050a\u0072m\u0073\u0020\u0074\u0079\u0070\u0065\u003a \u0025\u0054",_efcd );};};};if _dgfc ==nil {return _gcdec ,nil ;};_gcdec .UpdateParams (_dgfc );
-_efd ,_fgg :=GetStream (_dgfc .Get ("\u004a\u0042\u0049G\u0032\u0047\u006c\u006f\u0062\u0061\u006c\u0073"));if !_fgg {return _gcdec ,nil ;};var _efaegb error ;_gcdec .Globals ,_efaegb =_be .DecodeGlobals (_efd .Stream );if _efaegb !=nil {_efaegb =_eb .Wrap (_efaegb ,_eecc ,"\u0063\u006f\u0072\u0072u\u0070\u0074\u0065\u0064\u0020\u006a\u0062\u0069\u0067\u0032 \u0065n\u0063\u006f\u0064\u0065\u0064\u0020\u0064a\u0074\u0061");
-_bd .Log .Debug ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_efaegb );return nil ,_efaegb ;};return _gcdec ,nil ;};
-
-// DecodeStream decodes a multi-encoded stream by passing it through the
-// DecodeStream method of the underlying encoders.
-func (_bfed *MultiEncoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return _bfed .DecodeBytes (streamObj .Stream );};
-
-// MakeDictMap creates a PdfObjectDictionary initialized from a map of keys to values.
-func MakeDictMap (objmap map[string ]PdfObject )*PdfObjectDictionary {_adcfc :=MakeDict ();return _adcfc .Update (objmap );};
-
-// GetFilterName returns the name of the encoding filter.
-func (_cgfb *FlateEncoder )GetFilterName ()string {return StreamEncodingFilterNameFlate };
-
-// ReadAtLeast reads at least n bytes into slice p.
-// Returns the number of bytes read (should always be == n), and an error on failure.
-func (_ga *bufferedReadSeeker )ReadAtLeast (p []byte ,n int )(int ,error ){_cdc :=n ;_bc :=0;for _cdc > 0{_aee ,_cb :=_ga .Read (p [n -_bc :]);if _cb !=nil {return _bc ,_cb ;};_bc ++;_cdc -=_aee ;};return _bc ,nil ;};
-
-// GetBoolVal returns the bool value within a *PdObjectBool represented by an PdfObject interface directly or indirectly.
-// If the PdfObject does not represent a bool value, a default value of false is returned (found = false also).
-func GetBoolVal (obj PdfObject )(_fgdc bool ,_cbgeb bool ){_cafb ,_cbgeb :=TraceToDirectObject (obj ).(*PdfObjectBool );if _cbgeb {return bool (*_cafb ),true ;};return false ,false ;};
-
-// EncodeImage encodes 'img' golang image.Image into jbig2 encoded bytes document using default encoder settings.
-func (_bbgd *JBIG2Encoder )EncodeImage (img _b .Image )([]byte ,error ){return _bbgd .encodeImage (img )};
-
-// EncodeBytes ASCII encodes the passed in slice of bytes.
-func (_fdfc *ASCIIHexEncoder )EncodeBytes (data []byte )([]byte ,error ){var _dbb _f .Buffer ;for _ ,_abag :=range data {_dbb .WriteString (_ee .Sprintf ("\u0025\u002e\u0032X\u0020",_abag ));};_dbb .WriteByte ('>');return _dbb .Bytes (),nil ;};func (_cadf *PdfCrypt )makeKey (_cfa string ,_abgg ,_bdab uint32 ,_feeb []byte )([]byte ,error ){_def ,_cacc :=_cadf ._edb [_cfa ];
-if !_cacc {return nil ,_ee .Errorf ("\u0075n\u006b\u006e\u006f\u0077n\u0020\u0063\u0072\u0079\u0070t\u0020f\u0069l\u0074\u0065\u0072\u0020\u0028\u0025\u0073)",_cfa );};return _def .MakeKey (_abgg ,_bdab ,_feeb );};
-
-// EncodeBytes encodes slice of bytes into JBIG2 encoding format.
-// The input 'data' must be an image. In order to Decode it a user is responsible to
-// load the codec ('png', 'jpg').
-// Returns jbig2 single page encoded document byte slice. The encoder uses DefaultPageSettings
-// to encode given image.
-func (_feddc *JBIG2Encoder )EncodeBytes (data []byte )([]byte ,error ){const _bcfd ="\u004aB\u0049\u0047\u0032\u0045\u006e\u0063\u006f\u0064\u0065\u0072\u002eE\u006e\u0063\u006f\u0064\u0065\u0042\u0079\u0074\u0065\u0073";if _feddc .ColorComponents !=1||_feddc .BitsPerComponent !=1{return nil ,_eb .Errorf (_bcfd ,"\u0070\u0072\u006f\u0076\u0069\u0064\u0065\u0064\u0020i\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0069\u006e\u0070\u0075\u0074\u0020\u0069\u006d\u0061\u0067\u0065\u002e\u0020\u004a\u0042\u0049G\u0032\u0020E\u006e\u0063o\u0064\u0065\u0072\u0020\u0072\u0065\u0071\u0075\u0069\u0072\u0065\u0073\u0020bi\u006e\u0061\u0072\u0079\u0020\u0069\u006d\u0061\u0067e\u0073\u0020\u0064\u0061\u0074\u0061");
-};var (_affb *_ff .Bitmap ;_begd error ;);_bdfc :=(_feddc .Width *_feddc .Height )==len (data );if _bdfc {_affb ,_begd =_ff .NewWithUnpaddedData (_feddc .Width ,_feddc .Height ,data );}else {_affb ,_begd =_ff .NewWithData (_feddc .Width ,_feddc .Height ,data );
-};if _begd !=nil {return nil ,_begd ;};_dfdga :=_feddc .DefaultPageSettings ;if _begd =_dfdga .Validate ();_begd !=nil {return nil ,_eb .Wrap (_begd ,_bcfd ,"");};if _feddc ._daa ==nil {_feddc ._daa =_eea .InitEncodeDocument (_dfdga .FileMode );};switch _dfdga .Compression {case JB2Generic :if _begd =_feddc ._daa .AddGenericPage (_affb ,_dfdga .DuplicatedLinesRemoval );
-_begd !=nil {return nil ,_eb .Wrap (_begd ,_bcfd ,"");};case JB2SymbolCorrelation :return nil ,_eb .Error (_bcfd ,"s\u0079\u006d\u0062\u006f\u006c\u0020\u0063\u006f\u0072r\u0065\u006c\u0061\u0074\u0069\u006f\u006e e\u006e\u0063\u006f\u0064i\u006e\u0067\u0020\u006e\u006f\u0074\u0020\u0069\u006dpl\u0065\u006de\u006e\u0074\u0065\u0064\u0020\u0079\u0065\u0074");
-case JB2SymbolRankHaus :return nil ,_eb .Error (_bcfd ,"\u0073y\u006d\u0062o\u006c\u0020\u0072a\u006e\u006b\u0020\u0068\u0061\u0075\u0073 \u0065\u006e\u0063\u006f\u0064\u0069n\u0067\u0020\u006e\u006f\u0074\u0020\u0069\u006d\u0070\u006c\u0065m\u0065\u006e\u0074\u0065\u0064\u0020\u0079\u0065\u0074");
-default:return nil ,_eb .Error (_bcfd ,"\u0070\u0072\u006f\u0076i\u0064\u0065\u0064\u0020\u0069\u006e\u0076\u0061\u006c\u0069d\u0020c\u006f\u006d\u0070\u0072\u0065\u0073\u0073i\u006f\u006e");};return _feddc .Encode ();};func _eaff (_gdgaa *PdfObjectStream ,_dede *PdfObjectDictionary )(*CCITTFaxEncoder ,error ){_dgac :=NewCCITTFaxEncoder ();
-_bcfg :=_gdgaa .PdfObjectDictionary ;if _bcfg ==nil {return _dgac ,nil ;};if _dede ==nil {_caf :=TraceToDirectObject (_bcfg .Get ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073"));if _caf !=nil {switch _fcce :=_caf .(type ){case *PdfObjectDictionary :_dede =_fcce ;
-case *PdfObjectArray :if _fcce .Len ()==1{if _efcf ,_cebdc :=GetDict (_fcce .Get (0));_cebdc {_dede =_efcf ;};};default:_bd .Log .Error ("\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073\u0020\u006e\u006f\u0074 \u0061 \u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079\u0020\u0025\u0023\u0076",_caf );
-return nil ,_de .New ("\u0069\u006e\u0076\u0061li\u0064\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073");};};if _dede ==nil {_bd .Log .Error ("\u0044\u0065c\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073\u0020\u006e\u006f\u0074\u0020\u0073\u0070\u0065\u0063\u0069\u0066\u0069\u0065\u0064 %\u0023\u0076",_caf );
-return nil ,_de .New ("\u0069\u006e\u0076\u0061li\u0064\u0020\u0044\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073");};};if _ebcdb ,_agde :=GetNumberAsInt64 (_dede .Get ("\u004b"));_agde ==nil {_dgac .K =int (_ebcdb );};if _debd ,_ebgbg :=GetNumberAsInt64 (_dede .Get ("\u0043o\u006c\u0075\u006d\u006e\u0073"));
-_ebgbg ==nil {_dgac .Columns =int (_debd );}else {_dgac .Columns =1728;};if _eeecb ,_bgaf :=GetNumberAsInt64 (_dede .Get ("\u0042\u006c\u0061\u0063\u006b\u0049\u0073\u0031"));_bgaf ==nil {_dgac .BlackIs1 =_eeecb > 0;}else {if _cgde ,_cfaeg :=GetBoolVal (_dede .Get ("\u0042\u006c\u0061\u0063\u006b\u0049\u0073\u0031"));
-_cfaeg {_dgac .BlackIs1 =_cgde ;}else {if _efeb ,_ebge :=GetArray (_dede .Get ("\u0044\u0065\u0063\u006f\u0064\u0065"));_ebge {_cabb ,_gcaa :=_efeb .ToIntegerArray ();if _gcaa ==nil {_dgac .BlackIs1 =_cabb [0]==1&&_cabb [1]==0;};};};};if _ebce ,_edgg :=GetNumberAsInt64 (_dede .Get ("\u0045\u006ec\u006f\u0064\u0065d\u0042\u0079\u0074\u0065\u0041\u006c\u0069\u0067\u006e"));
-_edgg ==nil {_dgac .EncodedByteAlign =_ebce > 0;}else {if _gccfd ,_fbfg :=GetBoolVal (_dede .Get ("\u0045\u006ec\u006f\u0064\u0065d\u0042\u0079\u0074\u0065\u0041\u006c\u0069\u0067\u006e"));_fbfg {_dgac .EncodedByteAlign =_gccfd ;};};if _cdaa ,_ccgg :=GetNumberAsInt64 (_dede .Get ("\u0045n\u0064\u004f\u0066\u004c\u0069\u006ee"));
-_ccgg ==nil {_dgac .EndOfLine =_cdaa > 0;}else {if _egec ,_dgbc :=GetBoolVal (_dede .Get ("\u0045n\u0064\u004f\u0066\u004c\u0069\u006ee"));_dgbc {_dgac .EndOfLine =_egec ;};};if _acaa ,_fcga :=GetNumberAsInt64 (_dede .Get ("\u0052\u006f\u0077\u0073"));
-_fcga ==nil {_dgac .Rows =int (_acaa );};_dgac .EndOfBlock =true ;if _aaegc ,_aggc :=GetNumberAsInt64 (_dede .Get ("\u0045\u006e\u0064\u004f\u0066\u0042\u006c\u006f\u0063\u006b"));_aggc ==nil {_dgac .EndOfBlock =_aaegc > 0;}else {if _adf ,_dbcc :=GetBoolVal (_dede .Get ("\u0045\u006e\u0064\u004f\u0066\u0042\u006c\u006f\u0063\u006b"));
-_dbcc {_dgac .EndOfBlock =_adf ;};};if _dabfg ,_ecac :=GetNumberAsInt64 (_dede .Get ("\u0044\u0061\u006d\u0061ge\u0064\u0052\u006f\u0077\u0073\u0042\u0065\u0066\u006f\u0072\u0065\u0045\u0072\u0072o\u0072"));_ecac !=nil {_dgac .DamagedRowsBeforeError =int (_dabfg );
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0064\u0065\u0063\u006f\u0064\u0065\u0020\u0070\u0061\u0072\u0061\u006ds\u003a\u0020\u0025\u0073",_dede .String ());};return _dgac ,nil ;};
-
-// IsTextWriteDirectionLTR returns `true` if string write direction Left To Right.
-// detect string write direction using golang.org/x/text/unicode/bidi library.
-func IsTextWriteDirectionLTR (str string )bool {_dgdce :=func (_dbfb rune )bool {return _dbfb =='\u000A'};_bdcbf :=_fa .TrimFunc (str ,_dgdce );_dcfc :=_dc .Paragraph {};_ ,_fefda :=_dcfc .SetString (_bdcbf );if _fefda !=nil {return true ;};_eccg ,_fefda :=_dcfc .Order ();
-if _fefda !=nil {return true ;};if _eccg .NumRuns ()< 1{return true ;};return _dcfc .IsLeftToRight ();};func (_fccb errorReader )Read ([]byte )(int ,error ){return 0,_fccb ._gdgba };
-
-// IsNullObject returns true if `obj` is a PdfObjectNull.
-func IsNullObject (obj PdfObject )bool {_ ,_caaad :=TraceToDirectObject (obj ).(*PdfObjectNull );return _caaad ;};var _agf =[len (_gbd )]_gb .Pool {{New :func ()any {_cc :=make ([]byte ,_gge );return &_cc }},{New :func ()any {_eec :=make ([]byte ,_fbb );
-return &_eec }},{New :func ()any {_dde :=make ([]byte ,_ddd );return &_dde }},{New :func ()any {_ac :=make ([]byte ,_ceg );return &_ac }},{New :func ()any {_ebg :=make ([]byte ,_gac );return &_ebg }},{New :func ()any {_bcg :=make ([]byte ,_fga );return &_bcg }}};
-
-
-// Update updates multiple keys and returns the dictionary back so can be used in a chained fashion.
-func (_gfbg *PdfObjectDictionary )Update (objmap map[string ]PdfObject )*PdfObjectDictionary {_gfbg ._cagec .Lock ();defer _gfbg ._cagec .Unlock ();for _cfff ,_abggd :=range objmap {_gfbg .setWithLock (PdfObjectName (_cfff ),_abggd ,false );};return _gfbg ;
-};func (_geab *JBIG2Image )toBitmap ()(_bbaf *_ff .Bitmap ,_bfec error ){const _ddcc ="\u004a\u0042\u0049\u00472I\u006d\u0061\u0067\u0065\u002e\u0074\u006f\u0042\u0069\u0074\u006d\u0061\u0070";if _geab .Data ==nil {return nil ,_eb .Error (_ddcc ,"\u0069\u006d\u0061\u0067e \u0064\u0061\u0074\u0061\u0020\u006e\u006f\u0074\u0020\u0064\u0065\u0066\u0069\u006ee\u0064");
-};if _geab .Width ==0||_geab .Height ==0{return nil ,_eb .Error (_ddcc ,"\u0069\u006d\u0061\u0067\u0065\u0020h\u0065\u0069\u0067\u0068\u0074\u0020\u006f\u0072\u0020\u0077\u0069\u0064\u0074h\u0020\u006e\u006f\u0074\u0020\u0064\u0065f\u0069\u006e\u0065\u0064");
-};if _geab .HasPadding {_bbaf ,_bfec =_ff .NewWithData (_geab .Width ,_geab .Height ,_geab .Data );}else {_bbaf ,_bfec =_ff .NewWithUnpaddedData (_geab .Width ,_geab .Height ,_geab .Data );};if _bfec !=nil {return nil ,_eb .Wrap (_bfec ,_ddcc ,"");};return _bbaf ,nil ;
-};
-
-// EncodeBytes JPX encodes the passed in slice of bytes.
-func (_defb *JPXEncoder )EncodeBytes (data []byte )([]byte ,error ){_bd .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u003a\u0020\u0041t\u0074\u0065\u006dpt\u0069\u006e\u0067\u0020\u0074\u006f \u0075\u0073\u0065\u0020\u0075\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064 \u0065\u006e\u0063\u006f\u0064\u0069\u006e\u0067 \u0025\u0073",_defb .GetFilterName ());
-return data ,ErrNoJPXDecode ;};var _dffaf =_fe .MustCompile ("\u0025\u0025\u0045\u004f\u0046\u003f");
-
-// MakeArrayFromIntegers creates an PdfObjectArray from a slice of ints, where each array element is
-// an PdfObjectInteger.
-func MakeArrayFromIntegers (vals []int )*PdfObjectArray {_ffbe :=MakeArray ();for _ ,_gcbcb :=range vals {_ffbe .Append (MakeInteger (int64 (_gcbcb )));};return _ffbe ;};
-
-// MakeBool creates a PdfObjectBool from a bool value.
-func MakeBool (val bool )*PdfObjectBool {_aabf :=PdfObjectBool (val );return &_aabf };func (_bdgc *PdfParser )xrefTableHealthCheck (_gcac *PdfObjectDictionary )error {if _cbbad ,_eadcbd :=_gcac .Get ("\u0053\u0069\u007a\u0065").(*PdfObjectInteger );_eadcbd {_dbgcc :=int64 (*_cbbad )/2;
-if int64 (len (_bdgc ._gabb .ObjectMap ))< _dbgcc {return _de .New ("\u006d\u0061\u0070\u0070\u0065\u0064\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0074o\u006f\u0020\u006c\u006f\u0077\u0020\u0063\u006f\u006d\u0070\u0061\u0072\u0065d\u0020\u0077\u0069\u0074\u0068\u0020\u0074\u006f\u0074\u0061\u006c\u0020tr\u0061\u0069\u006c\u0065\u0072\u0020\u0073\u0069\u007a\u0065");
-};};_fgcb :=_gcac .Get ("\u0052\u006f\u006f\u0074");if _fgcb ==nil {return _de .New ("\u0072\u006f\u006f\u0074 o\u0062\u006a\u0065\u0063\u0074\u0020\u0069\u0073\u0020\u006d\u0069\u0073\u0073\u0069n\u0067");};_cgffed ,_fgegd :=_bdgc .Resolve (_fgcb );if _fgegd !=nil {return _fgegd ;
-};if _ ,_bcdff :=_cgffed .(*PdfObjectDictionary );!_bcdff {return _de .New ("\u0063\u0061\u0074al\u006f\u0067\u0020\u006f\u0062\u006a\u0065\u0063\u0074 \u0069s\u0020n\u006ft\u0020\u0061\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079");
-};_cefd :=_cgffed .(*PdfObjectDictionary ).Get ("\u0050\u0061\u0067e\u0073");if _cefd ==nil {return _de .New ("\u0070\u0061\u0067\u0065\u0073\u0020o\u0062\u006a\u0065\u0063\u0074\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075n\u0064\u0020\u0069\u006e\u0020\u0063\u0061t\u0061\u006c\u006f\u0067");
-};_fgdd ,_fgegd :=_bdgc .Resolve (_cefd );if _fgegd !=nil {return _fgegd ;};if _ ,_badbf :=_fgdd .(*PdfObjectDictionary );!_badbf {return _de .New ("\u0070\u0061\u0067\u0065\u0073\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u0020\u0069\u0073 \u006eo\u0074\u0020\u0061\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079");
-};return nil ;};func _dgff (_bccc _ce .ReadSeeker ,_gege int64 )(*limitedReadSeeker ,error ){_ ,_gfbc :=_bccc .Seek (0,_ce .SeekStart );if _gfbc !=nil {return nil ,_gfbc ;};return &limitedReadSeeker {_eggb :_bccc ,_bdcg :_gege },nil ;};const (_ebfe =0;
-_afg =1;_gecc =2;_add =3;_eedg =4;);
-
-// MakeDecodeParams makes a new instance of an encoding dictionary based on
-// the current encoder settings.
-func (_efbcf *ASCIIHexEncoder )MakeDecodeParams ()PdfObject {return nil };
-
-// EncodeBytes encodes the image data using either Group3 or Group4 CCITT facsimile (fax) encoding.
-// `data` is expected to be 1 color component, 1 bit per component. It is also valid to provide 8 BPC, 1 CC image like
-// a standard go image Gray data.
-func (_agfdf *CCITTFaxEncoder )EncodeBytes (data []byte )([]byte ,error ){var _bbba _fd .Gray ;switch len (data ){case _agfdf .Rows *_agfdf .Columns :_aegg ,_debeb :=_fd .NewImage (_agfdf .Columns ,_agfdf .Rows ,8,1,data ,nil ,nil );if _debeb !=nil {return nil ,_debeb ;
-};_bbba =_aegg .(_fd .Gray );case (_agfdf .Columns *_agfdf .Rows )+7>>3:_bdaa ,_bfde :=_fd .NewImage (_agfdf .Columns ,_agfdf .Rows ,1,1,data ,nil ,nil );if _bfde !=nil {return nil ,_bfde ;};_adad :=_bdaa .(*_fd .Monochrome );if _bfde =_adad .AddPadding ();
-_bfde !=nil {return nil ,_bfde ;};_bbba =_adad ;default:if len (data )< _fd .BytesPerLine (_agfdf .Columns ,1,1)*_agfdf .Rows {return nil ,_de .New ("p\u0072\u006f\u0076\u0069\u0064\u0065d\u0020\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020i\u006e\u0070\u0075t\u0020d\u0061\u0074\u0061");
-};_bedf ,_fega :=_fd .NewImage (_agfdf .Columns ,_agfdf .Rows ,1,1,data ,nil ,nil );if _fega !=nil {return nil ,_fega ;};_gcdc :=_bedf .(*_fd .Monochrome );_bbba =_gcdc ;};_aede :=make ([][]byte ,_agfdf .Rows );for _ffad :=0;_ffad < _agfdf .Rows ;_ffad ++{_bcfc :=make ([]byte ,_agfdf .Columns );
-for _badg :=0;_badg < _agfdf .Columns ;_badg ++{_afgf :=_bbba .GrayAt (_badg ,_ffad );_bcfc [_badg ]=_afgf .Y >>7;};_aede [_ffad ]=_bcfc ;};_bfcga :=&_fef .Encoder {K :_agfdf .K ,Columns :_agfdf .Columns ,EndOfLine :_agfdf .EndOfLine ,EndOfBlock :_agfdf .EndOfBlock ,BlackIs1 :_agfdf .BlackIs1 ,DamagedRowsBeforeError :_agfdf .DamagedRowsBeforeError ,Rows :_agfdf .Rows ,EncodedByteAlign :_agfdf .EncodedByteAlign };
-return _bfcga .Encode (_aede ),nil ;};func _fgc ()*_f .Buffer {return _eef .Get ().(*_f .Buffer )};var _efeca =_fe .MustCompile ("\u0028\u005c\u0064\u002b\u0029\u005c\u0073\u002b\u0028\u005c\u0064+\u0029\u005c\u0073\u002b\u0028\u005b\u006e\u0066\u005d\u0029\\\u0073\u002a\u0024");
-
-
-// ReadBytesAt reads byte content at specific offset and length within the PDF.
-func (_bbdc *PdfParser )ReadBytesAt (offset ,len int64 )([]byte ,error ){_cced :=_bbdc .GetFileOffset ();_ ,_bedca :=_bbdc ._fgaa .Seek (offset ,_ce .SeekStart );if _bedca !=nil {return nil ,_bedca ;};_fcffe :=make ([]byte ,len );_ ,_bedca =_ce .ReadAtLeast (_bbdc ._fgaa ,_fcffe ,int (len ));
-if _bedca !=nil {return nil ,_bedca ;};_bbdc .SetFileOffset (_cced );return _fcffe ,nil ;};
-
-// DecodeBytes decodes a slice of JPX encoded bytes and returns the result.
-func (_gbdaa *JPXEncoder )DecodeBytes (encoded []byte )([]byte ,error ){_bd .Log .Debug ("\u0045\u0072\u0072\u006f\u0072\u003a\u0020\u0041t\u0074\u0065\u006dpt\u0069\u006e\u0067\u0020\u0074\u006f \u0075\u0073\u0065\u0020\u0075\u006e\u0073\u0075\u0070\u0070\u006f\u0072\u0074\u0065\u0064 \u0065\u006e\u0063\u006f\u0064\u0069\u006e\u0067 \u0025\u0073",_gbdaa .GetFilterName ());
-return encoded ,ErrNoJPXDecode ;};
-
-// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
-// Has the Filter set and the DecodeParms.
-func (_bec *FlateEncoder )MakeStreamDict ()*PdfObjectDictionary {_cbf :=MakeDict ();_cbf .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_bec .GetFilterName ()));_gbdd :=_bec .MakeDecodeParams ();if _gbdd !=nil {_cbf .Set ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073",_gbdd );
-};return _cbf ;};
-
-// Merge merges in key/values from another dictionary. Overwriting if has same keys.
-// The mutated dictionary (d) is returned in order to allow method chaining.
-func (_ggbe *PdfObjectDictionary )Merge (another *PdfObjectDictionary )*PdfObjectDictionary {if another !=nil {for _ ,_addde :=range another .Keys (){_bgcdd :=another .Get (_addde );_ggbe .Set (_addde ,_bgcdd );};};return _ggbe ;};func (_decag *PdfParser )parseLinearizedDictionary ()(*PdfObjectDictionary ,error ){_gcbcc ,_bfbdc :=_decag ._fgaa .Seek (0,_ce .SeekEnd );
-if _bfbdc !=nil {return nil ,_bfbdc ;};var _ffgbe int64 ;var _ddfag int64 =2048;for _ffgbe < _gcbcc -4{if _gcbcc <=(_ddfag +_ffgbe ){_ddfag =_gcbcc -_ffgbe ;};_ ,_eddeb :=_decag ._fgaa .Seek (_ffgbe ,_ce .SeekStart );if _eddeb !=nil {return nil ,_eddeb ;
-};_cccdf :=make ([]byte ,_ddfag );_ ,_eddeb =_decag ._fgaa .Read (_cccdf );if _eddeb !=nil {return nil ,_eddeb ;};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004c\u006f\u006f\u006b\u0069\u006e\u0067\u0020\u0066\u006f\u0072\u0020\u0066i\u0072\u0073\u0074\u0020\u0069\u006ed\u0069\u0072\u0065\u0063\u0074\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u003a \u0022\u0025\u0073\u0022",string (_cccdf ));
-};_eedb :=_facf .FindAllStringIndex (string (_cccdf ),-1);if _eedb !=nil {_fcca :=_eedb [0];if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0049\u006e\u0064\u003a\u0020\u0025\u0020\u0064",_eedb );};_ ,_dbab :=_decag ._fgaa .Seek (int64 (_fcca [0]),_ce .SeekStart );
-if _dbab !=nil {return nil ,_dbab ;};_decag ._fgaa ._cad =_fae .NewReader (_decag ._fgaa ._dbe );_befed ,_dbab :=_decag .ParseIndirectObject ();if _dbab !=nil {return nil ,nil ;};if _abaea ,_ffee :=GetIndirect (_befed );_ffee {if _ffgaf ,_ecaab :=GetDict (_abaea .PdfObject );
-_ecaab {if _dgdbc :=_ffgaf .Get ("\u004c\u0069\u006e\u0065\u0061\u0072\u0069\u007a\u0065\u0064");_dgdbc !=nil {return _ffgaf ,nil ;};return nil ,nil ;};};return nil ,nil ;};_ffgbe +=_ddfag -4;};return nil ,_de .New ("\u0074\u0068\u0065\u0020\u0066\u0069\u0072\u0073\u0074\u0020\u006fb\u006a\u0065\u0063\u0074\u0020\u006e\u006f\u0074\u0020\u0066o\u0075\u006e\u0064");
-};func (_gcea *PdfParser )parseXref ()(*PdfObjectDictionary ,error ){_gcea .skipSpaces ();const _aggd =20;_bggf ,_ :=_gcea ._fgaa .Peek (_aggd );for _gcgc :=0;_gcgc < 2;_gcgc ++{if _gcea ._fgeb ==0{_gcea ._fgeb =_gcea .GetFileOffset ();};if _facf .Match (_bggf ){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0078\u0072e\u0066\u0020\u0070\u006f\u0069\u006e\u0074\u0073\u0020\u0074\u006f\u0020\u0061\u006e\u0020\u006f\u0062\u006a\u0065\u0063\u0074\u002e\u0020\u0050\u0072\u006f\u0062\u0061\u0062\u006c\u0079\u0020\u0078\u0072\u0065\u0066\u0020\u006f\u0062\u006a\u0065\u0063\u0074");
-};_bd .Log .Debug ("\u0073t\u0061r\u0074\u0069\u006e\u0067\u0020w\u0069\u0074h\u0020\u0022\u0025\u0073\u0022",string (_bggf ));return _gcea .parseXrefStream (nil );};if _aabd .Match (_bggf ){if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0053\u0074\u0061\u006ed\u0061\u0072\u0064\u0020\u0078\u0072\u0065\u0066\u0020\u0073e\u0063t\u0069\u006f\u006e\u0020\u0074\u0061\u0062l\u0065\u0021");
-};return _gcea .parseXrefTable ();};_dfaf :=_gcea .GetFileOffset ();if _gcea ._fgeb ==0{_gcea ._fgeb =_dfaf ;};_gcea .SetFileOffset (_dfaf -_aggd );defer _gcea .SetFileOffset (_dfaf );_fefc ,_ :=_gcea ._fgaa .Peek (_aggd );_bggf =append (_fefc ,_bggf ...);
-};_bd .Log .Debug ("\u0057\u0061\u0072\u006e\u0069\u006e\u0067\u003a\u0020\u0055\u006e\u0061\u0062\u006c\u0065\u0020\u0074\u006f \u0066\u0069\u006e\u0064\u0020\u0078\u0072\u0065f\u0020\u0074\u0061\u0062\u006c\u0065\u0020\u006fr\u0020\u0073\u0074\u0072\u0065\u0061\u006d.\u0020\u0052\u0065\u0070\u0061i\u0072\u0020\u0061\u0074\u0074e\u006d\u0070\u0074\u0065\u0064\u003a\u0020\u004c\u006f\u006f\u006b\u0069\u006e\u0067\u0020\u0066\u006f\u0072\u0020\u0065\u0061\u0072\u006c\u0069\u0065\u0073\u0074\u0020x\u0072\u0065\u0066\u0020\u0066\u0072\u006f\u006d\u0020\u0062\u006f\u0074to\u006d\u002e");
-if _fdcf :=_gcea .repairSeekXrefMarker ();_fdcf !=nil {_bd .Log .Debug ("\u0052e\u0070a\u0069\u0072\u0020\u0066\u0061i\u006c\u0065d\u0020\u002d\u0020\u0025\u0076",_fdcf );return nil ,_fdcf ;};return _gcea .parseXrefTable ();};
-
-// GetFloatVal returns the float64 value represented by the PdfObject directly or indirectly if contained within an
-// indirect object. On type mismatch the found bool flag returned is false and a nil pointer is returned.
-func GetFloatVal (obj PdfObject )(_ddfgb float64 ,_adfg bool ){_gcfdd ,_adfg :=TraceToDirectObject (obj ).(*PdfObjectFloat );if _adfg {return float64 (*_gcfdd ),true ;};return 0,false ;};
-
-// GetInt returns the *PdfObjectBool object that is represented by a PdfObject either directly or indirectly
-// within an indirect object. The bool flag indicates whether a match was found.
-func GetInt (obj PdfObject )(_gdde *PdfObjectInteger ,_decg bool ){_gdde ,_decg =TraceToDirectObject (obj ).(*PdfObjectInteger );return _gdde ,_decg ;};
-
-// GetDict returns the *PdfObjectDictionary represented by the PdfObject directly or indirectly within an indirect
-// object. On type mismatch the found bool flag is false and a nil pointer is returned.
-func GetDict (obj PdfObject )(_bfad *PdfObjectDictionary ,_aceg bool ){_bfad ,_aceg =TraceToDirectObject (obj ).(*PdfObjectDictionary );return _bfad ,_aceg ;};
-
-// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
-func (_fagg *CCITTFaxEncoder )MakeStreamDict ()*PdfObjectDictionary {_fdfg :=MakeDict ();_fdfg .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_fagg .GetFilterName ()));_fdfg .SetIfNotNil ("D\u0065\u0063\u006f\u0064\u0065\u0050\u0061\u0072\u006d\u0073",_fagg .MakeDecodeParams ());
-return _fdfg ;};func _aaad (_dbeca ,_fegcg PdfObject ,_eggbb int ,_bbcb map[indirectPair ]bool )bool {if _eggbb > _ecbeb {_bd .Log .Error ("\u0054\u0072ac\u0065\u0020\u0064e\u0070\u0074\u0068\u0020lev\u0065l \u0062\u0065\u0079\u006f\u006e\u0064\u0020%d\u0020\u002d\u0020\u0065\u0072\u0072\u006fr\u0021",_ecbeb );
-return false ;};if _dbeca ==nil &&_fegcg ==nil {return true ;}else if _dbeca ==nil ||_fegcg ==nil {return false ;};if _g .TypeOf (_dbeca )!=_g .TypeOf (_fegcg ){return false ;};switch _gfgf :=_dbeca .(type ){case *PdfObjectNull :return true ;case *PdfObjectReference :_efege :=_fegcg .(*PdfObjectReference );
-return _gfgf .ObjectNumber ==_efege .ObjectNumber &&_gfgf .GenerationNumber ==_efege .GenerationNumber ;case *PdfObjectName :return *_gfgf ==*(_fegcg .(*PdfObjectName ));case *PdfObjectString :return *_gfgf ==*(_fegcg .(*PdfObjectString ));case *PdfObjectInteger :return *_gfgf ==*(_fegcg .(*PdfObjectInteger ));
-case *PdfObjectBool :return *_gfgf ==*(_fegcg .(*PdfObjectBool ));case *PdfObjectFloat :return *_gfgf ==*(_fegcg .(*PdfObjectFloat ));case *PdfIndirectObject :if _bbcb ==nil {_bbcb =map[indirectPair ]bool {};};_abbc :=_fegcg .(*PdfIndirectObject );_eecf :=indirectPair {_gfgf ,_abbc };
-if _bbcb [_eecf ]{return true ;};_bbcb [_eecf ]=true ;return _aaad (TraceToDirectObject (_dbeca ),TraceToDirectObject (_fegcg ),_eggbb +1,_bbcb );case *PdfObjectArray :_fbeg :=_fegcg .(*PdfObjectArray );if len ((*_gfgf )._bgegc )!=len ((*_fbeg )._bgegc ){return false ;
-};for _fegeg ,_ddggc :=range (*_gfgf )._bgegc {if !_aaad (_ddggc ,(*_fbeg )._bgegc [_fegeg ],_eggbb +1,_bbcb ){return false ;};};return true ;case *PdfObjectDictionary :_caca :=_fegcg .(*PdfObjectDictionary );_eccbb :=_gfgf .Keys ();_daaaa :=_caca .Keys ();
-if len (_eccbb )!=len (_daaaa ){return false ;};for _ ,_ccafb :=range _eccbb {_agad :=_gfgf .Get (_ccafb );_gebcc :=_caca .Get (_ccafb );if _gebcc ==nil ||!_aaad (_agad ,_gebcc ,_eggbb +1,_bbcb ){return false ;};};return true ;case *PdfObjectStream :_fcbfa :=_fegcg .(*PdfObjectStream );
-if !_f .Equal (_gfgf .Stream ,_fcbfa .Stream ){return false ;};return _aaad (_gfgf .PdfObjectDictionary ,_fcbfa .PdfObjectDictionary ,_eggbb +1,_bbcb );default:_bd .Log .Error ("\u0045\u0052R\u004f\u0052\u003a\u0020\u0055\u006e\u006b\u006e\u006f\u0077\u006e\u0020\u0074\u0079\u0070\u0065\u003a\u0020\u0025\u0054\u0020\u002d\u0020\u0073\u0068\u006f\u0075\u006c\u0064\u0020\u006e\u0065\u0076\u0065\u0072\u0020\u0068\u0061\u0070\u0070\u0065\u006e\u0021",_dbeca );
-};return false ;};
-
-// SetIfNotNil sets the dictionary's key -> val mapping entry -IF- val is not nil.
-// Note that we take care to perform a type switch.  Otherwise if we would supply a nil value
-// of another type, e.g. (PdfObjectArray*)(nil), then it would not be a PdfObject(nil) and thus
-// would get set.
-func (_cccef *PdfObjectDictionary )SetIfNotNil (key PdfObjectName ,val PdfObject ){if val !=nil {switch _eegbf :=val .(type ){case *PdfObjectName :if _eegbf !=nil {_cccef .Set (key ,val );};case *PdfObjectDictionary :if _eegbf !=nil {_cccef .Set (key ,val );
-};case *PdfObjectStream :if _eegbf !=nil {_cccef .Set (key ,val );};case *PdfObjectString :if _eegbf !=nil {_cccef .Set (key ,val );};case *PdfObjectNull :if _eegbf !=nil {_cccef .Set (key ,val );};case *PdfObjectInteger :if _eegbf !=nil {_cccef .Set (key ,val );
-};case *PdfObjectArray :if _eegbf !=nil {_cccef .Set (key ,val );};case *PdfObjectBool :if _eegbf !=nil {_cccef .Set (key ,val );};case *PdfObjectFloat :if _eegbf !=nil {_cccef .Set (key ,val );};case *PdfObjectReference :if _eegbf !=nil {_cccef .Set (key ,val );
-};case *PdfIndirectObject :if _eegbf !=nil {_cccef .Set (key ,val );};default:_bd .Log .Error ("\u0045\u0052R\u004f\u0052\u003a\u0020\u0055\u006e\u006b\u006e\u006f\u0077\u006e\u0020\u0074\u0079\u0070\u0065\u003a\u0020\u0025\u0054\u0020\u002d\u0020\u0073\u0068\u006f\u0075\u006c\u0064\u0020\u006e\u0065\u0076\u0065\u0072\u0020\u0068\u0061\u0070\u0070\u0065\u006e\u0021",val );
-};};};
-
-// Implement the Read and Seek methods.
-func (_eg *bufferedReadSeeker )Read (p []byte )(int ,error ){return _eg ._cad .Read (p )};
-
-// NewCCITTFaxEncoder makes a new CCITTFax encoder.
-func NewCCITTFaxEncoder ()*CCITTFaxEncoder {return &CCITTFaxEncoder {Columns :1728,EndOfBlock :true }};func _bgd (_cade *_gbg .StdEncryptDict ,_dfc *PdfObjectDictionary )error {R ,_gae :=_dfc .Get ("\u0052").(*PdfObjectInteger );if !_gae {return _de .New ("\u0065\u006e\u0063\u0072y\u0070\u0074\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006ea\u0072y\u0020\u006d\u0069\u0073\u0073\u0069\u006eg\u0020\u0052");
-};if *R < 2||*R > 6{return _ee .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0052 \u0028\u0025\u0064\u0029",*R );};_cade .R =int (*R );O ,_gae :=_dfc .GetString ("\u004f");if !_gae {return _de .New ("\u0065\u006e\u0063\u0072y\u0070\u0074\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006ea\u0072y\u0020\u006d\u0069\u0073\u0073\u0069\u006eg\u0020\u004f");
-};if _cade .R ==5||_cade .R ==6{if len (O )< 48{return _ee .Errorf ("\u004c\u0065\u006e\u0067th\u0028\u004f\u0029\u0020\u003c\u0020\u0034\u0038\u0020\u0028\u0025\u0064\u0029",len (O ));};}else if len (O )!=32{return _ee .Errorf ("L\u0065n\u0067\u0074\u0068\u0028\u004f\u0029\u0020\u0021=\u0020\u0033\u0032\u0020(%\u0064\u0029",len (O ));
-};_cade .O =[]byte (O );U ,_gae :=_dfc .GetString ("\u0055");if !_gae {return _de .New ("\u0065\u006e\u0063\u0072y\u0070\u0074\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006ea\u0072y\u0020\u006d\u0069\u0073\u0073\u0069\u006eg\u0020\u0055");};if _cade .R ==5||_cade .R ==6{if len (U )< 48{return _ee .Errorf ("\u004c\u0065\u006e\u0067th\u0028\u0055\u0029\u0020\u003c\u0020\u0034\u0038\u0020\u0028\u0025\u0064\u0029",len (U ));
-};}else if len (U )!=32{_bd .Log .Debug ("\u0057\u0061r\u006e\u0069\u006e\u0067\u003a\u0020\u004c\u0065\u006e\u0067\u0074\u0068\u0028\u0055\u0029\u0020\u0021\u003d\u0020\u0033\u0032\u0020(%\u0064\u0029",len (U ));};_cade .U =[]byte (U );if _cade .R >=5{OE ,_aag :=_dfc .GetString ("\u004f\u0045");
-if !_aag {return _de .New ("\u0065\u006ec\u0072\u0079\u0070\u0074\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079\u0020\u006d\u0069\u0073\u0073\u0069\u006eg \u004f\u0045");}else if len (OE )!=32{return _ee .Errorf ("L\u0065\u006e\u0067\u0074h(\u004fE\u0029\u0020\u0021\u003d\u00203\u0032\u0020\u0028\u0025\u0064\u0029",len (OE ));
-};_cade .OE =[]byte (OE );UE ,_aag :=_dfc .GetString ("\u0055\u0045");if !_aag {return _de .New ("\u0065\u006ec\u0072\u0079\u0070\u0074\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006e\u0061\u0072\u0079\u0020\u006d\u0069\u0073\u0073\u0069\u006eg \u0055\u0045");
-}else if len (UE )!=32{return _ee .Errorf ("L\u0065\u006e\u0067\u0074h(\u0055E\u0029\u0020\u0021\u003d\u00203\u0032\u0020\u0028\u0025\u0064\u0029",len (UE ));};_cade .UE =[]byte (UE );};P ,_gae :=_dfc .Get ("\u0050").(*PdfObjectInteger );if !_gae {return _de .New ("\u0065\u006e\u0063\u0072\u0079\u0070\u0074 \u0064\u0069\u0063t\u0069\u006f\u006e\u0061r\u0079\u0020\u006d\u0069\u0073\u0073\u0069\u006e\u0067\u0020\u0070\u0065\u0072\u006d\u0069\u0073\u0073\u0069\u006f\u006e\u0073\u0020\u0061\u0074\u0074\u0072");
-};_cade .P =_gbg .Permissions (*P );if _cade .R ==6{Perms ,_cee :=_dfc .GetString ("\u0050\u0065\u0072m\u0073");if !_cee {return _de .New ("\u0065\u006e\u0063\u0072\u0079\u0070\u0074\u0020\u0064\u0069\u0063\u0074\u0069\u006f\u006ea\u0072y\u0020\u006d\u0069\u0073\u0073\u0069\u006e\u0067\u0020\u0050\u0065\u0072\u006d\u0073");
-}else if len (Perms )!=16{return _ee .Errorf ("\u004ce\u006e\u0067\u0074\u0068\u0028\u0050\u0065\u0072\u006d\u0073\u0029 \u0021\u003d\u0020\u0031\u0036\u0020\u0028\u0025\u0064\u0029",len (Perms ));};_cade .Perms =[]byte (Perms );};if _dfd ,_ebgb :=_dfc .Get ("\u0045n\u0063r\u0079\u0070\u0074\u004d\u0065\u0074\u0061\u0064\u0061\u0074\u0061").(*PdfObjectBool );
-_ebgb {_cade .EncryptMetadata =bool (*_dfd );}else {_cade .EncryptMetadata =true ;};return nil ;};
-
-// Remove removes an element specified by key.
-func (_fdceag *PdfObjectDictionary )Remove (key PdfObjectName ){_fdceag ._cagec .Lock ();defer _fdceag ._cagec .Unlock ();_gegbf :=-1;for _cbbgc ,_eddb :=range _fdceag ._ggeeg {if _eddb ==key {_gegbf =_cbbgc ;break ;};};if _gegbf >=0{_fdceag ._ggeeg =append (_fdceag ._ggeeg [:_gegbf ],_fdceag ._ggeeg [_gegbf +1:]...);
-delete (_fdceag ._abada ,key );};};
-
-// Seek implementation of Seek interface.
-func (_gdfb *limitedReadSeeker )Seek (offset int64 ,whence int )(int64 ,error ){var _fegee int64 ;switch whence {case _ce .SeekStart :_fegee =offset ;case _ce .SeekCurrent :_cbgf ,_ffcc :=_gdfb ._eggb .Seek (0,_ce .SeekCurrent );if _ffcc !=nil {return 0,_ffcc ;
-};_fegee =_cbgf +offset ;case _ce .SeekEnd :_fegee =_gdfb ._bdcg +offset ;};if _ebegg :=_gdfb .getError (_fegee );_ebegg !=nil {return 0,_ebegg ;};if _ ,_efbf :=_gdfb ._eggb .Seek (_fegee ,_ce .SeekStart );_efbf !=nil {return 0,_efbf ;};return _fegee ,nil ;
-};func (_efge *PdfParser )loadXrefs ()(*PdfObjectDictionary ,error ){_efge ._gabb .ObjectMap =make (map[int ]XrefObject );_efge ._cegf =make (objectStreams );_aagac ,_agfddg :=_efge ._fgaa .Seek (0,_ce .SeekEnd );if _agfddg !=nil {return nil ,_agfddg ;
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0066s\u0069\u007a\u0065\u003a\u0020\u0025d",_aagac );};_efge ._fcbfc =_aagac ;_agfddg =_efge .seekToEOFMarker (_aagac );if _agfddg !=nil {_bd .Log .Debug ("\u0046\u0061i\u006c\u0065\u0064\u0020\u0073\u0065\u0065\u006b\u0020\u0074\u006f\u0020\u0065\u006f\u0066\u0020\u006d\u0061\u0072\u006b\u0065\u0072: \u0025\u0076",_agfddg );
-return nil ,_agfddg ;};_dafc ,_agfddg :=_efge ._fgaa .Seek (0,_ce .SeekCurrent );if _agfddg !=nil {return nil ,_agfddg ;};var _dgfd int64 =64;_bbafd :=_dafc -_dgfd ;if _bbafd < 0{_bbafd =0;};_ ,_agfddg =_efge ._fgaa .Seek (_bbafd ,_ce .SeekStart );if _agfddg !=nil {return nil ,_agfddg ;
-};_edfg :=make ([]byte ,_dgfd );_ ,_agfddg =_efge ._fgaa .Read (_edfg );if _agfddg !=nil {_bd .Log .Debug ("\u0046\u0061i\u006c\u0065\u0064\u0020\u0072\u0065\u0061\u0064\u0069\u006e\u0067\u0020\u0077\u0068\u0069\u006c\u0065\u0020\u006c\u006f\u006f\u006b\u0069\u006e\u0067\u0020\u0066\u006f\u0072\u0020\u0073\u0074\u0061\u0072\u0074\u0078\u0072\u0065\u0066\u003a\u0020\u0025\u0076",_agfddg );
-return nil ,_agfddg ;};_ddggf :=_fdea .FindStringSubmatch (string (_edfg ));if len (_ddggf )< 2{_bd .Log .Debug ("E\u0072\u0072\u006f\u0072\u003a\u0020s\u0074\u0061\u0072\u0074\u0078\u0072\u0065\u0066\u0020n\u006f\u0074\u0020f\u006fu\u006e\u0064\u0021");
-return nil ,_de .New ("\u0073\u0074\u0061\u0072tx\u0072\u0065\u0066\u0020\u006e\u006f\u0074\u0020\u0066\u006f\u0075\u006e\u0064");};if len (_ddggf )> 2{_bd .Log .Debug ("\u0045\u0052\u0052O\u0052\u003a\u0020\u004du\u006c\u0074\u0069\u0070\u006c\u0065\u0020s\u0074\u0061\u0072\u0074\u0078\u0072\u0065\u0066\u0020\u0028\u0025\u0073\u0029\u0021",_edfg );
-return nil ,_de .New ("m\u0075\u006c\u0074\u0069\u0070\u006ce\u0020\u0073\u0074\u0061\u0072\u0074\u0078\u0072\u0065f\u0020\u0065\u006et\u0072i\u0065\u0073\u003f");};_ecgf ,_ :=_c .ParseInt (_ddggf [1],10,64);if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0073t\u0061r\u0074\u0078\u0072\u0065\u0066\u0020\u0061\u0074\u0020\u0025\u0064",_ecgf );
-};if _ecgf > _aagac {_bd .Log .Debug ("\u0045\u0052\u0052OR\u003a\u0020\u0058\u0072\u0065\u0066\u0020\u006f\u0066f\u0073e\u0074 \u006fu\u0074\u0073\u0069\u0064\u0065\u0020\u006f\u0066\u0020\u0066\u0069\u006c\u0065");_bd .Log .Debug ("\u0041\u0074\u0074\u0065\u006d\u0070\u0074\u0069\u006e\u0067\u0020\u0072e\u0070\u0061\u0069\u0072");
-_ecgf ,_agfddg =_efge .repairLocateXref ();if _agfddg !=nil {_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a \u0052\u0065\u0070\u0061\u0069\u0072\u0020\u0061\u0074\u0074\u0065\u006d\u0070t\u0020\u0066\u0061\u0069\u006c\u0065\u0064 \u0028\u0025\u0073\u0029");
-return nil ,_agfddg ;};};_efge ._fgaa .Seek (_ecgf ,_ce .SeekStart );_aaggb ,_agfddg :=_efge .parseXref ();if _agfddg !=nil {return nil ,_agfddg ;};_bcfe :=_aaggb .Get ("\u0058R\u0065\u0066\u0053\u0074\u006d");if _bcfe !=nil {_ecec ,_gdeg :=_bcfe .(*PdfObjectInteger );
-if !_gdeg {return nil ,_de .New ("\u0058\u0052\u0065\u0066\u0053\u0074\u006d\u0020\u0021=\u0020\u0069\u006e\u0074");};_ ,_agfddg =_efge .parseXrefStream (_ecec );if _agfddg !=nil &&_efge .Opts !=nil &&!_efge .Opts .RelaxedMode {return nil ,_agfddg ;};};
-var _ggcg []int64 ;_gbbdd :=func (_bdb int64 ,_dffef []int64 )bool {for _ ,_eabd :=range _dffef {if _eabd ==_bdb {return true ;};};return false ;};_bcfe =_aaggb .Get ("\u0050\u0072\u0065\u0076");for _bcfe !=nil {_ffgg ,_agece :=_bcfe .(*PdfObjectInteger );
-if !_agece {_bd .Log .Debug ("\u0049\u006ev\u0061\u006c\u0069\u0064\u0020P\u0072\u0065\u0076\u0020\u0072e\u0066\u0065\u0072\u0065\u006e\u0063\u0065\u003a\u0020\u004e\u006f\u0074\u0020\u0061\u0020\u002a\u0050\u0064\u0066\u004f\u0062\u006a\u0065\u0063\u0074\u0049\u006e\u0074\u0065\u0067\u0065\u0072\u0020\u0028\u0025\u0054\u0029",_bcfe );
-return _aaggb ,nil ;};_acad :=*_ffgg ;if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0041\u006eot\u0068\u0065\u0072 \u0050\u0072\u0065\u0076 xr\u0065f \u0074\u0061\u0062\u006c\u0065\u0020\u006fbj\u0065\u0063\u0074\u0020\u0061\u0074\u0020%\u0064",_acad );
-};_efge ._fgaa .Seek (int64 (_acad ),_ce .SeekStart );_eaaf ,_afaec :=_efge .parseXref ();if _afaec !=nil {_bd .Log .Debug ("\u0057\u0061\u0072\u006e\u0069\u006e\u0067\u003a\u0020\u0045\u0072\u0072\u006f\u0072\u0020-\u0020\u0046\u0061\u0069\u006c\u0065\u0064\u0020\u006c\u006f\u0061\u0064\u0069n\u0067\u0020\u0061\u006e\u006f\u0074\u0068\u0065\u0072\u0020\u0028\u0050re\u0076\u0029\u0020\u0074\u0072\u0061\u0069\u006c\u0065\u0072");
-_bd .Log .Debug ("\u0041\u0074t\u0065\u006d\u0070\u0074i\u006e\u0067 \u0074\u006f\u0020\u0063\u006f\u006e\u0074\u0069n\u0075\u0065\u0020\u0062\u0079\u0020\u0069\u0067\u006e\u006f\u0072\u0069n\u0067\u0020\u0069\u0074");break ;};_efge ._ddfe =append (_efge ._ddfe ,int64 (_acad ));
-_bcfe =_eaaf .Get ("\u0050\u0072\u0065\u0076");if _bcfe !=nil {_addb :=*(_bcfe .(*PdfObjectInteger ));if _gbbdd (int64 (_addb ),_ggcg ){_bd .Log .Debug ("\u0050\u0072ev\u0065\u006e\u0074i\u006e\u0067\u0020\u0063irc\u0075la\u0072\u0020\u0078\u0072\u0065\u0066\u0020re\u0066\u0065\u0072\u0065\u006e\u0063\u0069n\u0067");
-break ;};_ggcg =append (_ggcg ,int64 (_addb ));};};if _efge .Opts !=nil &&_efge .Opts .AutoRepairXrefTable {_acee :=_efge .xrefTableHealthCheck (_aaggb );if _acee !=nil {_bd .Log .Debug ("\u0058\u0072\u0065\u0066\u0020\u0074\u0061\u0062\u006c\u0065\u0020\u0068\u0065\u0061\u006c\u0074\u0068\u0020c\u0068\u0065\u0063\u006b\u0020\u0066\u0061i\u006c\u0065\u0064\u003a\u0020\u0025\u0076\u002c\u0020\u0061\u0074t\u0065\u006d\u0070\u0074\u0020\u0072\u0065\u0070\u0061\u0069\u0072",_acee );
-_daaa ,_gebcga :=_efge .repairRebuildXrefsTopDown ();if _gebcga !=nil {_bd .Log .Debug ("F\u0061\u0069\u006c\u0065\u0064\u0020\u0074\u006f\u0020r\u0065\u0062\u0075\u0069\u006c\u0064\u0020xr\u0065\u0066\u0073\u003a \u0025\u0076\u002c\u0020\u0066\u0069\u006c\u0065\u0020un\u0072\u0065c\u006f\u0076\u0065\u0072\u0061\u0062\u006c\u0065",_gebcga );
-return _aaggb ,_gebcga ;};_efge ._gabb =*_daaa ;};};return _aaggb ,nil ;};
-
-// DecodeReader returns a reader that RunLength-decodes from r. A length byte
-// in [0,127] introduces length+1 literal bytes; a length byte in [129,255]
-// repeats the next byte 257-length times; a length byte of 128 marks EOD.
-func (_faca *RunLengthEncoder )DecodeReader (r _ce .Reader )_ce .Reader {return &runLengthReader {_dacfe :_egce (r )};};func _bcbc (_dfce uint ,_gbdf ,_bgafe float64 )float64 {_cggd :=_fefg .RoundFloat ((float64 (_dfce )/255.0),6);_dad :=_fefg .RoundFloat ((_bgafe -_gbdf )*_cggd ,6);
-return _fefg .RoundFloat ((_gbdf +_dad )*255.0,6);};func (_edf *PdfParser )parseDetailedHeader ()(_debf error ){_edf ._fgaa .Seek (0,_ce .SeekStart );_aeeed :=20;_fgb :=make ([]byte ,_aeeed );var (_cada bool ;_dbaf int ;);for {_gce ,_dagg :=_edf ._fgaa .ReadByte ();
-if _dagg !=nil {if _dagg ==_ce .EOF {break ;}else {return _dagg ;};};if IsDecimalDigit (_gce )&&_fgb [_aeeed -1]=='.'&&IsDecimalDigit (_fgb [_aeeed -2])&&_fgb [_aeeed -3]=='-'&&_fgb [_aeeed -4]=='F'&&_fgb [_aeeed -5]=='D'&&_fgb [_aeeed -6]=='P'&&_fgb [_aeeed -7]=='%'{_edf ._ecbge =Version {Major :int (_fgb [_aeeed -2]-'0'),Minor :int (_gce -'0')};
-_edf ._dafba ._bfbg =_dbaf -7;_cada =true ;break ;};_dbaf ++;_fgb =append (_fgb [1:_aeeed ],_gce );};if !_cada {return _ee .Errorf ("n\u006f \u0066\u0069\u006c\u0065\u0020\u0068\u0065\u0061d\u0065\u0072\u0020\u0066ou\u006e\u0064");};_aacg ,_debf :=_edf ._fgaa .ReadByte ();
-if _debf ==_ce .EOF {return _ee .Errorf ("\u006eo\u0074\u0020\u0061\u0020\u0076\u0061\u006c\u0069\u0064\u0020\u0050d\u0066\u0020\u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074");};if _debf !=nil {return _debf ;};_edf ._dafba ._bac =_aacg =='\n';_aacg ,_debf =_edf ._fgaa .ReadByte ();
-if _debf !=nil {return _ee .Errorf ("\u006e\u006f\u0074\u0020a\u0020\u0076\u0061\u006c\u0069\u0064\u0020\u0070\u0064\u0066 \u0064o\u0063\u0075\u006d\u0065\u006e\u0074\u003a \u0025\u0077",_debf );};if _aacg !='%'{return nil ;};_cdcd :=make ([]byte ,4);_ ,_debf =_edf ._fgaa .Read (_cdcd );
-if _debf !=nil {return _ee .Errorf ("\u006e\u006f\u0074\u0020a\u0020\u0076\u0061\u006c\u0069\u0064\u0020\u0070\u0064\u0066 \u0064o\u0063\u0075\u006d\u0065\u006e\u0074\u003a \u0025\u0077",_debf );};_edf ._dafba ._ddea =[4]byte {_cdcd [0],_cdcd [1],_cdcd [2],_cdcd [3]};
-return nil ;};
-
-// HeaderPosition gets the file header position.
-func (_cgb ParserMetadata )HeaderPosition ()int {return _cgb ._bfbg };
-
-// Read implementation of Read interface.
-func (_dfec *limitedReadSeeker )Read (p []byte )(_bffb int ,_eecb error ){_gfaac ,_eecb :=_dfec ._eggb .Seek (0,_ce .SeekCurrent );if _eecb !=nil {return 0,_eecb ;};_bccg :=_dfec ._bdcg -_gfaac ;if _bccg <=0{return 0,_ce .EOF ;};if _fedc :=int64 (len (p ));
-_fedc < _bccg {_bccg =_fedc ;};_gafe :=make ([]byte ,_bccg );_bffb ,_eecb =_dfec ._eggb .Read (_gafe );copy (p ,_gafe );return _bffb ,_eecb ;};
-
-// GetCrypter returns the PdfCrypt instance which has information about the PDFs encryption.
-func (_deda *PdfParser )GetCrypter ()*PdfCrypt {return _deda ._ggee };
-
-// Write outputs the object as it is to be written to file.
-func (_bdcb *PdfObjectNull )Write ()[]byte {return []byte ("\u006e\u0075\u006c\u006c")};
-
-// IsPrintable checks if a character is printable.
-// Regular characters that are outside the range EXCLAMATION MARK(21h)
-// (!) to TILDE (7Eh) (~) should be written using the hexadecimal notation.
-func IsPrintable (c byte )bool {return 0x21<=c &&c <=0x7E};func (_gdbcf *runLengthReader )Read (p []byte )(int ,error ){_cgfg :=0;for _cgfg < len (p ){if _gdbcf ._dcegb < _gdbcf ._ccgd {_bfdc :=copy (p [_cgfg :],_gdbcf ._abbbf [_gdbcf ._dcegb :_gdbcf ._ccgd ]);
-_cgfg +=_bfdc ;_gdbcf ._dcegb +=_bfdc ;continue ;};if _gdbcf ._gbbg !=nil {if _cgfg > 0{return _cgfg ,nil ;};return 0,_gdbcf ._gbbg ;};_gdbcf ._gbbg =_gdbcf .fillRun ();};return _cgfg ,nil ;};
-
-// EncodeBytes encodes data into ASCII85 encoded format.
-func (_ccfe *ASCII85Encoder )EncodeBytes (data []byte )([]byte ,error ){var _gccf _f .Buffer ;for _fefag :=0;_fefag < len (data );_fefag +=4{_ebdf :=data [_fefag ];_acdd :=1;_abcg :=byte (0);if _fefag +1< len (data ){_abcg =data [_fefag +1];_acdd ++;};
-_aggb :=byte (0);if _fefag +2< len (data ){_aggb =data [_fefag +2];_acdd ++;};_fdcea :=byte (0);if _fefag +3< len (data ){_fdcea =data [_fefag +3];_acdd ++;};_cfeb :=(uint32 (_ebdf )<<24)|(uint32 (_abcg )<<16)|(uint32 (_aggb )<<8)|uint32 (_fdcea );if _cfeb ==0{_gccf .WriteByte ('z');
-}else {_face :=_ccfe .base256Tobase85 (_cfeb );for _ ,_ecba :=range _face [:_acdd +1]{_gccf .WriteByte (_ecba +'!');};};};_gccf .WriteString ("\u007e\u003e");return _gccf .Bytes (),nil ;};var _eadba =map[byte ][]byte {'\n':[]byte ("\u005c\u006e"),'\r':[]byte ("\u005c\u0072"),'\t':[]byte ("\u005c\u0074"),'\b':[]byte ("\u005c\u0062"),'\f':[]byte ("\u005c\u0066"),'(':[]byte ("\u005c\u0028"),')':[]byte ("\u005c\u0029"),'\\':[]byte ("\u005c\u005c")};
-func (_fcaa *PdfParser )skipSpaces ()(int ,error ){_cfebg :=0;for {_abaa ,_cceb :=_fcaa ._fgaa .ReadByte ();if _cceb !=nil {return 0,_cceb ;};if IsWhiteSpace (_abaa ){_cfebg ++;}else {_fcaa ._fgaa .UnreadByte ();break ;};};return _cfebg ,nil ;};
-
-// PdfCrypt provides PDF encryption/decryption support.
-// The PDF standard supports encryption of strings and streams (Section 7.6).
-type PdfCrypt struct{_aff encryptDict ;_dfb _gbg .StdEncryptDict ;_fcd string ;_eab []byte ;_aae map[PdfObject ]bool ;_dfa map[PdfObject ]bool ;_ccc bool ;_edb cryptFilters ;_dcg string ;_eabe string ;_acbf *PdfParser ;_afea map[int ]struct{};};
-
-// DecodeBytes returns the passed in slice of bytes.
-// The purpose of the method is to satisfy the StreamEncoder interface.
-func (_eefe *RawEncoder )DecodeBytes (encoded []byte )([]byte ,error ){return encoded ,nil };
+EarlyChange int ;};
+
+// GetStringVal returns the string value represented by the PdfObject directly or indirectly if
+// contained within an indirect object. On type mismatch the found bool flag returned is false and
+// an empty string is returned.
+func GetStringVal (obj PdfObject )(_gdgcb string ,_dfbe bool ){_ddab ,_dfbe :=TraceToDirectObject (obj ).(*PdfObjectString );if _dfbe {return _ddab .Str (),true ;};return ;};
 
 // JBIG2Encoder implements both jbig2 encoder and the decoder. The encoder allows to encode
 // provided images (best used document scans) in multiple way. By default it uses single page generic
@@ -1857,10 +2060,10 @@ BitsPerComponent int ;
 Width int ;
 
 // Height is the height of the image to encode.
-Height int ;_daa *_eea .Document ;
+Height int ;_ceef *_dg .Document ;
 
 // Globals are the JBIG2 global segments.
-Globals _be .Globals ;
+Globals _ggf .Globals ;
 
 // IsChocolateData defines if the data is encoded such that
 // binary data '1' means black and '0' white.
@@ -1871,223 +2074,19 @@ IsChocolateData bool ;
 // DefaultPageSettings are the settings parameters used by the jbig2 encoder.
 DefaultPageSettings JBIG2EncoderSettings ;};
 
-// EncodeJBIG2Image encodes 'img' into jbig2 encoded bytes stream, using default encoder settings.
-func (_cbfdf *JBIG2Encoder )EncodeJBIG2Image (img *JBIG2Image )([]byte ,error ){const _befb ="c\u006f\u0072\u0065\u002eEn\u0063o\u0064\u0065\u004a\u0042\u0049G\u0032\u0049\u006d\u0061\u0067\u0065";if _cgfc :=_cbfdf .AddPageImage (img ,&_cbfdf .DefaultPageSettings );
-_cgfc !=nil {return nil ,_eb .Wrap (_cgfc ,_befb ,"");};return _cbfdf .Encode ();};
-
-// DecodeGlobals decodes 'encoded' byte stream and returns their Globally defined segments ('Globals').
-func (_egbdd *JBIG2Encoder )DecodeGlobals (encoded []byte )(_be .Globals ,error ){return _be .DecodeGlobals (encoded );};
-
-// GetNumberAsFloat returns the contents of `obj` as a float if it is an integer or float, or an
-// error if it isn't.
-func GetNumberAsFloat (obj PdfObject )(float64 ,error ){switch _bffd :=obj .(type ){case *PdfObjectFloat :return float64 (*_bffd ),nil ;case *PdfObjectInteger :return float64 (*_bffd ),nil ;case *PdfObjectReference :_gaff :=TraceToDirectObject (obj );return GetNumberAsFloat (_gaff );
-case *PdfIndirectObject :return GetNumberAsFloat (_bffd .PdfObject );};return 0,ErrNotANumber ;};
-
-// EncodeBytes encodes a bytes array and return the encoded value based on the encoder parameters.
-func (_ceef *RunLengthEncoder )EncodeBytes (data []byte )([]byte ,error ){_cggc :=_f .NewReader (data );var _cffec []byte ;var _fbca []byte ;_dggg ,_agfd :=_cggc .ReadByte ();if _agfd ==_ce .EOF {return []byte {},nil ;}else if _agfd !=nil {return nil ,_agfd ;
-};_adef :=1;for {_faec ,_gbf :=_cggc .ReadByte ();if _gbf ==_ce .EOF {break ;}else if _gbf !=nil {return nil ,_gbf ;};if _faec ==_dggg {if len (_fbca )> 0{_fbca =_fbca [:len (_fbca )-1];if len (_fbca )> 0{_cffec =append (_cffec ,byte (len (_fbca )-1));
-_cffec =append (_cffec ,_fbca ...);};_adef =1;_fbca =[]byte {};};_adef ++;if _adef >=127{_cffec =append (_cffec ,byte (257-_adef ),_dggg );_adef =0;};}else {if _adef > 0{if _adef ==1{_fbca =[]byte {_dggg };}else {_cffec =append (_cffec ,byte (257-_adef ),_dggg );
-};_adef =0;};_fbca =append (_fbca ,_faec );if len (_fbca )>=127{_cffec =append (_cffec ,byte (len (_fbca )-1));_cffec =append (_cffec ,_fbca ...);_fbca =[]byte {};};};_dggg =_faec ;};if len (_fbca )> 0{_cffec =append (_cffec ,byte (len (_fbca )-1));_cffec =append (_cffec ,_fbca ...);
-}else if _adef > 0{_cffec =append (_cffec ,byte (257-_adef ),_dggg );};_cffec =append (_cffec ,128);return _cffec ,nil ;};
-
-// Inspect analyzes the document object structure. Returns a map of object types (by name) with the instance count
-// as value.
-func (_dgbca *PdfParser )Inspect ()(map[string ]int ,error ){return _dgbca .inspect ()};
-
-// DCTEncoder provides a DCT (JPG) encoding/decoding functionality for images.
-type DCTEncoder struct{ColorComponents int ;BitsPerComponent int ;Width int ;Height int ;Quality int ;Decode []float64 ;};
-
-// DecodeStream implements ASCII85 stream decoding.
-func (_fcdd *ASCII85Encoder )DecodeStream (streamObj *PdfObjectStream )([]byte ,error ){return _fcdd .DecodeBytes (streamObj .Stream );};const (StreamEncodingFilterNameFlate ="F\u006c\u0061\u0074\u0065\u0044\u0065\u0063\u006f\u0064\u0065";StreamEncodingFilterNameLZW ="\u004cZ\u0057\u0044\u0065\u0063\u006f\u0064e";
-StreamEncodingFilterNameDCT ="\u0044C\u0054\u0044\u0065\u0063\u006f\u0064e";StreamEncodingFilterNameRunLength ="\u0052u\u006eL\u0065\u006e\u0067\u0074\u0068\u0044\u0065\u0063\u006f\u0064\u0065";StreamEncodingFilterNameASCIIHex ="\u0041\u0053\u0043\u0049\u0049\u0048\u0065\u0078\u0044e\u0063\u006f\u0064\u0065";
-StreamEncodingFilterNameASCII85 ="\u0041\u0053\u0043\u0049\u0049\u0038\u0035\u0044\u0065\u0063\u006f\u0064\u0065";StreamEncodingFilterNameCCITTFax ="\u0043\u0043\u0049\u0054\u0054\u0046\u0061\u0078\u0044e\u0063\u006f\u0064\u0065";StreamEncodingFilterNameJBIG2 ="J\u0042\u0049\u0047\u0032\u0044\u0065\u0063\u006f\u0064\u0065";
-StreamEncodingFilterNameJPX ="\u004aP\u0058\u0044\u0065\u0063\u006f\u0064e";StreamEncodingFilterNameRaw ="\u0052\u0061\u0077";);func (_cbd *PdfParser )lookupByNumberWrapper (_efg int ,_eaf bool )(PdfObject ,bool ,error ){_gga ,_ead ,_bda :=_cbd .lookupByNumber (_efg ,_eaf );
-if _bda !=nil {return nil ,_ead ,_bda ;};if !_ead &&_cbd ._ggee !=nil &&_cbd ._ggee ._ccc &&!_cbd ._ggee .isDecrypted (_gga ){_cgc :=_cbd ._ggee .Decrypt (_gga ,0,0);if _cgc !=nil {return nil ,_ead ,_cgc ;};};return _gga ,_ead ,nil ;};func _aaff ()string {return _bd .Version };
-
-
-// String returns a string describing `streams`.
-func (_bggff *PdfObjectStreams )String ()string {return _ee .Sprintf ("\u004f\u0062j\u0065\u0063\u0074 \u0073\u0074\u0072\u0065\u0061\u006d\u0020\u0025\u0064",_bggff .ObjectNumber );};
-
-// NewRunLengthEncoder makes a new run length encoder
-func NewRunLengthEncoder ()*RunLengthEncoder {return &RunLengthEncoder {}};
-
-// ReadByte reads a single byte from the buffered reader.
-func (_dcd *bufferedReadSeeker )ReadByte ()(byte ,error ){_dg ,_ggf :=_dcd ._cad .ReadByte ();if _ggf !=nil {return 0,_ggf ;};return _dg ,nil ;};
-
-// EncodeBytes DCT encodes the passed in slice of bytes.
-func (_fac *DCTEncoder )EncodeBytes (data []byte )([]byte ,error ){var _defg _b .Image ;if _fac .ColorComponents ==1&&_fac .BitsPerComponent ==8{_defg =&_b .Gray {Rect :_b .Rect (0,0,_fac .Width ,_fac .Height ),Pix :data ,Stride :_fd .BytesPerLine (_fac .Width ,_fac .BitsPerComponent ,_fac .ColorComponents )};
-}else {var _dgdg error ;_defg ,_dgdg =_fd .NewImage (_fac .Width ,_fac .Height ,_fac .BitsPerComponent ,_fac .ColorComponents ,data ,nil ,nil );if _dgdg !=nil {return nil ,_dgdg ;};};_eeac :=_ad .Options {};_eeac .Quality =_fac .Quality ;var _cggg _f .Buffer ;
-if _faac :=_ad .Encode (&_cggg ,_defg ,&_eeac );_faac !=nil {return nil ,_faac ;};return _cggg .Bytes (),nil ;};
-
-// DecodeBytes decodes a multi-encoded slice of bytes by passing it through the
-// DecodeBytes method of the underlying encoders.
-func (_daege *MultiEncoder )DecodeBytes (encoded []byte )([]byte ,error ){_fgff :=encoded ;var _acbe error ;for _ ,_bcaeb :=range _daege ._gdgb {if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u004du\u006c\u0074i\u0020\u0045\u006e\u0063o\u0064\u0065\u0072 \u0044\u0065\u0063\u006f\u0064\u0065\u003a\u0020\u0041pp\u006c\u0079\u0069n\u0067\u0020F\u0069\u006c\u0074\u0065\u0072\u003a \u0025\u0076 \u0025\u0054",_bcaeb ,_bcaeb );
-};_fgff ,_acbe =_bcaeb .DecodeBytes (_fgff );if _acbe !=nil {return nil ,_acbe ;};};return _fgff ,nil ;};
-
-// AcquireBytes returns a []byte with cap at least size, drawn from a pooled
-// size-class bucket. The returned slice has len == size. If size exceeds the
-// largest bucket, a plain make([]byte, size) is returned instead; that buffer
-// is still safe to pass to ReleaseBytes (it is dropped because its cap does
-// not match a bucket). If size <= 0, returns nil.
-func AcquireBytes (size int )[]byte {if size <=0{return nil ;};_df :=_ddda (size );if _df < 0{return make ([]byte ,size );};_beb :=_agf [_df ].Get ().(*[]byte );return (*_beb )[:size ];};
-
-// ASCII85Encoder implements ASCII85 encoder/decoder.
-type ASCII85Encoder struct{};
-
-// PdfObjectBool represents the primitive PDF boolean object.
-type PdfObjectBool bool ;
-
-// DecodeBytes decodes a slice of ASCII encoded bytes and returns the result.
-func (_ccac *ASCIIHexEncoder )DecodeBytes (encoded []byte )([]byte ,error ){_gcef :=_f .NewReader (encoded );var _fcc []byte ;for {_eaec ,_adecb :=_gcef .ReadByte ();if _adecb !=nil {return nil ,_adecb ;};if _eaec =='>'{break ;};if IsWhiteSpace (_eaec ){continue ;
-};if (_eaec >='a'&&_eaec <='f')||(_eaec >='A'&&_eaec <='F')||(_eaec >='0'&&_eaec <='9'){_fcc =append (_fcc ,_eaec );}else {_bd .Log .Debug ("\u0045\u0052\u0052\u004f\u0052\u003a\u0020\u0049\u006e\u0076\u0061\u006c\u0069d\u0020\u0061\u0073\u0063\u0069\u0069 \u0068\u0065\u0078\u0020\u0063\u0068\u0061\u0072\u0061\u0063\u0074\u0065\u0072 \u0028\u0025\u0063\u0029",_eaec );
-return nil ,_ee .Errorf ("\u0069\u006e\u0076\u0061\u006c\u0069\u0064\u0020\u0061\u0073\u0063\u0069\u0069\u0020\u0068e\u0078 \u0063\u0068\u0061\u0072\u0061\u0063\u0074\u0065\u0072\u0020\u0028\u0025\u0063\u0029",_eaec );};};if len (_fcc )%2==1{_fcc =append (_fcc ,'0');
-};if _bd .Log .IsLogLevel (_bd .LogLevelTrace ){_bd .Log .Trace ("\u0049\u006e\u0062\u006f\u0075\u006e\u0064\u0020\u0025\u0073",_fcc );};_aage :=make ([]byte ,_abc .DecodedLen (len (_fcc )));_ ,_fdec :=_abc .Decode (_aage ,_fcc );if _fdec !=nil {return nil ,_fdec ;
-};return _aage ,nil ;};
-
-// GetObjectStreams returns the *PdfObjectStreams represented by the PdfObject. On type mismatch the found bool flag is
-// false and a nil pointer is returned.
-func GetObjectStreams (obj PdfObject )(_aggdb *PdfObjectStreams ,_bcecf bool ){_aggdb ,_bcecf =obj .(*PdfObjectStreams );return _aggdb ,_bcecf ;};func (emptyReader )Read ([]byte )(int ,error ){return 0,_ce .EOF };
-
-// MakeStreamDict makes a new instance of an encoding dictionary for a stream object.
-func (_aef *ASCIIHexEncoder )MakeStreamDict ()*PdfObjectDictionary {_egga :=MakeDict ();_egga .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_aef .GetFilterName ()));return _egga ;};
-
-// Get returns the PdfObject corresponding to the specified key.
-// Returns a nil value if the key is not set.
-func (_gbef *PdfObjectDictionary )Get (key PdfObjectName )PdfObject {_gbef ._cagec .RLock ();defer _gbef ._cagec .RUnlock ();_bgffb ,_fgcef :=_gbef ._abada [key ];if !_fgcef {return nil ;};return _bgffb ;};
-
-// MakeDecodeParams makes a new instance of an encoding dictionary based on
-// the current encoder settings.
-func (_gdbc *JPXEncoder )MakeDecodeParams ()PdfObject {return nil };
-
-// MakeInteger creates a PdfObjectInteger from an int64.
-func MakeInteger (val int64 )*PdfObjectInteger {_ggac :=PdfObjectInteger (val );return &_ggac };func _dbd (_dae PdfObject )(int64 ,int64 ,error ){if _ggd ,_aa :=_dae .(*PdfIndirectObject );_aa {return _ggd .ObjectNumber ,_ggd .GenerationNumber ,nil ;};
-if _acb ,_ace :=_dae .(*PdfObjectStream );_ace {return _acb .ObjectNumber ,_acb .GenerationNumber ,nil ;};return 0,0,_de .New ("\u006e\u006ft\u0020\u0061\u006e\u0020\u0069\u006e\u0064\u0069\u0072\u0065\u0063\u0074\u002f\u0073\u0074\u0072\u0065\u0061\u006d\u0020\u006f\u0062je\u0063\u0074");
-};
-
-// MakeObjectStreams creates an PdfObjectStreams from a list of PdfObjects.
-func MakeObjectStreams (objects ...PdfObject )*PdfObjectStreams {return &PdfObjectStreams {_egfda :objects };};
-
-// RegisterCustomStreamEncoder register a custom encoder handler for certain filter.
-func RegisterCustomStreamEncoder (filterName string ,customStreamEncoder StreamEncoder ){_adfbg .Store (filterName ,customStreamEncoder );};
-
-// ResolveReferencesDeep recursively traverses through object `o`, looking up and replacing
-// references with indirect objects.
-// Optionally a map of already deep-resolved objects can be provided via `traversed`. The `traversed` map
-// is updated while traversing the objects to avoid traversing same objects multiple times.
-func ResolveReferencesDeep (o PdfObject ,traversed map[PdfObject ]struct{})error {if traversed ==nil {traversed =map[PdfObject ]struct{}{};};return _aagec (o ,0,traversed );};
-
-// MakeDecodeParams makes a new instance of an encoding dictionary based on
-// the current encoder settings.
-func (_fcba *FlateEncoder )MakeDecodeParams ()PdfObject {if _fcba .Predictor > 1{_cfacb :=MakeDict ();_cfacb .Set ("\u0050r\u0065\u0064\u0069\u0063\u0074\u006fr",MakeInteger (int64 (_fcba .Predictor )));if _fcba .BitsPerComponent !=8{_cfacb .Set ("\u0042\u0069t\u0073\u0050\u0065r\u0043\u006f\u006d\u0070\u006f\u006e\u0065\u006e\u0074",MakeInteger (int64 (_fcba .BitsPerComponent )));
-};if _fcba .Columns !=1{_cfacb .Set ("\u0043o\u006c\u0075\u006d\u006e\u0073",MakeInteger (int64 (_fcba .Columns )));};if _fcba .Colors !=1{_cfacb .Set ("\u0043\u006f\u006c\u006f\u0072\u0073",MakeInteger (int64 (_fcba .Colors )));};return _cfacb ;};return nil ;
-};
-
-// IsWhiteSpace checks if byte represents a white space character.
-func IsWhiteSpace (ch byte )bool {if (ch ==0x00)||(ch ==0x09)||(ch ==0x0A)||(ch ==0x0C)||(ch ==0x0D)||(ch ==0x20){return true ;};return false ;};
-
-// Set sets the PdfObject at index i of the streams. An error is returned if the index is outside bounds.
-func (_agbc *PdfObjectStreams )Set (i int ,obj PdfObject )error {if i < 0||i >=len (_agbc ._egfda ){return _de .New ("\u006f\u0075\u0074\u0073\u0069\u0064\u0065\u0020\u0062o\u0075\u006e\u0064\u0073");};_agbc ._egfda [i ]=obj ;return nil ;};
-
-// EncryptInfo contains an information generated by the document encrypter.
-type EncryptInfo struct{Version ;
-
-// Encrypt is an encryption dictionary that contains all necessary parameters.
-// It should be stored in all copies of the document trailer.
-Encrypt *PdfObjectDictionary ;
-
-// ID0 and ID1 are IDs used in the trailer. Older algorithms such as RC4 uses them for encryption.
-ID0 ,ID1 string ;};
-
-// EncodeBytes returns the passed in slice of bytes.
-// The purpose of the method is to satisfy the StreamEncoder interface.
-func (_abbd *RawEncoder )EncodeBytes (data []byte )([]byte ,error ){return data ,nil };
-
-// DecodeBytes decodes a slice of DCT encoded bytes and returns the result.
-func (_egbd *DCTEncoder )DecodeBytes (encoded []byte )(_gaeg []byte ,_ebac error ){_acf :=_f .NewReader (encoded );_cfb ,_ebac :=_ad .Decode (_acf );if _ebac !=nil {_bd .Log .Debug ("\u0045r\u0072\u006f\u0072\u0020\u0064\u0065\u0063\u006f\u0064\u0069\u006eg\u0020\u0069\u006d\u0061\u0067\u0065\u003a\u0020\u0025\u0073",_ebac );
-return nil ,_ebac ;};_fage :=_cfb .Bounds ();_cfbe :=AcquireBytes (_fage .Dx ()*_fage .Dy ()*_egbd .ColorComponents *_egbd .BitsPerComponent /8);defer func (){if _ebac !=nil {ReleaseBytes (_cfbe );};}();_gggb :=0;switch _egbd .ColorComponents {case 1:_agcff :=[]float64 {_egbd .Decode [0],_egbd .Decode [1]};
-for _cefe :=_fage .Min .Y ;_cefe < _fage .Max .Y ;_cefe ++{for _daeb :=_fage .Min .X ;_daeb < _fage .Max .X ;_daeb ++{_geaa :=_cfb .At (_daeb ,_cefe );if _egbd .BitsPerComponent ==16{_ggge ,_cged :=_geaa .(_ag .Gray16 );if !_cged {return nil ,_de .New ("\u0063\u006fl\u006f\u0072\u0020t\u0079\u0070\u0065\u0020\u0065\u0072\u0072\u006f\u0072");
-};_gbace :=_bcbc (uint (_ggge .Y >>8),_agcff [0],_agcff [1]);_baba :=_bcbc (uint (_ggge .Y ),_agcff [0],_agcff [1]);_cfbe [_gggb ]=byte (_gbace );_gggb ++;_cfbe [_gggb ]=byte (_baba );_gggb ++;}else {_dacf ,_babc :=_geaa .(_ag .Gray );if !_babc {return nil ,_de .New ("\u0063\u006fl\u006f\u0072\u0020t\u0079\u0070\u0065\u0020\u0065\u0072\u0072\u006f\u0072");
-};_cfbe [_gggb ]=byte (_bcbc (uint (_dacf .Y ),_agcff [0],_agcff [1]));_gggb ++;};};};case 3:_addd :=[]float64 {_egbd .Decode [0],_egbd .Decode [1]};_febc :=[]float64 {_egbd .Decode [2],_egbd .Decode [3]};_gffb :=[]float64 {_egbd .Decode [4],_egbd .Decode [5]};
-for _cfgc :=_fage .Min .Y ;_cfgc < _fage .Max .Y ;_cfgc ++{for _bdfb :=_fage .Min .X ;_bdfb < _fage .Max .X ;_bdfb ++{_bddg :=_cfb .At (_bdfb ,_cfgc );if _egbd .BitsPerComponent ==16{_eafa ,_dced :=_bddg .(_ag .RGBA64 );if !_dced {return nil ,_de .New ("\u0063\u006fl\u006f\u0072\u0020t\u0079\u0070\u0065\u0020\u0065\u0072\u0072\u006f\u0072");
-};_ceca :=_bcbc (uint (_eafa .R >>8),_addd [0],_addd [1]);_egfd :=_bcbc (uint (_eafa .R ),_addd [0],_addd [1]);_bad :=_bcbc (uint (_eafa .G >>8),_febc [0],_febc [1]);_gaa :=_bcbc (uint (_eafa .G ),_febc [0],_febc [1]);_ddbd :=_bcbc (uint (_eafa .B >>8),_gffb [0],_gffb [1]);
-_aafd :=_bcbc (uint (_eafa .B ),_gffb [0],_gffb [1]);_cfbe [_gggb ]=byte (_ceca );_gggb ++;_cfbe [_gggb ]=byte (_egfd );_gggb ++;_cfbe [_gggb ]=byte (_bad );_gggb ++;_cfbe [_gggb ]=byte (_gaa );_gggb ++;_cfbe [_gggb ]=byte (_ddbd );_gggb ++;_cfbe [_gggb ]=byte (_aafd );
-_gggb ++;}else {_caeg ,_cccd :=_bddg .(_ag .RGBA );if _cccd {_cbdbf :=_bcbc (uint (_caeg .R ),_addd [0],_addd [1]);_cfgg :=_bcbc (uint (_caeg .G ),_febc [0],_febc [1]);_cfae :=_bcbc (uint (_caeg .B ),_gffb [0],_gffb [1]);_cfbe [_gggb ]=byte (_cbdbf );_gggb ++;
-_cfbe [_gggb ]=byte (_cfgg );_gggb ++;_cfbe [_gggb ]=byte (_cfae );_gggb ++;}else {_debe ,_abbb :=_bddg .(_ag .YCbCr );if !_abbb {return nil ,_de .New ("\u0063\u006fl\u006f\u0072\u0020t\u0079\u0070\u0065\u0020\u0065\u0072\u0072\u006f\u0072");};_fdab ,_fcdf ,_ecee ,_ :=_debe .RGBA ();
-_egad :=_bcbc (uint (_fdab >>8),_addd [0],_addd [1]);_efab :=_bcbc (uint (_fcdf >>8),_febc [0],_febc [1]);_ffb :=_bcbc (uint (_ecee >>8),_gffb [0],_gffb [1]);_cfbe [_gggb ]=byte (_egad );_gggb ++;_cfbe [_gggb ]=byte (_efab );_gggb ++;_cfbe [_gggb ]=byte (_ffb );
-_gggb ++;};};};};case 4:_fcff :=[]float64 {_egbd .Decode [0],_egbd .Decode [1]};_cbeb :=[]float64 {_egbd .Decode [2],_egbd .Decode [3]};_fdga :=[]float64 {_egbd .Decode [4],_egbd .Decode [5]};_abgfa :=[]float64 {_egbd .Decode [6],_egbd .Decode [7]};for _ggda :=_fage .Min .Y ;
-_ggda < _fage .Max .Y ;_ggda ++{for _ccfd :=_fage .Min .X ;_ccfd < _fage .Max .X ;_ccfd ++{_ccb :=_cfb .At (_ccfd ,_ggda );_eeed ,_gebeb :=_ccb .(_ag .CMYK );if !_gebeb {return nil ,_de .New ("\u0063\u006fl\u006f\u0072\u0020t\u0079\u0070\u0065\u0020\u0065\u0072\u0072\u006f\u0072");
-};_cdde :=255-_bcbc (uint (_eeed .C ),_fcff [0],_fcff [1]);_gdeeb :=255-_bcbc (uint (_eeed .M ),_cbeb [0],_cbeb [1]);_cccfg :=255-_bcbc (uint (_eeed .Y ),_fdga [0],_fdga [1]);_cfce :=255-_bcbc (uint (_eeed .K ),_abgfa [0],_abgfa [1]);_cfbe [_gggb ]=byte (_cdde );
-_gggb ++;_cfbe [_gggb ]=byte (_gdeeb );_gggb ++;_cfbe [_gggb ]=byte (_cccfg );_gggb ++;_cfbe [_gggb ]=byte (_cfce );_gggb ++;};};};return _cfbe ,nil ;};
-
-// MakeArrayFromIntegers64 creates an PdfObjectArray from a slice of int64s, where each array element
-// is an PdfObjectInteger.
-func MakeArrayFromIntegers64 (vals []int64 )*PdfObjectArray {_bade :=MakeArray ();for _ ,_bebb :=range vals {_bade .Append (MakeInteger (_bebb ));};return _bade ;};
-
-// Resolve resolves a PdfObject to direct object, looking up and resolving references as needed (unlike TraceToDirect).
-func (_aba *PdfParser )Resolve (obj PdfObject )(PdfObject ,error ){_eba ,_fefa :=obj .(*PdfObjectReference );if !_fefa {return obj ,nil ;};_gcd :=_aba .GetFileOffset ();defer func (){_aba .SetFileOffset (_gcd )}();_gdg ,_fdba :=_aba .LookupByReference (*_eba );
-if _fdba !=nil {return nil ,_fdba ;};_ffa ,_abg :=_gdg .(*PdfIndirectObject );if !_abg {return _gdg ,nil ;};_gdg =_ffa .PdfObject ;_ ,_fefa =_gdg .(*PdfObjectReference );if _fefa {return _ffa ,_de .New ("\u006d\u0075lt\u0069\u0020\u0064e\u0070\u0074\u0068\u0020tra\u0063e \u0070\u006f\u0069\u006e\u0074\u0065\u0072 t\u006f\u0020\u0070\u006f\u0069\u006e\u0074e\u0072");
-};return _gdg ,nil ;};
-
-// PdfIndirectObject represents the primitive PDF indirect object.
-type PdfIndirectObject struct{PdfObjectReference ;PdfObject ;};
-
-// String returns a string describing `null`.
-func (_aebe *PdfObjectNull )String ()string {return "\u006e\u0075\u006c\u006c"};func (_cbbg *PdfCrypt )authenticate (_afa []byte )(bool ,error ){_cbbg ._ccc =false ;_dbed :=_cbbg .securityHandler ();_efec ,_bbc ,_gcaf :=_dbed .Authenticate (&_cbbg ._dfb ,_afa );
-if _gcaf !=nil {return false ,_gcaf ;}else if _bbc ==0||len (_efec )==0{return false ,nil ;};_cbbg ._ccc =true ;_cbbg ._eab =_efec ;return true ,nil ;};
-
-// ShallowEqualObjects returns true if `obj1` and `obj2` are equal at the top level
-// without recursing into nested objects. Indirect objects are compared by object number
-// (identity), not by content. Dictionary and array values are compared by pointer equality.
-func ShallowEqualObjects (obj1 ,obj2 PdfObject )bool {if obj1 ==nil &&obj2 ==nil {return true ;}else if obj1 ==nil ||obj2 ==nil {return false ;};if _g .TypeOf (obj1 )!=_g .TypeOf (obj2 ){return false ;};switch _bfdb :=obj1 .(type ){case *PdfObjectNull :return true ;
-case *PdfObjectReference :_gebf :=obj2 .(*PdfObjectReference );return _bfdb .ObjectNumber ==_gebf .ObjectNumber &&_bfdb .GenerationNumber ==_gebf .GenerationNumber ;case *PdfObjectName :return *_bfdb ==*(obj2 .(*PdfObjectName ));case *PdfObjectString :return *_bfdb ==*(obj2 .(*PdfObjectString ));
-case *PdfObjectInteger :return *_bfdb ==*(obj2 .(*PdfObjectInteger ));case *PdfObjectBool :return *_bfdb ==*(obj2 .(*PdfObjectBool ));case *PdfObjectFloat :return *_bfdb ==*(obj2 .(*PdfObjectFloat ));case *PdfIndirectObject :_fcac :=obj2 .(*PdfIndirectObject );
-return _bfdb .ObjectNumber ==_fcac .ObjectNumber &&_bfdb .GenerationNumber ==_fcac .GenerationNumber ;case *PdfObjectArray :_afgb :=obj2 .(*PdfObjectArray );if len (_bfdb ._bgegc )!=len (_afgb ._bgegc ){return false ;};for _cfbb ,_gbc :=range _bfdb ._bgegc {if _gbc !=_afgb ._bgegc [_cfbb ]{return false ;
-};};return true ;case *PdfObjectDictionary :_fffc :=obj2 .(*PdfObjectDictionary );_fgfgg :=_bfdb .Keys ();_cfcd :=_fffc .Keys ();if len (_fgfgg )!=len (_cfcd ){return false ;};for _ ,_afbe :=range _fgfgg {_cgdde :=_bfdb .Get (_afbe );_aaffg :=_fffc .Get (_afbe );
-if _cgdde !=_aaffg {return false ;};};return true ;case *PdfObjectStream :_cfcc :=obj2 .(*PdfObjectStream );if _bfdb .PdfObjectDictionary !=_cfcc .PdfObjectDictionary {return false ;};return _f .Equal (_bfdb .Stream ,_cfcc .Stream );default:_bd .Log .Error ("\u0045\u0052R\u004f\u0052\u003a\u0020\u0055\u006e\u006b\u006e\u006f\u0077\u006e\u0020\u0074\u0079\u0070\u0065\u003a\u0020\u0025\u0054\u0020\u002d\u0020\u0073\u0068\u006f\u0075\u006c\u0064\u0020\u006e\u0065\u0076\u0065\u0072\u0020\u0068\u0061\u0070\u0070\u0065\u006e\u0021",obj1 );
-};return false ;};
-
-// DecodeImages decodes the page images from the jbig2 'encoded' data input.
-// The jbig2 document may contain multiple pages, thus the function can return multiple
-// images. The images order corresponds to the page number.
-func (_bccd *JBIG2Encoder )DecodeImages (encoded []byte )([]_b .Image ,error ){const _eeca ="\u004aB\u0049\u0047\u0032\u0045n\u0063\u006f\u0064\u0065\u0072.\u0044e\u0063o\u0064\u0065\u0049\u006d\u0061\u0067\u0065s";_gded ,_gfd :=_fg .Decode (encoded ,_fg .Parameters {},_bccd .Globals .ToDocumentGlobals ());
-if _gfd !=nil {return nil ,_eb .Wrap (_gfd ,_eeca ,"");};_caeb ,_gfd :=_gded .PageNumber ();if _gfd !=nil {return nil ,_eb .Wrap (_gfd ,_eeca ,"");};_dbec :=[]_b .Image {};var _dgabaf _b .Image ;for _cegcg :=1;_cegcg <=_caeb ;_cegcg ++{_dgabaf ,_gfd =_gded .DecodePageImage (_cegcg );
-if _gfd !=nil {return nil ,_eb .Wrapf (_gfd ,_eeca ,"\u0070\u0061\u0067\u0065\u003a\u0020\u0027\u0025\u0064\u0027",_cegcg );};_dbec =append (_dbec ,_dgabaf );};return _dbec ,nil ;};
+// Append appends PdfObject(s) to the array.
+func (_deae *PdfObjectArray )Append (objects ...PdfObject ){if _deae ==nil {_be .Log .Debug ("\u0057\u0061\u0072\u006e\u0020\u002d\u0020\u0041\u0074\u0074\u0065\u006d\u0070t\u0020\u0074\u006f\u0020\u0061\u0070p\u0065\u006e\u0064\u0020\u0074\u006f\u0020\u0061\u0020\u006e\u0069\u006c\u0020a\u0072\u0072\u0061\u0079");
+return ;};_deae ._dccdc =append (_deae ._dccdc ,objects ...);};
 
 // Write outputs the object as it is to be written to file.
-func (_daed *PdfObjectString )Write ()[]byte {return _gf (func (_fcffc *_f .Buffer ){if _daed ._gfedc {_geac :=_daed ._fadd ;if !_daed ._efdc {_geac =_abc .EncodeToString (_daed .Bytes ());};_fcffc .Grow (len (_geac )+2);_fcffc .WriteString ("\u003c");
-_fcffc .WriteString (_geac );_fcffc .WriteString ("\u003e");return ;};_fcffc .Grow (len (_daed ._fadd )+len (_daed ._fadd )/5+2);_fcffc .WriteString ("\u0028");for _afag :=0;_afag < len (_daed ._fadd );_afag ++{_beag :=_daed ._fadd [_afag ];if _bgge ,_fagc :=_eadba [_beag ];
-_fagc {_fcffc .Write (_bgge );}else {_fcffc .WriteByte (_beag );};};_fcffc .WriteString ("\u0029");});};
+func (_cgddd *PdfObjectString )Write ()[]byte {return _cage (func (_gefg *_ad .Buffer ){if _cgddd ._cdebe {_cecdf :=_cgddd ._babb ;if !_cgddd ._cfedd {_cecdf =_ee .EncodeToString (_cgddd .Bytes ());};_gefg .Grow (len (_cecdf )+2);_gefg .WriteString ("\u003c");
+_gefg .WriteString (_cecdf );_gefg .WriteString ("\u003e");return ;};_gefg .Grow (len (_cgddd ._babb )+len (_cgddd ._babb )/5+2);_gefg .WriteString ("\u0028");for _ababf :=0;_ababf < len (_cgddd ._babb );_ababf ++{_addcc :=_cgddd ._babb [_ababf ];if _acgca ,_gbce :=_eecg [_addcc ];
+_gbce {_gefg .Write (_acgca );}else {_gefg .WriteByte (_addcc );};};_gefg .WriteString ("\u0029");});};const _ddga =32<<(^uint (0)>>63);
 
-// MakeStreamDict make a new instance of an encoding dictionary for a stream object.
-func (_dedf *ASCII85Encoder )MakeStreamDict ()*PdfObjectDictionary {_gebc :=MakeDict ();_gebc .Set ("\u0046\u0069\u006c\u0074\u0065\u0072",MakeName (_dedf .GetFilterName ()));return _gebc ;};const (DefaultJPEGQuality =75;);
+// GetStream returns the *PdfObjectStream represented by the PdfObject. On type mismatch the found bool flag is
+// false and a nil pointer is returned.
+func GetStream (obj PdfObject )(_facdf *PdfObjectStream ,_caagf bool ){obj =ResolveReference (obj );_facdf ,_caagf =obj .(*PdfObjectStream );return _facdf ,_caagf ;};func _ac (_aca *_ad .Buffer ){_aca .Reset ();_ebg .Put (_aca )};
 
-// GetUpdatedObjects returns pdf objects which were updated from the specific version (from prevParser).
-func (_abgaa *PdfParser )GetUpdatedObjects (prevParser *PdfParser )(map[int64 ]PdfObject ,error ){if prevParser ==nil {return nil ,_de .New ("\u0070\u0072e\u0076\u0069\u006f\u0075\u0073\u0020\u0070\u0061\u0072\u0073\u0065\u0072\u0020\u0063\u0061\u006e\u0027\u0074\u0020\u0062\u0065\u0020nu\u006c\u006c");
-};_bgaa ,_dfbf :=_abgaa .getNumbersOfUpdatedObjects (prevParser );if _dfbf !=nil {return nil ,_dfbf ;};_afee :=make (map[int64 ]PdfObject );for _ ,_dbedf :=range _bgaa {if _ececb ,_cgdef :=_abgaa .LookupByNumber (_dbedf );_cgdef ==nil {_afee [int64 (_dbedf )]=_ececb ;
-}else {return nil ,_cgdef ;};};return _afee ,nil ;};
-
-// MakeName creates a PdfObjectName from a string.
-func MakeName (s string )*PdfObjectName {_adag :=PdfObjectName (s );return &_adag };var _fdea =_fe .MustCompile ("\u0073t\u0061r\u0074\u0078\u003f\u0072\u0065f\u005c\u0073*\u0028\u005c\u0064\u002b\u0029");
-
-// Validate validates the page settings for the JBIG2 encoder.
-func (_gfab JBIG2EncoderSettings )Validate ()error {const _fcaf ="\u0076a\u006ci\u0064\u0061\u0074\u0065\u0045\u006e\u0063\u006f\u0064\u0065\u0072";if _gfab .Threshold < 0||_gfab .Threshold > 1.0{return _eb .Errorf (_fcaf ,"\u0070\u0072\u006f\u0076\u0069\u0064\u0065\u0064\u0020\u0074\u0068\u0072\u0065\u0073\u0068\u006f\u006c\u0064\u0020\u0076a\u006c\u0075\u0065\u003a\u0020\u0027\u0025\u0076\u0027 \u006d\u0075\u0073\u0074\u0020\u0062\u0065\u0020\u0069\u006e\u0020\u0072\u0061n\u0067\u0065\u0020\u005b\u0030\u002e0\u002c\u0020\u0031.\u0030\u005d",_gfab .Threshold );
-};if _gfab .ResolutionX < 0{return _eb .Errorf (_fcaf ,"\u0070\u0072\u006f\u0076\u0069\u0064\u0065\u0064\u0020\u0078\u0020\u0072\u0065\u0073\u006f\u006c\u0075\u0074\u0069\u006fn\u003a\u0020\u0027\u0025\u0064\u0027\u0020\u006d\u0075s\u0074\u0020\u0062\u0065\u0020\u0070\u006f\u0073\u0069\u0074\u0069\u0076\u0065 \u006f\u0072\u0020\u007a\u0065\u0072o\u0020\u0076\u0061l\u0075\u0065",_gfab .ResolutionX );
-};if _gfab .ResolutionY < 0{return _eb .Errorf (_fcaf ,"\u0070\u0072\u006f\u0076\u0069\u0064\u0065\u0064\u0020\u0079\u0020\u0072\u0065\u0073\u006f\u006c\u0075\u0074\u0069\u006fn\u003a\u0020\u0027\u0025\u0064\u0027\u0020\u006d\u0075s\u0074\u0020\u0062\u0065\u0020\u0070\u006f\u0073\u0069\u0074\u0069\u0076\u0065 \u006f\u0072\u0020\u007a\u0065\u0072o\u0020\u0076\u0061l\u0075\u0065",_gfab .ResolutionY );
-};if _gfab .DefaultPixelValue !=0&&_gfab .DefaultPixelValue !=1{return _eb .Errorf (_fcaf ,"de\u0066\u0061u\u006c\u0074\u0020\u0070\u0069\u0078\u0065\u006c\u0020v\u0061\u006c\u0075\u0065\u003a\u0020\u0027\u0025\u0064\u0027\u0020\u006d\u0075\u0073\u0074\u0020\u0062\u0065\u0020\u0061\u0020\u0076\u0061\u006c\u0075\u0065\u0020\u0066o\u0072 \u0074\u0068\u0065\u0020\u0062\u0069\u0074\u003a \u007b0\u002c\u0031}",_gfab .DefaultPixelValue );
-};if _gfab .Compression !=JB2Generic {return _eb .Errorf (_fcaf ,"\u0070\u0072\u006f\u0076\u0069\u0064\u0065d\u0020\u0063\u006fm\u0070\u0072\u0065\u0073s\u0069\u006f\u006e\u0020\u0069\u0073\u0020\u006e\u006f\u0074\u0020\u0069\u006d\u0070\u006c\u0065\u006d\u0065\u006e\u0074\u0065\u0064\u0020\u0079\u0065\u0074");
-};return nil ;};
-
-// SetFileOffset sets the file to an offset position and resets buffer.
-func (_gfec *PdfParser )SetFileOffset (offset int64 ){_gfec ._fgaa .SetFileOffset (offset )};
-
-// NewRawEncoder returns a new instace of RawEncoder.
-func NewRawEncoder ()*RawEncoder {return &RawEncoder {}};
-
-// PdfObjectInteger represents the primitive PDF integer numerical object.
-type PdfObjectInteger int64 ;func (_cgfgg *PdfParser )seekPdfVersionTopDown ()(int ,int ,error ){_cgfgg ._fgaa .Seek (0,_ce .SeekStart );_efbcb :=20;_gdega :=make ([]byte ,_efbcb );for {_dged ,_fgad :=_cgfgg ._fgaa .ReadByte ();if _fgad !=nil {if _fgad ==_ce .EOF {break ;
-}else {return 0,0,_fgad ;};};if IsDecimalDigit (_dged )&&_gdega [_efbcb -1]=='.'&&IsDecimalDigit (_gdega [_efbcb -2])&&_gdega [_efbcb -3]=='-'&&_gdega [_efbcb -4]=='F'&&_gdega [_efbcb -5]=='D'&&_gdega [_efbcb -6]=='P'{_bffc :=int (_gdega [_efbcb -2]-'0');
-_eebg :=int (_dged -'0');return _bffc ,_eebg ,nil ;};_gdega =append (_gdega [1:_efbcb ],_dged );};return 0,0,_de .New ("\u0076\u0065\u0072\u0073\u0069\u006f\u006e\u0020\u006e\u006f\u0074\u0020f\u006f\u0075\u006e\u0064");};
-
-// MakeArrayFromFloats creates an PdfObjectArray from a slice of float64s, where each array element is an
-// PdfObjectFloat.
-func MakeArrayFromFloats (vals []float64 )*PdfObjectArray {_cecf :=MakeArray ();for _ ,_eafgc :=range vals {_cecf .Append (MakeFloat (_eafgc ));};return _cecf ;};type errorReader struct{_gdgba error };
+// GetFilterName returns the name of the encoding filter.
+func (_edf *RunLengthEncoder )GetFilterName ()string {return StreamEncodingFilterNameRunLength };func _eabf (_bbdd ,_dcbg ,_cfbb uint8 )uint8 {_egea :=int (_cfbb );_gfbgb :=int (_dcbg )-_egea ;_fdgeb :=int (_bbdd )-_egea ;_egea =_bdc (_gfbgb +_fdgeb );
+_gfbgb =_bdc (_gfbgb );_fdgeb =_bdc (_fdgeb );if _gfbgb <=_fdgeb &&_gfbgb <=_egea {return _bbdd ;}else if _fdgeb <=_egea {return _dcbg ;};return _cfbb ;};
